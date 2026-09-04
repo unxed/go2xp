@@ -17,8 +17,8 @@
 | 3 | `go2xp patch` + `verify`, профиль xp | [x] + проходит под Wine (winxp) |
 | 3.5 | Wine smoke test (`scripts/wine-test.sh`) | [x] |
 | 4 | ранние asm-полифиллы, `probes/hello` | [x] |
-| 5 | Go-полифиллы, `probes/exec`, `probes/files` | [~] механизм готов, CancelIoEx первый; ждёт подтверждения |
-| 6 | `probes/net`, `probes/console`, `probes/signals` | [ ] |
+| 5 | Go-полифиллы, `probes/exec`, `probes/files` | [x] |
+| 6 | `probes/net`, `probes/console`, `probes/signals` | [~] console и signals готовы, net остался |
 | 7 | CI / reusable action | [ ] |
 | 8 | профиль win7 | [ ] |
 | 8.5 | перевод репозитория на английский (после первого запуска на XP) | [ ] |
@@ -241,3 +241,31 @@ pending lists: nothing left, 41 imports, all of them XP-era kernel32.
 - Next: step 6 - console and signal probes, then the first run on real hardware. Note that
   Wine cannot narrow the pending list any further: it exports everything, so only XP can
   say which lazy imports really fail.
+
+### 2026-09-04 - step 6: console and signal probes
+
+- `probes/console` covers the Console API surface f4 will need on XP, where there is no
+  ConPTY and no ANSI interpreter: mode round-trip, screen buffer geometry, and a
+  cell-level WriteConsoleOutputW/ReadConsoleOutputW pair. Three properties keep it usable
+  in CI: the handles come from CONOUT$/CONIN$ rather than stdio, so redirection does not
+  break it; the cell test writes to a back buffer that is never made active, so it cannot
+  disturb the display; and the input queue is only inspected, never waited on. The console
+  functions are reached through NewLazyDLL, so they run through the GetProcAddress hook.
+- `probes/signals` re-executes itself in a new process group and sends CTRL_BREAK_EVENT to
+  that group alone, rather than to its own, which would take the harness down with it.
+  That is also the shape f4 needs: interrupt a child without killing yourself.
+- Wine reports success from GenerateConsoleCtrlEvent but delivers nothing across process
+  groups, so the probe detects Wine (ntdll exports wine_get_version, which no real Windows
+  has) and reports SKIP there instead of a false failure. On real Windows the same
+  situation is still a failure.
+- `scripts/wine-test.sh` now runs the probes under script(1) so Wine gives them a real
+  console, and decides PASS/FAIL from the probe's own verdict line rather than the exit
+  status, which the terminal wrapper obscures. SKIP counts as a pass.
+- Windows-only probes have a non-Windows stub file so `go build ./...` still works
+  everywhere.
+- 15 runs, all green (signals SKIPs under Wine).
+
+Two things Wine has now told us it cannot check, both waiting on hardware: whether control
+events actually reach os/signal, and which lazily resolved imports XP really lacks.
+
+- Next: `probes/net`, then step 7 (CI) or the first run on real XP, whichever comes first.

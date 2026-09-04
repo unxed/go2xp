@@ -20,6 +20,24 @@ export WINEDEBUG=${WINEDEBUG:--all}
 
 command -v wine >/dev/null || { echo "wine not found"; exit 1; }
 
+# The console and signal probes need a real console, which Wine only provides when its
+# stdio is a terminal. script(1) supplies one; without it those probes report SKIP.
+esc=$(printf '\033')
+if command -v script >/dev/null; then
+	run() { script -qec "timeout 120 wine $1" /dev/null 2>/dev/null | tr -d '\r' | sed "s/${esc}\[[0-9;?]*[a-zA-Z]//g"; }
+else
+	run() { timeout 120 wine "$1" 2>/dev/null; }
+fi
+
+# A probe reports its own verdict, which survives the terminal wrapper better than an
+# exit status does.
+check() {
+	case "$2" in
+	*"OK "*|*SKIP*) echo "PASS $1: $(echo "$2" | tr -s "\n" " ")" ;;
+	*) echo "FAIL $1: $(echo "$2" | tr -s "\n" " ")"; fail=1 ;;
+	esac
+}
+
 out=$(mktemp -d)
 trap 'rm -rf "$out"' EXIT
 
@@ -38,18 +56,9 @@ for dir in probes/*/; do
 	# GO2XP_FORCE_POLYFILLS makes the table win instead, which is the only way to
 	# exercise the polyfills themselves without a real XP.
 	for exe in "$name.exe" "$name-patched.exe"; do
-		if result=$(cd "$out" && timeout 120 wine "$exe" 2>/dev/null); then
-			echo "PASS $exe: $result"
-		else
-			echo "FAIL $exe (exit $?)"
-			fail=1
-		fi
+		check "$exe" "$(cd "$out" && run "$exe")"
 	done
-	if result=$(cd "$out" && GO2XP_FORCE_POLYFILLS=1 timeout 120 wine "$name-patched.exe" 2>/dev/null); then
-		echo "PASS $name-patched.exe [forced polyfills]: $result"
-	else
-		echo "FAIL $name-patched.exe [forced polyfills] (exit $?)"
-		fail=1
-	fi
+	check "$name-patched.exe [forced polyfills]" \
+		"$(cd "$out" && GO2XP_FORCE_POLYFILLS=1 run "$name-patched.exe")"
 done
 exit $fail
