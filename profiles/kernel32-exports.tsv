@@ -1,0 +1,1908 @@
+# kernel32.dll exports and whether Windows XP SP3 (5.1) has them.
+# Source: Geoff Chappell, 'KERNEL32 Functions' (geoffchappell.com/studies/windows/win32/kernel32/api),
+# column = version range the export exists in. Format: name<TAB>xp|no<TAB>versions
+# Generated once; re-run scripts/fetch-exports.py to refresh.
+AcquireSRWLockExclusive	no	6.0 and higher
+AcquireSRWLockShared	no	6.0 and higher
+AcquireStateLock	no	6.2 only
+ActivateActCtx	xp	5.1 and higher
+ActivateActCtxWorker	no	6.2 and higher
+AddAtomA	xp	3.51 and higher
+AddAtomW	xp	3.51 and higher
+AddConsoleAliasA	no	3.51 and higher (NT only)
+AddConsoleAliasW	no	3.51 and higher (NT only)
+AddDllDirectory	no	6.2 and higher
+AddIntegrityLabelToBoundaryDescriptor	no	6.1 and higher
+AddLocalAlternateComputerNameA	xp	5.1 and higher
+AddLocalAlternateComputerNameW	xp	5.1 and higher
+AddRefActCtx	xp	5.1 and higher
+AddRefActCtxWorker	no	6.2 and higher
+AddResourceAttributeAce	no	6.2 and higher
+AddSIDToBoundaryDescriptor	no	6.0 and higher
+AddScopedPolicyIDAce	no	6.2 and higher
+AddSecureMemoryCacheCallback	no	6.0 from Windows Vista SP1, and higher
+AddVectoredContinueHandler	no	5.2 from Windows Server 2003 SP1, and higher
+AddVectoredExceptionHandler	xp	5.1 and higher
+AdjustCalendarDate	no	6.0 and higher
+AllocConsole	xp	3.51 and higher
+AllocLSCallback	no	4.0 to 4.90 (Windows only)
+AllocSLCallback	no	4.0 to 4.90 (Windows only)
+AllocateUserPhysicalPages	xp	5.0 and higher
+AllocateUserPhysicalPagesNuma	no	6.0 and higher
+AppContainerDeriveSidFromMoniker	no	6.2 only
+AppContainerFreeMemory	no	6.2 only
+AppContainerLookupDisplayNameMrtReference	no	6.2 only
+AppContainerLookupMoniker	no	6.2 only
+AppContainerRegisterSid	no	6.2 only
+AppContainerUnregisterSid	no	6.2 only
+AppXFreeMemory	no	6.2 only
+AppXGetApplicationData	no	6.2 only
+AppXGetDevelopmentMode	no	6.2 only
+AppXGetOSMaxVersionTested	no	6.2 and higher
+AppXGetOSMinVersion	no	6.2 only
+AppXGetPackageCapabilities	no	6.2 only
+AppXGetPackageSid	no	6.2 only
+AppXGetPackageState	no	6.2 only
+AppXLookupDisplayName	no	6.2 only
+AppXLookupMoniker	no	6.2 only
+AppXSetPackageState	no	6.2 only
+ApplicationRecoveryFinished	no	6.0 and higher
+ApplicationRecoveryInProgress	no	6.0 and higher
+AreFileApisANSI	xp	3.51 and higher
+AssignProcessToJobObject	xp	5.0 and higher
+AttachConsole	xp	5.1 and higher
+BackupRead	xp	3.51 and higher
+BackupSeek	xp	3.51 and higher
+BackupWrite	xp	3.51 and higher
+BaseAttachCompleteThunk	no	3.51 to 5.0 (NT only)
+BaseCheckAppcompatCache	xp	5.1 and higher
+BaseCheckAppcompatCacheEx	no	6.1 and higher
+BaseCheckAppcompatCacheExWorker	no	6.2 and higher
+BaseCheckAppcompatCacheWorker	no	6.2 and higher
+BaseCheckElevation	no	6.2 and higher
+BaseCheckRunApp	no	5.2 from Windows Server 2003 SP1, to 6.3
+BaseCleanupAppcompatCache	xp	5.1 only
+BaseCleanupAppcompatCacheSupport	xp	5.1 and higher
+BaseCleanupAppcompatCacheSupportWorker	no	6.2 and higher
+BaseDestroyVDMEnvironment	no	6.2 and higher
+BaseDllReadWriteIniFile	no	6.1 and higher
+BaseDumpAppcompatCache	xp	5.1 and higher
+BaseDumpAppcompatCacheWorker	no	6.2 and higher
+BaseElevationPostProcessing	no	6.2 and higher
+BaseFlushAppcompatCache	xp	5.1 and higher
+BaseFlushAppcompatCacheWorker	no	6.2 and higher
+BaseFormatObjectAttributes	no	6.1 and higher
+BaseFormatTimeOut	no	6.1 and higher
+BaseFreeAppCompatDataForProcessWorker	no	6.3 and higher
+BaseGenerateAppCompatData	no	6.0 and higher
+BaseGetNamedObjectDirectory	no	6.1 and higher
+BaseInitAppcompatCache	xp	5.1 only
+BaseInitAppcompatCacheSupport	xp	5.1 and higher
+BaseInitAppcompatCacheSupportWorker	no	6.2 and higher
+BaseIsAppcompatInfrastructureDisabled	no	5.2 and higher
+BaseIsAppcompatInfrastructureDisabledWorker	no	6.2 and higher
+BaseIsDosApplication	no	6.2 and higher
+BaseProcessInitPostImport	xp	5.1 and 5.2
+BaseProcessStart	no	5.2 only (x64 only)
+BaseQueryModuleData	?	some 5.1 and 5.2, and higher; 
+    begins in 5.1 from Windows XP SP2; 
+    begins in 5.2 from Windows Server 2003 SP1
+BaseReadAppCompatDataForProcessWorker	no	6.3 and higher
+BaseSetLastNTError	no	6.1 and higher
+BaseThreadInitThunk	no	6.0 and higher
+BaseThreadStart	no	5.2 only (x64 only)
+BaseUpdateAppcompatCache	xp	5.1 and higher
+BaseUpdateAppcompatCacheWorker	no	6.2 and higher
+BaseUpdateVDMEntry	no	6.2 and higher
+BaseVerifyUnicodeString	no	6.1 and higher
+BaseWriteErrorElevationRequiredEvent	no	6.2 and higher
+Basep8BitStringToDynamicUnicodeString	no	6.1 and higher
+BasepAllocateActivationContextActivationBlock	no	6.1 and higher
+BasepAnsiStringToDynamicUnicodeString	no	6.1 and higher
+BasepAppCompatHookDLL	no	6.2 only
+BasepAppContainerEnvironmentExtension	no	6.2 and higher
+BasepAppXExtension	no	6.2 and higher
+BasepCheckAppCompat	no	6.1 and higher
+BasepCheckBadapp	no	5.2 from Windows Server 2003 SP1, to 6.3
+BasepCheckWebBladeHashes	no	6.2 and higher
+BasepCheckWinSaferRestrictions	?	some 5.1 and 5.2, and higher; 
+    begins in 5.1 from Windows XP SP2; 
+    begins in 5.2 from Windows Server 2003 SP1
+BasepConstructSxsCreateProcessMessage	no	6.2 and higher
+BasepCopyEncryption	no	6.2 and higher
+BasepFreeActivationContextActivationBlock	no	6.1 and higher
+BasepFreeAppCompatData	no	5.2 from Windows Server 2003 SP1, and higher
+BasepGetAppCompatData	no	6.2 and higher
+BasepGetComputerNameFromNtPath	no	6.2 and higher
+BasepGetExeArchType	no	6.2 and higher
+BasepIsProcessAllowed	no	6.2 and higher
+BasepMapModuleHandle	no	6.1 and higher
+BasepNotifyLoadStringResource	no	6.2 and higher
+BasepPostSuccessAppXExtension	no	6.2 and higher
+BasepProcessInvalidImage	no	6.2 and higher
+BasepQueryAppCompat	no	6.2 and higher
+BasepReleaseAppXContext	no	6.2 and higher
+BasepReleaseSxsCreateProcessUtilityStruct	no	6.2 and higher
+BasepReportFault	no	6.2 and higher
+BasepSetFileEncryptionCompression	no	6.2 and higher
+Beep	xp	3.51 and higher
+BeginUpdateResourceA	xp	3.51 and higher
+BeginUpdateResourceW	xp	3.51 and higher
+BindIoCompletionCallback	xp	5.0 and higher
+BuildCommDCBA	xp	3.51 and higher
+BuildCommDCBAndTimeoutsA	xp	3.51 and higher
+BuildCommDCBAndTimeoutsW	xp	3.51 and higher
+BuildCommDCBW	xp	3.51 and higher
+CallNamedPipeA	xp	3.51 and higher
+CallNamedPipeW	xp	3.51 and higher
+Callback12	no	4.0 to 4.90 (Windows only)
+Callback16	no	4.0 to 4.90 (Windows only)
+Callback20	no	4.0 to 4.90 (Windows only)
+Callback24	no	4.0 to 4.90 (Windows only)
+Callback28	no	4.0 to 4.90 (Windows only)
+Callback32	no	4.0 to 4.90 (Windows only)
+Callback36	no	4.0 to 4.90 (Windows only)
+Callback4	no	4.0 to 4.90 (Windows only)
+Callback40	no	4.0 to 4.90 (Windows only)
+Callback44	no	4.0 to 4.90 (Windows only)
+Callback48	no	4.0 to 4.90 (Windows only)
+Callback52	no	4.0 to 4.90 (Windows only)
+Callback56	no	4.0 to 4.90 (Windows only)
+Callback60	no	4.0 to 4.90 (Windows only)
+Callback64	no	4.0 to 4.90 (Windows only)
+Callback8	no	4.0 to 4.90 (Windows only)
+CallbackMayRunLong	no	6.0 and higher
+CalloutOnFiberStack	no	6.3 and higher
+CancelDeviceWakeupRequest	xp	4.10 and higher
+CancelIo	xp	4.0 from Windows NT 4.0, and higher
+CancelIoEx	no	6.0 and higher
+CancelSynchronousIo	no	6.0 and higher
+CancelThreadpoolIo	no	6.0 and higher
+CancelTimerQueueTimer	xp	5.0 and higher
+CancelWaitableTimer	xp	4.0 from Windows NT 4.0, and higher
+CeipIsOptedIn	no	6.2 and higher
+ChangeTimerQueueTimer	xp	5.0 and higher
+CheckAllowDecryptedRemoteDestinationPolicy	no	6.2 and higher
+CheckElevation	no	6.0 and higher
+CheckElevationEnabled	no	6.0 and higher
+CheckForReadOnlyResource	no	6.0 and higher
+CheckForReadOnlyResourceFilter	no	6.2 and higher
+CheckNameLegalDOS8Dot3A	xp	5.1 from Windows XP SP1, and higher
+CheckNameLegalDOS8Dot3W	xp	5.1 from Windows XP SP1, and higher
+CheckRemoteDebuggerPresent	xp	5.1 from Windows XP SP1, and higher
+CheckTokenCapability	no	6.2 and higher
+CheckTokenMembershipEx	no	6.2 and higher
+ClearCommBreak	xp	3.51 and higher
+ClearCommError	xp	3.51 and higher
+CloseConsoleHandle	no	3.51 and higher (NT only)
+CloseHandle	xp	3.51 and higher
+ClosePackageInfo	no	6.2 and higher
+ClosePrivateNamespace	no	6.0 and higher
+CloseProfileUserMapping	xp	3.51 and higher
+CloseState	no	6.2 and higher
+CloseStateAtom	no	6.2 only
+CloseStateChangeNotification	no	6.2 only
+CloseStateContainer	no	6.2 only
+CloseStateLock	no	6.2 only
+CloseSystemHandle	no	4.0 to 4.90 (Windows only)
+CloseThreadpool	no	6.0 and higher
+CloseThreadpoolCleanupGroup	no	6.0 and higher
+CloseThreadpoolCleanupGroupMembers	no	6.0 and higher
+CloseThreadpoolIo	no	6.0 and higher
+CloseThreadpoolTimer	no	6.0 and higher
+CloseThreadpoolWait	no	6.0 and higher
+CloseThreadpoolWork	no	6.0 and higher
+CmdBatNotification	no	3.51 and higher (NT only)
+CommConfigDialogA	xp	3.51 and higher
+CommConfigDialogW	xp	3.51 and higher
+CommitStateAtom	no	6.2 only
+CompareCalendarDates	no	6.0 and higher
+CompareFileTime	xp	3.51 and higher
+CompareStringA	xp	3.51 and higher
+CompareStringEx	no	6.0 and higher
+CompareStringOrdinal	no	6.0 and higher
+CompareStringW	xp	3.51 and higher
+ConnectNamedPipe	xp	3.51 and higher
+ConsoleIMERoutine	no	5.2 and 6.0 (x64 only)
+ConsoleMenuControl	no	3.51 and higher (NT only)
+ContinueDebugEvent	xp	3.51 and higher
+ConvertCalDateTimeToSystemTime	no	6.0 and higher
+ConvertDefaultLocale	xp	3.51 and higher
+ConvertFiberToThread	xp	5.1 and higher
+ConvertNLSDayOfWeekToWin32DayOfWeek	no	6.0 and higher
+ConvertSystemTimeToCalDateTime	no	6.0 and higher
+ConvertThreadToFiber	xp	3.51 from Windows NT 3.51 SP5, and higher (NT); 
+    4.10 to 4.90 (Windows)
+ConvertThreadToFiberEx	no	5.2 and higher
+ConvertToGlobalHandle	no	4.0 to 4.90 (Windows only)
+CopyContext	no	6.1 from Windows 7 SP1, and higher
+CopyExtendedContext	no	6.1 before Windows 7 SP1
+CopyFile2	no	6.2 and higher
+CopyFileA	xp	3.51 and higher
+CopyFileExA	xp	4.0 from Windows NT 4.0, and higher
+CopyFileExW	xp	4.0 from Windows NT 4.0, and higher
+CopyFileTransactedA	no	6.0 and higher
+CopyFileTransactedW	no	6.0 and higher
+CopyFileW	xp	3.51 and higher
+CopyLZFile	xp	5.1 and higher
+CreateActCtxA	xp	5.1 and higher
+CreateActCtxW	xp	5.1 and higher
+CreateActCtxWWorker	no	6.2 and higher
+CreateBoundaryDescriptorA	no	6.0 and higher
+CreateBoundaryDescriptorW	no	6.0 and higher
+CreateConsoleScreenBuffer	xp	3.51 and higher
+CreateDirectoryA	xp	3.51 and higher
+CreateDirectoryExA	xp	3.51 and higher
+CreateDirectoryExW	xp	3.51 and higher
+CreateDirectoryTransactedA	no	6.0 and higher
+CreateDirectoryTransactedW	no	6.0 and higher
+CreateDirectoryW	xp	3.51 and higher
+CreateEventA	xp	3.51 and higher
+CreateEventExA	no	6.0 and higher
+CreateEventExW	no	6.0 and higher
+CreateEventW	xp	3.51 and higher
+CreateFiber	xp	3.51 from Windows NT 3.51 SP5, and higher (NT); 
+    4.10 to 4.90 (Windows)
+CreateFiberEx	xp	5.0 from Windows 2000 SP2, and higher
+CreateFile2	no	6.2 and higher
+CreateFileA	xp	3.51 and higher
+CreateFileMappingA	xp	3.51 and higher
+CreateFileMappingFromApp	no	6.2 and higher
+CreateFileMappingNumaA	no	6.0 and higher
+CreateFileMappingNumaW	no	6.0 and higher
+CreateFileMappingW	xp	3.51 and higher
+CreateFileTransactedA	no	6.0 and higher
+CreateFileTransactedW	no	6.0 and higher
+CreateFileW	xp	3.51 and higher
+CreateHardLinkA	xp	5.0 and higher
+CreateHardLinkTransactedA	no	6.0 and higher
+CreateHardLinkTransactedW	no	6.0 and higher
+CreateHardLinkW	xp	5.0 and higher
+CreateIoCompletionPort	xp	3.51 and higher
+CreateJobObjectA	xp	5.0 and higher
+CreateJobObjectW	xp	5.0 and higher
+CreateJobSet	xp	5.1 and higher
+CreateKernelThread	no	4.0 to 4.90 (Windows only)
+CreateMailslotA	xp	3.51 and higher
+CreateMailslotW	xp	3.51 and higher
+CreateMemoryResourceNotification	xp	5.1 and higher
+CreateMutexA	xp	3.51 and higher
+CreateMutexExA	no	6.0 and higher
+CreateMutexExW	no	6.0 and higher
+CreateMutexW	xp	3.51 and higher
+CreateNamedPipeA	xp	3.51 and higher
+CreateNamedPipeW	xp	3.51 and higher
+CreateNlsSecurityDescriptor	xp	5.1 from Windows XP SP1 to 5.2
+CreatePipe	xp	3.51 and higher
+CreatePrivateNamespaceA	no	6.0 and higher
+CreatePrivateNamespaceW	no	6.0 and higher
+CreateProcessA	xp	3.51 and higher
+CreateProcessAsUserA	no	10.0 and higher; 
+    earlier in ADVAPI32
+CreateProcessAsUserW	no	6.1 and higher; 
+    earlier in ADVAPI32
+CreateProcessInternalA	xp	5.0 from Windows 2000 SP3, and higher
+CreateProcessInternalW	xp	5.0 from Windows 2000 SP3, and higher
+CreateProcessInternalWSecure	?	some 5.0 and 5.1 only; 
+    begins in 5.0 from Windows 2000 SP4; 
+    begins in 5.1 from Windows XP SP2
+CreateProcessW	xp	3.51 and higher
+CreateRemoteThread	xp	3.51 and higher
+CreateRemoteThreadEx	no	6.1 and higher
+CreateSemaphoreA	xp	3.51 and higher
+CreateSemaphoreExA	no	6.0 and higher
+CreateSemaphoreExW	no	6.0 and higher
+CreateSemaphoreW	xp	3.51 and higher
+CreateSocketHandle	no	4.0 to 4.90 (Windows); 
+    5.1 and higher (NT, x86 only)
+CreateStateAtom	no	6.2 only
+CreateStateChangeNotification	no	6.2 only
+CreateStateContainer	no	6.2 only
+CreateStateLock	no	6.2 only
+CreateStateSubcontainer	no	6.2 only
+CreateSymbolicLinkA	no	6.0 and higher
+CreateSymbolicLinkTransactedA	no	6.0 and higher
+CreateSymbolicLinkTransactedW	no	6.0 and higher
+CreateSymbolicLinkW	no	6.0 and higher
+CreateTapePartition	xp	3.51 and higher
+CreateThread	xp	3.51 and higher
+CreateThreadpool	no	6.0 and higher
+CreateThreadpoolCleanupGroup	no	6.0 and higher
+CreateThreadpoolIo	no	6.0 and higher
+CreateThreadpoolTimer	no	6.0 and higher
+CreateThreadpoolWait	no	6.0 and higher
+CreateThreadpoolWork	no	6.0 and higher
+CreateTimerQueue	xp	5.0 and higher
+CreateTimerQueueTimer	xp	5.0 and higher
+CreateToolhelp32Snapshot	xp	4.0 and higher
+CreateUmsCompletionList	no	6.1 and higher (x64 only)
+CreateUmsThreadContext	no	6.1 and higher (x64 only)
+CreateVirtualBuffer	no	3.51 to 5.2 before Windows Server 2003 SP1 (NT only)
+CreateWaitableTimerA	xp	4.0 (NT) and higher
+CreateWaitableTimerExA	no	6.0 and higher
+CreateWaitableTimerExW	no	6.0 and higher
+CreateWaitableTimerW	xp	4.0 (NT) and higher
+CtrlRoutine	no	5.2 from Windows Server 2003 SP1, and higher (x64); 
+    6.1 and higher (x86)
+DeactivateActCtx	xp	5.1 and higher
+DeactivateActCtxWorker	no	6.2 and higher
+DebugActiveProcess	xp	3.51 and higher
+DebugActiveProcessStop	xp	5.1 and higher
+DebugBreak	xp	3.51 and higher
+DebugBreakProcess	xp	5.1 and higher
+DebugSetProcessKillOnExit	xp	5.1 and higher
+DecodePointer	?	some 5.1 and 5.2, and higher; 
+    begins in 5.1 from Windows XP SP2; 
+    begins in 5.2 from Windows Server 2003 SP1
+DecodeSystemPointer	?	some 5.1 and 5.2, and higher; 
+    begins in 5.1 from Windows XP SP2; 
+    begins in 5.2 from Windows Server 2003 SP1
+DefineDosDeviceA	xp	3.51 and higher
+DefineDosDeviceW	xp	3.51 and higher
+DelayLoadFailureHook	xp	5.0 and higher
+DeleteAtom	xp	3.51 and higher
+DeleteBoundaryDescriptor	no	6.0 and higher
+DeleteCriticalSection	xp	3.51 and higher
+DeleteFiber	xp	3.51 from Windows NT 3.51 SP5, and higher (NT); 
+    4.10 to 4.90 (Windows)
+DeleteFileA	xp	3.51 and higher
+DeleteFileTransactedA	no	6.0 and higher
+DeleteFileTransactedW	no	6.0 and higher
+DeleteFileW	xp	3.51 and higher
+DeleteProcThreadAttributeList	no	6.0 and higher
+DeleteStateAtomValue	no	6.2 only
+DeleteStateContainer	no	6.2 only
+DeleteStateContainerValue	no	6.2 only
+DeleteSynchronizationBarrier	no	6.3 and higher
+DeleteTimerQueue	xp	5.0 and higher
+DeleteTimerQueueEx	xp	5.0 and higher
+DeleteTimerQueueTimer	xp	5.0 and higher
+DeleteUmsCompletionList	no	6.1 and higher (x64 only)
+DeleteUmsThreadContext	no	6.1 and higher (x64 only)
+DeleteVolumeMountPointA	xp	5.0 and higher
+DeleteVolumeMountPointW	xp	5.0 and higher
+DequeueUmsCompletionListItems	no	6.1 and higher (x64 only)
+DeviceIoControl	xp	3.51 and higher
+DisableThreadLibraryCalls	xp	3.51 and higher
+DisableThreadProfiling	no	6.1 and higher
+DisassociateCurrentThreadFromCallback	no	6.0 and higher
+DiscardVirtualMemory	no	10.0 and higher
+DisconnectNamedPipe	xp	3.51 and higher
+DnsHostnameToComputerNameA	xp	5.0 and higher
+DnsHostnameToComputerNameExW	no	6.3 and higher
+DnsHostnameToComputerNameW	xp	5.0 and higher
+DosDateTimeToFileTime	xp	3.51 and higher
+DosPathToSessionPathA	xp	5.0 and higher
+DosPathToSessionPathW	xp	5.0 and higher
+DuplicateConsoleHandle	no	3.51 and higher (NT only)
+DuplicateEncryptionInfoFileExt	no	6.2 and higher
+DuplicateHandle	xp	3.51 and higher
+DuplicateStateContainerHandle	no	6.2 only
+EnableThreadProfiling	no	6.1 and higher
+EncodePointer	?	some 5.1 and 5.2, and higher; 
+    begins in 5.1 from Windows XP SP2; 
+    begins in 5.2 from Windows Server 2003 SP1
+EncodeSystemPointer	?	some 5.1 and 5.2, and higher; 
+    begins in 5.1 from Windows XP SP2; 
+    begins in 5.2 from Windows Server 2003 SP1
+EndUpdateResourceA	xp	3.51 and higher
+EndUpdateResourceW	xp	3.51 and higher
+EnterCriticalSection	xp	3.51 and higher
+EnterSynchronizationBarrier	no	6.3 and higher
+EnterUmsSchedulingMode	no	6.1 and higher (x64 only)
+EnumCalendarInfoA	xp	3.51 and higher
+EnumCalendarInfoExA	xp	4.10 and higher
+EnumCalendarInfoExEx	no	6.0 and higher
+EnumCalendarInfoExW	xp	4.10 and higher
+EnumCalendarInfoW	xp	3.51 and higher
+EnumDateFormatsA	xp	3.51 and higher
+EnumDateFormatsExA	xp	4.10 and higher
+EnumDateFormatsExEx	no	6.0 and higher
+EnumDateFormatsExW	xp	4.10 and higher
+EnumDateFormatsW	xp	3.51 and higher
+EnumLanguageGroupLocalesA	xp	4.90 and higher
+EnumLanguageGroupLocalesW	xp	4.90 and higher
+EnumResourceLanguagesA	xp	3.51 and higher
+EnumResourceLanguagesExA	no	6.0 and higher
+EnumResourceLanguagesExW	no	6.0 and higher
+EnumResourceLanguagesW	xp	3.51 and higher
+EnumResourceNamesA	xp	3.51 and higher
+EnumResourceNamesExA	no	6.0 and higher
+EnumResourceNamesExW	no	6.0 and higher
+EnumResourceNamesW	xp	3.51 and higher
+EnumResourceTypesA	xp	3.51 and higher
+EnumResourceTypesExA	no	6.0 and higher
+EnumResourceTypesExW	no	6.0 and higher
+EnumResourceTypesW	xp	3.51 and higher
+EnumSystemCodePagesA	xp	3.51 and higher
+EnumSystemCodePagesW	xp	3.51 and higher
+EnumSystemFirmwareTables	no	5.2 from Windows Server 2003 SP1, and higher
+EnumSystemGeoID	no	4.90 only (Windows); 
+    5.1 and higher (NT)
+EnumSystemLanguageGroupsA	xp	4.90 and higher
+EnumSystemLanguageGroupsW	xp	4.90 and higher
+EnumSystemLocalesA	xp	3.51 and higher
+EnumSystemLocalesEx	no	6.0 and higher
+EnumSystemLocalesW	xp	3.51 and higher
+EnumTimeFormatsA	xp	3.51 and higher
+EnumTimeFormatsEx	no	6.0 and higher
+EnumTimeFormatsW	xp	3.51 and higher
+EnumUILanguagesA	xp	4.90 and higher
+EnumUILanguagesW	xp	4.90 and higher
+EnumerateLocalComputerNamesA	xp	5.1 and higher
+EnumerateLocalComputerNamesW	xp	5.1 and higher
+EnumerateStateAtomValues	no	6.2 only
+EnumerateStateContainerItems	no	6.2 only
+EraseTape	xp	3.51 and higher
+EscapeCommFunction	xp	3.51 and higher
+ExecuteUmsThread	no	6.1 and higher (x64 only)
+ExitProcess	xp	3.51 and higher
+ExitThread	xp	3.51 and higher
+ExitVDM	no	3.51 and higher (NT only)
+ExpandEnvironmentStringsA	xp	3.51 and higher
+ExpandEnvironmentStringsW	xp	3.51 and higher
+ExpungeConsoleCommandHistoryA	no	3.51 and higher (NT only)
+ExpungeConsoleCommandHistoryW	no	3.51 and higher (NT only)
+ExtendVirtualBuffer	no	3.51 to 5.2 before Windows Server 2003 SP1 (NT only)
+FT_Exit0	no	4.0 to 4.90 (Windows only)
+FT_Exit12	no	4.0 to 4.90 (Windows only)
+FT_Exit16	no	4.0 to 4.90 (Windows only)
+FT_Exit20	no	4.0 to 4.90 (Windows only)
+FT_Exit24	no	4.0 to 4.90 (Windows only)
+FT_Exit28	no	4.0 to 4.90 (Windows only)
+FT_Exit32	no	4.0 to 4.90 (Windows only)
+FT_Exit36	no	4.0 to 4.90 (Windows only)
+FT_Exit4	no	4.0 to 4.90 (Windows only)
+FT_Exit40	no	4.0 to 4.90 (Windows only)
+FT_Exit44	no	4.0 to 4.90 (Windows only)
+FT_Exit48	no	4.0 to 4.90 (Windows only)
+FT_Exit52	no	4.0 to 4.90 (Windows only)
+FT_Exit56	no	4.0 to 4.90 (Windows only)
+FT_Exit8	no	4.0 to 4.90 (Windows only)
+FT_Prolog	no	4.0 to 4.90 (Windows only)
+FT_Thunk	no	4.0 to 4.90 (Windows only)
+FatalAppExitA	xp	3.51 and higher
+FatalAppExitW	xp	3.51 and higher
+FatalExit	xp	3.51 and higher
+FileTimeToDosDateTime	xp	3.51 and higher
+FileTimeToLocalFileTime	xp	3.51 and higher
+FileTimeToSystemTime	xp	3.51 and higher
+FillConsoleOutputAttribute	xp	3.51 and higher
+FillConsoleOutputCharacterA	xp	3.51 and higher
+FillConsoleOutputCharacterW	xp	3.51 and higher
+FindActCtxSectionGuid	xp	5.1 and higher
+FindActCtxSectionGuidWorker	no	6.2 and higher
+FindActCtxSectionStringA	xp	5.1 and higher
+FindActCtxSectionStringW	xp	5.1 and higher
+FindActCtxSectionStringWWorker	no	6.2 and higher
+FindAtomA	xp	3.51 and higher
+FindAtomW	xp	3.51 and higher
+FindClose	xp	3.51 and higher
+FindCloseChangeNotification	xp	3.51 and higher
+FindFirstChangeNotificationA	xp	3.51 and higher
+FindFirstChangeNotificationW	xp	3.51 and higher
+FindFirstFileA	xp	3.51 and higher
+FindFirstFileExA	xp	4.0 from Windows NT 4.0, and higher
+FindFirstFileExW	xp	4.0 from Windows NT 4.0, and higher
+FindFirstFileNameTransactedW	no	6.0 and higher
+FindFirstFileNameW	no	6.0 and higher
+FindFirstFileTransactedA	no	6.0 and higher
+FindFirstFileTransactedW	no	6.0 and higher
+FindFirstFileW	xp	3.51 and higher
+FindFirstStreamTransactedW	no	6.0 and higher
+FindFirstStreamW	no	5.2 and higher
+FindFirstVolumeA	xp	5.0 and higher
+FindFirstVolumeMountPointA	xp	5.0 and higher
+FindFirstVolumeMountPointW	xp	5.0 and higher
+FindFirstVolumeW	xp	5.0 and higher
+FindNLSString	no	6.0 and higher
+FindNLSStringEx	no	6.0 and higher
+FindNextChangeNotification	xp	3.51 and higher
+FindNextFileA	xp	3.51 and higher
+FindNextFileNameW	no	6.0 and higher
+FindNextFileW	xp	3.51 and higher
+FindNextStreamW	no	5.2 and higher
+FindNextVolumeA	xp	5.0 and higher
+FindNextVolumeMountPointA	xp	5.0 and higher
+FindNextVolumeMountPointW	xp	5.0 and higher
+FindNextVolumeW	xp	5.0 and higher
+FindPackagesByPackageFamily	no	6.3 and higher
+FindResourceA	xp	3.51 and higher
+FindResourceExA	xp	3.51 and higher
+FindResourceExW	xp	3.51 and higher
+FindResourceW	xp	3.51 and higher
+FindStringOrdinal	no	6.1 and higher
+FindVolumeClose	xp	5.0 and higher
+FindVolumeMountPointClose	xp	5.0 and higher
+FlsAlloc	no	5.2 and higher
+FlsFree	no	5.2 and higher
+FlsGetValue	no	5.2 and higher
+FlsSetValue	no	5.2 and higher
+FlushConsoleInputBuffer	xp	3.51 and higher
+FlushFileBuffers	xp	3.51 and higher
+FlushInstructionCache	xp	3.51 and higher
+FlushProcessWriteBuffers	no	6.0 and higher
+FlushViewOfFile	xp	3.51 and higher
+FoldStringA	xp	3.51 and higher
+FoldStringW	xp	3.51 and higher
+FormatApplicationUserModelId	no	6.3 and higher
+FormatMessageA	xp	3.51 and higher
+FormatMessageW	xp	3.51 and higher
+FreeConsole	xp	3.51 and higher
+FreeEnvironmentStringsA	xp	3.51 and higher
+FreeEnvironmentStringsW	xp	3.51 and higher
+FreeLSCallback	no	4.0 to 4.90 (Windows only)
+FreeLibrary	xp	3.51 and higher
+FreeLibraryAndExitThread	xp	3.51 and higher
+FreeLibraryWhenCallbackReturns	no	6.0 and higher
+FreeMemoryJobObject	no	10.0 and higher
+FreeResource	xp	3.51 and higher
+FreeSLCallback	no	4.0 to 4.90 (Windows only)
+FreeUserPhysicalPages	xp	5.0 and higher
+FreeVirtualBuffer	no	3.51 to 5.2 before Windows Server 2003 SP1 (NT only)
+GenerateConsoleCtrlEvent	xp	3.51 and higher
+GetACP	xp	3.51 and higher
+GetActiveProcessorCount	no	6.1 and higher
+GetActiveProcessorGroupCount	no	6.1 and higher
+GetAppContainerAce	no	6.2 and higher
+GetAppContainerNamedObjectPath	no	6.2 and higher
+GetApplicationRecoveryCallback	no	6.0 and higher
+GetApplicationRecoveryCallbackWorker	no	6.2 and higher
+GetApplicationRestartSettings	no	6.0 and higher
+GetApplicationRestartSettingsWorker	no	6.2 and higher
+GetApplicationUserModelId	no	6.2 and higher
+GetAtomNameA	xp	3.51 and higher
+GetAtomNameW	xp	3.51 and higher
+GetBinaryType	xp	3.51 and higher
+GetBinaryTypeA	xp	3.51 and higher
+GetBinaryTypeW	xp	3.51 and higher
+GetCPFileNameFromRegistry	xp	5.1 from Windows XP SP1, to 6.0
+GetCPInfo	xp	3.51 and higher
+GetCPInfoExA	xp	4.10 and higher
+GetCPInfoExW	xp	4.10 and higher
+GetCachedSigningLevel	no	6.2 and higher
+GetCalendarDateFormat	no	6.0 and higher
+GetCalendarDateFormatEx	no	6.0 and higher
+GetCalendarDaysInMonth	no	6.0 and higher
+GetCalendarDifferenceInDays	no	6.0 and higher
+GetCalendarInfoA	xp	4.10 and higher
+GetCalendarInfoEx	no	6.0 and higher
+GetCalendarInfoW	xp	4.10 and higher
+GetCalendarMonthsInYear	no	6.0 and higher
+GetCalendarSupportedDateRange	no	6.0 and higher
+GetCalendarWeekNumber	no	6.0 and higher
+GetComPlusPackageInstallStatus	xp	5.1 and higher
+GetCommConfig	xp	3.51 and higher
+GetCommMask	xp	3.51 and higher
+GetCommModemStatus	xp	3.51 and higher
+GetCommProperties	xp	3.51 and higher
+GetCommState	xp	3.51 and higher
+GetCommTimeouts	xp	3.51 and higher
+GetCommandLineA	xp	3.51 and higher
+GetCommandLineW	xp	3.51 and higher
+GetCompressedFileSizeA	xp	3.51 and higher
+GetCompressedFileSizeTransactedA	no	6.0 and higher
+GetCompressedFileSizeTransactedW	no	6.0 and higher
+GetCompressedFileSizeW	xp	3.51 and higher
+GetComputerNameA	xp	3.51 and higher
+GetComputerNameExA	xp	5.0 and higher
+GetComputerNameExW	xp	5.0 and higher
+GetComputerNameW	xp	3.51 and higher
+GetConsoleAliasA	no	3.51 and higher (NT only)
+GetConsoleAliasExesA	no	3.51 and higher (NT only)
+GetConsoleAliasExesLengthA	no	3.51 and higher (NT only)
+GetConsoleAliasExesLengthW	no	3.51 and higher (NT only)
+GetConsoleAliasExesW	no	3.51 and higher (NT only)
+GetConsoleAliasW	no	3.51 and higher (NT only)
+GetConsoleAliasesA	no	3.51 and higher (NT only)
+GetConsoleAliasesLengthA	no	3.51 and higher (NT only)
+GetConsoleAliasesLengthW	no	3.51 and higher (NT only)
+GetConsoleAliasesW	no	3.51 and higher (NT only)
+GetConsoleCP	xp	3.51 and higher
+GetConsoleCharType	xp	5.0 and higher
+GetConsoleCommandHistoryA	no	3.51 and higher (NT only)
+GetConsoleCommandHistoryLengthA	no	3.51 and higher (NT only)
+GetConsoleCommandHistoryLengthW	no	3.51 and higher (NT only)
+GetConsoleCommandHistoryW	no	3.51 and higher (NT only)
+GetConsoleCursorInfo	xp	3.51 and higher
+GetConsoleCursorMode	xp	5.0 and higher
+GetConsoleDisplayMode	no	3.51 and higher (NT only)
+GetConsoleFontInfo	no	3.51 and higher (NT only)
+GetConsoleFontSize	no	3.51 and higher (NT only)
+GetConsoleHardwareState	no	3.51 and higher (NT only)
+GetConsoleHistoryInfo	no	6.0 and higher
+GetConsoleInputExeNameA	no	4.0 and higher (NT only)
+GetConsoleInputExeNameW	no	4.0 and higher (NT only)
+GetConsoleInputWaitHandle	no	3.51 and higher (NT only)
+GetConsoleKeyboardLayoutNameA	no	4.0 and higher (NT only)
+GetConsoleKeyboardLayoutNameW	no	4.0 and higher (NT only)
+GetConsoleMode	xp	3.51 and higher
+GetConsoleNlsMode	xp	5.0 and higher
+GetConsoleOriginalTitleA	no	6.0 and higher
+GetConsoleOriginalTitleW	no	6.0 and higher
+GetConsoleOutputCP	xp	3.51 and higher
+GetConsoleProcessList	xp	5.1 and higher
+GetConsoleScreenBufferInfo	xp	3.51 and higher
+GetConsoleScreenBufferInfoEx	no	6.0 and higher
+GetConsoleSelectionInfo	xp	5.1 and higher
+GetConsoleTitleA	xp	3.51 and higher
+GetConsoleTitleW	xp	3.51 and higher
+GetConsoleWindow	xp	5.0 and higher
+GetCurrencyFormatA	xp	3.51 and higher
+GetCurrencyFormatEx	no	6.0 and higher
+GetCurrencyFormatW	xp	3.51 and higher
+GetCurrentActCtx	xp	5.1 and higher
+GetCurrentActCtxWorker	no	6.2 and higher
+GetCurrentApplicationUserModelId	no	6.2 and higher
+GetCurrentConsoleFont	no	3.51 and higher (NT only)
+GetCurrentConsoleFontEx	no	6.0 and higher
+GetCurrentDirectoryA	xp	3.51 and higher
+GetCurrentDirectoryW	xp	3.51 and higher
+GetCurrentPackageFamilyName	no	6.2 and higher
+GetCurrentPackageFullName	no	6.2 and higher
+GetCurrentPackageId	no	6.2 and higher
+GetCurrentPackageInfo	no	6.2 and higher
+GetCurrentPackagePath	no	6.2 and higher
+GetCurrentProcess	xp	3.51 and higher
+GetCurrentProcessId	xp	3.51 and higher
+GetCurrentProcessorNumber	no	5.2 and higher
+GetCurrentProcessorNumberEx	no	6.1 and higher
+GetCurrentThread	xp	3.51 and higher
+GetCurrentThreadId	xp	3.51 and higher
+GetCurrentThreadStackLimits	no	6.2 and higher
+GetCurrentUmsThread	no	6.1 and higher (x64 only)
+GetDateFormatA	xp	3.51 and higher
+GetDateFormatAWorker	no	6.2 and higher
+GetDateFormatEx	no	6.0 and higher
+GetDateFormatW	xp	3.51 and higher
+GetDateFormatWWorker	no	6.2 and higher
+GetDaylightFlag	no	4.0 to 4.90 (Windows only)
+GetDefaultCommConfigA	xp	3.51 and higher
+GetDefaultCommConfigW	xp	3.51 and higher
+GetDefaultSortKeySize	xp	5.0 to 5.2
+GetDevicePowerState	xp	4.10 and higher
+GetDiskFreeSpaceA	xp	3.51 and higher
+GetDiskFreeSpaceExA	xp	4.0 from Windows 95 OSR2, and higher
+GetDiskFreeSpaceExW	xp	4.0 from Windows 95 OSR2, and higher
+GetDiskFreeSpaceW	xp	3.51 and higher
+GetDllDirectoryA	xp	5.1 from Windows XP SP1, and higher
+GetDllDirectoryW	xp	5.1 from Windows XP SP1, and higher
+GetDriveTypeA	xp	3.51 and higher
+GetDriveTypeW	xp	3.51 and higher
+GetDurationFormat	no	6.0 and higher
+GetDurationFormatEx	no	6.0 and higher
+GetDynamicTimeZoneInformation	no	6.0 and higher
+GetEnabledExtendedFeatures	no	6.1 before Windows 7 SP1
+GetEnabledXStateFeatures	no	6.1 from Windows 7 SP1, and higher
+GetEncryptedFileVersionExt	no	6.3 and higher
+GetEnvironmentStrings	xp	3.51 and higher
+GetEnvironmentStringsA	xp	3.51 and higher
+GetEnvironmentStringsW	xp	3.51 and higher
+GetEnvironmentVariableA	xp	3.51 and higher
+GetEnvironmentVariableW	xp	3.51 and higher
+GetEraNameCountedString	no	6.1 and higher
+GetErrorMode	no	4.0 to 4.90 (Windows); 
+    6.0 and higher (NT)
+GetExitCodeProcess	xp	3.51 and higher
+GetExitCodeThread	xp	3.51 and higher
+GetExpandedNameA	xp	5.1 and higher
+GetExpandedNameW	xp	5.1 and higher
+GetExtendedContextLength	no	6.1 before Windows 7 SP1
+GetExtendedFeaturesMask	no	6.1 before Windows 7 SP1
+GetFileAttributesA	xp	3.51 and higher
+GetFileAttributesExA	xp	4.0 from Windows NT 4.0, and higher
+GetFileAttributesExW	xp	4.0 from Windows NT 4.0, and higher
+GetFileAttributesTransactedA	no	6.0 and higher
+GetFileAttributesTransactedW	no	6.0 and higher
+GetFileAttributesW	xp	3.51 and higher
+GetFileBandwidthReservation	no	6.0 and higher
+GetFileInformationByHandle	xp	3.51 and higher
+GetFileInformationByHandleEx	no	6.0 and higher
+GetFileMUIInfo	no	6.0 and higher
+GetFileMUIPath	no	6.0 and higher
+GetFileSize	xp	3.51 and higher
+GetFileSizeEx	xp	5.0 and higher
+GetFileTime	xp	3.51 and higher
+GetFileType	xp	3.51 and higher
+GetFinalPathNameByHandleA	no	6.0 and higher
+GetFinalPathNameByHandleW	no	6.0 and higher
+GetFirmwareEnvironmentVariableA	xp	5.1 and higher
+GetFirmwareEnvironmentVariableExA	no	6.2 and higher
+GetFirmwareEnvironmentVariableExW	no	6.2 and higher
+GetFirmwareEnvironmentVariableW	xp	5.1 and higher
+GetFirmwareType	no	6.2 and higher
+GetFullPathNameA	xp	3.51 and higher
+GetFullPathNameTransactedA	no	6.0 and higher
+GetFullPathNameTransactedW	no	6.0 and higher
+GetFullPathNameW	xp	3.51 and higher
+GetGeoInfoA	no	4.90 only (Windows); 
+    5.1 and higher (NT)
+GetGeoInfoW	no	4.90 only (Windows); 
+    5.1 and higher (NT)
+GetHandleContext	no	4.0 to 4.90 (Windows); 
+    5.1 and higher (NT, x86 only)
+GetHandleInformation	xp	3.51 and higher
+GetHivePath	no	6.2 only
+GetLSCallbackTarget	no	4.0 to 4.90 (Windows only)
+GetLSCallbackTemplate	no	4.0 to 4.90 (Windows only)
+GetLargePageMinimum	no	5.2 and higher
+GetLargestConsoleWindowSize	xp	3.51 and higher
+GetLastError	xp	3.51 and higher
+GetLinguistLangSize	xp	5.0 to 5.2
+GetLocalTime	xp	3.51 and higher
+GetLocaleInfoA	xp	3.51 and higher
+GetLocaleInfoEx	no	6.0 and higher
+GetLocaleInfoW	xp	3.51 and higher
+GetLogicalDriveStringsA	xp	3.51 and higher
+GetLogicalDriveStringsW	xp	3.51 and higher
+GetLogicalDrives	xp	3.51 and higher
+GetLogicalProcessorInformation	xp	5.1 from Windows XP SP3, and higher
+GetLogicalProcessorInformationEx	no	6.1 and higher
+GetLongPathNameA	xp	4.10 and higher
+GetLongPathNameTransactedA	no	6.0 and higher
+GetLongPathNameTransactedW	no	6.0 and higher
+GetLongPathNameW	xp	4.10 and higher
+GetMailslotInfo	xp	3.51 and higher
+GetMaximumProcessorCount	no	6.1 and higher
+GetMaximumProcessorGroupCount	no	6.1 and higher
+GetMemoryErrorHandlingCapabilities	no	6.2 and higher
+GetModuleFileNameA	xp	3.51 and higher
+GetModuleFileNameW	xp	3.51 and higher
+GetModuleHandleA	xp	3.51 and higher
+GetModuleHandleExA	xp	5.1 and higher
+GetModuleHandleExW	xp	5.1 and higher
+GetModuleHandleW	xp	3.51 and higher
+GetNLSVersion	no	5.2 and higher
+GetNLSVersionEx	no	6.0 and higher
+GetNamedPipeAttribute	no	6.0 and higher
+GetNamedPipeClientComputerNameA	no	6.0 and higher
+GetNamedPipeClientComputerNameW	no	6.0 and higher
+GetNamedPipeClientProcessId	no	6.0 and higher
+GetNamedPipeClientSessionId	no	6.0 and higher
+GetNamedPipeHandleStateA	xp	3.51 and higher
+GetNamedPipeHandleStateW	xp	3.51 and higher
+GetNamedPipeInfo	xp	3.51 and higher
+GetNamedPipeServerProcessId	no	6.0 and higher
+GetNamedPipeServerSessionId	no	6.0 and higher
+GetNativeSystemInfo	xp	5.1 and higher
+GetNextUmsListItem	no	6.1 and higher (x64 only)
+GetNextVDMCommand	no	3.51 and higher (NT only)
+GetNlsSectionName	xp	5.0 to 5.2
+GetNumaAvailableMemory	xp	5.1 only
+GetNumaAvailableMemoryNode	xp	5.1 and higher
+GetNumaAvailableMemoryNodeEx	no	6.1 and higher
+GetNumaHighestNodeNumber	xp	5.1 and higher
+GetNumaNodeNumberFromHandle	no	6.1 and higher
+GetNumaNodeProcessorMask	xp	5.1 and higher
+GetNumaNodeProcessorMaskEx	no	6.1 and higher
+GetNumaProcessorMap	xp	5.1 only
+GetNumaProcessorNode	xp	5.1 and higher
+GetNumaProcessorNodeEx	no	6.1 and higher
+GetNumaProximityNode	no	6.0 and higher
+GetNumaProximityNodeEx	no	6.1 and higher
+GetNumberFormatA	xp	3.51 and higher
+GetNumberFormatEx	no	6.0 and higher
+GetNumberFormatW	xp	3.51 and higher
+GetNumberOfConsoleFonts	no	3.51 and higher (NT only)
+GetNumberOfConsoleInputEvents	xp	3.51 and higher
+GetNumberOfConsoleMouseButtons	xp	3.51 and higher
+GetOEMCP	xp	3.51 and higher
+GetOverlappedResult	xp	3.51 and higher
+GetOverlappedResultEx	no	6.2 and higher
+GetPackageApplicationIds	no	6.3 and higher
+GetPackageFamilyName	no	6.2 and higher
+GetPackageFullName	no	6.2 and higher
+GetPackageId	no	6.2 and higher
+GetPackageInfo	no	6.2 and higher
+GetPackagePath	no	6.2 and higher
+GetPackagePathByFullName	no	6.3 and higher
+GetPackagesByPackageFamily	no	6.2 and higher
+GetPhysicallyInstalledSystemMemory	no	6.0 from Windows Vista SP1, and higher
+GetPriorityClass	xp	3.51 and higher
+GetPrivateProfileIntA	xp	3.51 and higher
+GetPrivateProfileIntW	xp	3.51 and higher
+GetPrivateProfileSectionA	xp	3.51 and higher
+GetPrivateProfileSectionNamesA	xp	3.51 and higher
+GetPrivateProfileSectionNamesW	xp	3.51 and higher
+GetPrivateProfileSectionW	xp	3.51 and higher
+GetPrivateProfileStringA	xp	3.51 and higher
+GetPrivateProfileStringW	xp	3.51 and higher
+GetPrivateProfileStructA	xp	3.51 and higher
+GetPrivateProfileStructW	xp	3.51 and higher
+GetProcAddress	xp	3.51 and higher
+GetProcessAffinityMask	xp	3.51 and higher
+GetProcessDEPPolicy	?	some 5.1 and 6.0, and higher; 
+    begins in 5.1 from Windows XP SP3; 
+    begins in 6.0 from Windows Vista SP1
+GetProcessDefaultCpuSets	no	10.0 and higher
+GetProcessFlags	no	4.0 to 4.90 (Windows only)
+GetProcessGroupAffinity	no	6.1 and higher
+GetProcessHandleCount	xp	5.1 from Windows XP SP1, and higher
+GetProcessHeap	xp	3.51 and higher
+GetProcessHeaps	xp	3.51 and higher
+GetProcessId	xp	5.1 from Windows XP SP1, and higher
+GetProcessIdOfThread	no	5.2 and higher
+GetProcessInformation	no	6.2 and higher
+GetProcessIoCounters	xp	5.0 and higher
+GetProcessMitigationPolicy	no	6.2 and higher
+GetProcessPreferredUILanguages	no	6.1 and higher
+GetProcessPriorityBoost	xp	4.0 from Windows NT 4.0, and higher
+GetProcessShutdownParameters	xp	3.51 and higher
+GetProcessTimes	xp	3.51 and higher
+GetProcessUserModeExceptionPolicy	no	6.1 from Windows 7 SP1 only
+GetProcessVersion	xp	3.51 and higher
+GetProcessWorkingSetSize	xp	3.51 and higher
+GetProcessWorkingSetSizeEx	no	5.2 and higher
+GetProcessorSystemCycleTime	no	6.1 and higher
+GetProductInfo	no	6.0 and higher
+GetProductName	no	4.0 to 4.90 (Windows only)
+GetProfileIntA	xp	3.51 and higher
+GetProfileIntW	xp	3.51 and higher
+GetProfileSectionA	xp	3.51 and higher
+GetProfileSectionW	xp	3.51 and higher
+GetProfileStringA	xp	3.51 and higher
+GetProfileStringW	xp	3.51 and higher
+GetQueuedCompletionStatus	xp	3.51 and higher
+GetQueuedCompletionStatusEx	no	6.0 and higher
+GetRoamingLastObservedChangeTime	no	6.2 only
+GetSLCallbackTarget	no	4.0 to 4.90 (Windows only)
+GetSLCallbackTemplate	no	4.0 to 4.90 (Windows only)
+GetSerializedAtomBytes	no	6.2 only
+GetShortPathNameA	xp	3.51 and higher
+GetShortPathNameW	xp	3.51 and higher
+GetStagedPackagePathByFullName	no	6.3 and higher
+GetStartupInfoA	xp	3.51 and higher
+GetStartupInfoW	xp	3.51 and higher
+GetStateContainerDepth	no	6.2 only
+GetStateFolder	no	6.2 and higher
+GetStateRootFolder	no	6.2 only
+GetStateSettingsFolder	no	6.2 only
+GetStateVersion	no	6.2 only
+GetStdHandle	xp	3.51 and higher
+GetStringScripts	no	6.0 and higher
+GetStringTypeA	xp	3.51 and higher
+GetStringTypeExA	xp	3.51 and higher
+GetStringTypeExW	xp	3.51 and higher
+GetStringTypeW	xp	3.51 and higher
+GetSystemAppDataFolder	no	6.2 only
+GetSystemAppDataKey	no	6.2 and higher
+GetSystemCpuSetInformation	no	10.0 and higher
+GetSystemDEPPolicy	?	some 5.1 and 6.0, and higher; 
+    begins in 5.1 from Windows XP SP3; 
+    begins in 6.0 from Windows Vista SP1
+GetSystemDefaultLCID	xp	3.51 and higher
+GetSystemDefaultLangID	xp	3.51 and higher
+GetSystemDefaultLocaleName	no	6.0 and higher
+GetSystemDefaultUILanguage	xp	4.90 and higher
+GetSystemDirectoryA	xp	3.51 and higher
+GetSystemDirectoryW	xp	3.51 and higher
+GetSystemFileCacheSize	no	5.2 from Windows Server 2003 SP1, and higher
+GetSystemFirmwareTable	no	5.2 from Windows Server 2003 SP1, and higher
+GetSystemInfo	xp	3.51 and higher
+GetSystemPowerStatus	xp	3.51 and higher
+GetSystemPreferredUILanguages	no	6.0 and higher
+GetSystemRegistryQuota	xp	5.1 from Windows XP SP1, and higher
+GetSystemTime	xp	3.51 and higher
+GetSystemTimeAdjustment	xp	3.51 and higher
+GetSystemTimeAsFileTime	xp	3.51 and higher
+GetSystemTimePreciseAsFileTime	no	6.2 and higher
+GetSystemTimes	xp	5.1 from Windows XP SP1, and higher
+GetSystemWindowsDirectoryA	xp	5.0 and higher
+GetSystemWindowsDirectoryW	xp	5.0 and higher
+GetSystemWow64DirectoryA	xp	5.1 and higher
+GetSystemWow64DirectoryW	xp	5.1 and higher
+GetTapeParameters	xp	3.51 and higher
+GetTapePosition	xp	3.51 and higher
+GetTapeStatus	xp	3.51 and higher
+GetTempFileNameA	xp	3.51 and higher
+GetTempFileNameW	xp	3.51 and higher
+GetTempPathA	xp	3.51 and higher
+GetTempPathW	xp	3.51 and higher
+GetThreadContext	xp	3.51 and higher
+GetThreadErrorMode	no	6.1 and higher
+GetThreadGroupAffinity	no	6.1 and higher
+GetThreadIOPendingFlag	xp	5.1 from Windows XP SP1, and higher
+GetThreadId	no	5.2 and higher
+GetThreadIdealProcessorEx	no	6.1 and higher
+GetThreadInformation	no	6.2 and higher
+GetThreadLocale	xp	3.51 and higher
+GetThreadPreferredUILanguages	no	6.0 and higher
+GetThreadPriority	xp	3.51 and higher
+GetThreadPriorityBoost	xp	4.0 from Windows NT 4.0, and higher
+GetThreadSelectedCpuSets	no	10.0 and higher
+GetThreadSelectorEntry	xp	3.51 and higher
+GetThreadTimes	xp	3.51 and higher
+GetThreadUILanguage	no	6.0 and higher
+GetTickCount	xp	3.51 and higher
+GetTickCount64	no	6.0 and higher
+GetTimeFormatA	xp	3.51 and higher
+GetTimeFormatAWorker	no	6.2 and higher
+GetTimeFormatEx	no	6.0 and higher
+GetTimeFormatW	xp	3.51 and higher
+GetTimeFormatWWorker	no	6.2 and higher
+GetTimeZoneInformation	xp	3.51 and higher
+GetTimeZoneInformationForYear	no	6.0 from Windows Vista SP1, and higher
+GetUILanguageInfo	no	6.0 and higher
+GetUmsCompletionListEvent	no	6.1 and higher (x64 only)
+GetUmsSystemThreadInformation	no	6.1 from Windows 7 SP1, and higher (x64 only)
+GetUserDefaultLCID	xp	3.51 and higher
+GetUserDefaultLangID	xp	3.51 and higher
+GetUserDefaultLocaleName	no	6.0 and higher
+GetUserDefaultUILanguage	xp	4.90 and higher
+GetUserGeoID	no	4.90 only (Windows); 
+    5.1 and higher (NT)
+GetUserPreferredUILanguages	no	6.0 and higher
+GetVDMCurrentDirectories	no	3.51 and higher (NT only)
+GetVersion	xp	3.51 and higher
+GetVersionExA	xp	3.51 and higher
+GetVersionExW	xp	3.51 and higher
+GetVolumeInformationA	xp	3.51 and higher
+GetVolumeInformationByHandleW	no	6.0 and higher
+GetVolumeInformationW	xp	3.51 and higher
+GetVolumeNameForVolumeMountPointA	xp	5.0 and higher
+GetVolumeNameForVolumeMountPointW	xp	5.0 and higher
+GetVolumePathNameA	xp	5.0 and higher
+GetVolumePathNameW	xp	5.0 and higher
+GetVolumePathNamesForVolumeNameA	xp	5.1 and higher
+GetVolumePathNamesForVolumeNameW	xp	5.1 and higher
+GetWindowsDirectoryA	xp	3.51 and higher
+GetWindowsDirectoryW	xp	3.51 and higher
+GetWriteWatch	xp	4.10 and higher
+GetXStateFeaturesMask	no	6.1 from Windows 7 SP1, and higher
+GlobalAddAtomA	xp	3.51 and higher
+GlobalAddAtomExA	no	6.2 and higher
+GlobalAddAtomExW	no	6.2 and higher
+GlobalAddAtomW	xp	3.51 and higher
+GlobalAlloc	xp	3.51 and higher
+GlobalCompact	xp	3.51 and higher
+GlobalDeleteAtom	xp	3.51 and higher
+GlobalFindAtomA	xp	3.51 and higher
+GlobalFindAtomW	xp	3.51 and higher
+GlobalFix	xp	3.51 and higher
+GlobalFlags	xp	3.51 and higher
+GlobalFree	xp	3.51 and higher
+GlobalGetAtomNameA	xp	3.51 and higher
+GlobalGetAtomNameW	xp	3.51 and higher
+GlobalHandle	xp	3.51 and higher
+GlobalLock	xp	3.51 and higher
+GlobalMemoryStatus	xp	3.51 and higher
+GlobalMemoryStatusEx	xp	5.0 and higher
+GlobalReAlloc	xp	3.51 and higher
+GlobalSize	xp	3.51 and higher
+GlobalUnWire	xp	3.51 and higher
+GlobalUnfix	xp	3.51 and higher
+GlobalUnlock	xp	3.51 and higher
+GlobalWire	xp	3.51 and higher
+Heap32First	xp	4.0 and higher
+Heap32ListFirst	xp	4.0 and higher
+Heap32ListNext	xp	4.0 and higher
+Heap32Next	xp	4.0 and higher
+HeapAlloc	xp	3.51 and higher
+HeapCompact	xp	3.51 and higher
+HeapCreate	xp	3.51 and higher
+HeapCreateTagsW	no	3.51 to 5.2 (NT only)
+HeapDestroy	xp	3.51 and higher
+HeapExtend	no	3.51 to 5.2 (NT only)
+HeapFree	xp	3.51 and higher
+HeapLock	xp	3.51 and higher
+HeapQueryInformation	xp	5.1 and higher
+HeapQueryTagW	no	3.51 to 5.2 (NT only)
+HeapReAlloc	xp	3.51 and higher
+HeapSetFlags	no	4.0 to 4.90 (Windows only)
+HeapSetInformation	xp	5.1 and higher
+HeapSize	xp	3.51 and higher
+HeapSummary	no	3.51 and higher (NT only)
+HeapUnlock	xp	3.51 and higher
+HeapUsage	no	3.51 to 5.2 (NT only)
+HeapValidate	xp	3.51 and higher
+HeapWalk	xp	3.51 and higher
+IdnToAscii	no	6.0 and higher
+IdnToNameprepUnicode	no	6.0 and higher
+IdnToUnicode	no	6.0 and higher
+InitAtomTable	xp	3.51 and higher
+InitOnceBeginInitialize	no	6.0 and higher
+InitOnceComplete	no	6.0 and higher
+InitOnceExecuteOnce	no	6.0 and higher
+InitOnceInitialize	no	6.0 and higher
+InitializeConditionVariable	no	6.0 and higher
+InitializeContext	no	6.1 from Windows 7 SP1, and higher
+InitializeCriticalSection	xp	3.51 and higher
+InitializeCriticalSectionAndSpinCount	xp	4.0 from Windows NT 4.0 SP3, and higher
+InitializeCriticalSectionEx	no	6.0 and higher
+InitializeExtendedContext	no	6.1 before Windows 7 SP1
+InitializeProcThreadAttributeList	no	6.0 and higher
+InitializeSListHead	xp	5.1 and higher
+InitializeSRWLock	no	6.0 and higher
+InitializeSynchronizationBarrier	no	6.3 and higher
+InstallELAMCertificateInfo	no	6.3 and higher
+InterlockedCompareExchange	no	4.0 from Windows NT 4.0, and higher (x86 only)
+InterlockedCompareExchange64	no	5.2 and higher (x86 only)
+InterlockedDecrement	no	3.51 and higher (x86 only)
+InterlockedExchange	no	3.51 and higher (x86 only)
+InterlockedExchangeAdd	no	4.0 from Windows NT 4.0, and higher (x86 only)
+InterlockedFlushSList	xp	5.1 and higher
+InterlockedIncrement	no	3.51 and higher (x86 only)
+InterlockedPopEntrySList	xp	5.1 and higher
+InterlockedPushEntrySList	xp	5.1 and higher
+InterlockedPushListSList	no	6.0 and higher
+InterlockedPushListSListEx	no	6.2 and higher
+InvalidateConsoleDIBits	no	3.51 and higher (NT only)
+InvalidateNLSCache	no	4.0 to 4.90 (Windows only)
+IsBadCodePtr	xp	3.51 and higher
+IsBadHugeReadPtr	xp	3.51 and higher
+IsBadHugeWritePtr	xp	3.51 and higher
+IsBadReadPtr	xp	3.51 and higher
+IsBadStringPtrA	xp	3.51 and higher
+IsBadStringPtrW	xp	3.51 and higher
+IsBadWritePtr	xp	3.51 and higher
+IsCalendarLeapDay	no	6.0 and higher
+IsCalendarLeapMonth	no	6.0 and higher
+IsCalendarLeapYear	no	6.0 and higher
+IsDBCSLeadByte	xp	3.51 and higher
+IsDBCSLeadByteEx	xp	3.51 and higher
+IsDebuggerPresent	xp	3.51 and higher (NT); 
+    4.10 to 4.90 (Windows)
+IsLSCallback	no	4.0 to 4.90 (Windows only)
+IsNLSDefinedString	no	5.2 and higher
+IsNativeVhdBoot	no	6.2 and higher
+IsNormalizedString	no	6.0 and higher
+IsProcessCritical	no	6.3 and higher
+IsProcessInJob	xp	5.1 and higher
+IsProcessorFeaturePresent	xp	4.0 from Windows NT 4.0, and higher
+IsSLCallback	no	4.0 to 4.90 (Windows only)
+IsSystemResumeAutomatic	xp	4.10 and higher
+IsThreadAFiber	no	6.0 and higher
+IsThreadpoolTimerSet	no	6.0 and higher
+IsTimeZoneRedirectionEnabled	no	5.2 to 6.1
+IsValidCalDateTime	no	6.0 and higher
+IsValidCodePage	xp	3.51 and higher
+IsValidLanguageGroup	xp	4.90 and higher
+IsValidLocale	xp	3.51 and higher
+IsValidLocaleName	no	6.0 and higher
+IsValidNLSVersion	no	6.2 and higher
+IsValidUILanguage	xp	5.1 and 5.2
+IsWow64Process	xp	5.1 and higher
+K32EmptyWorkingSet	no	6.1 and higher
+K32EnumDeviceDrivers	no	6.1 and higher
+K32EnumPageFilesA	no	6.1 and higher
+K32EnumPageFilesW	no	6.1 and higher
+K32EnumProcessModules	no	6.1 and higher
+K32EnumProcessModulesEx	no	6.1 and higher
+K32EnumProcesses	no	6.1 and higher
+K32GetDeviceDriverBaseNameA	no	6.1 and higher
+K32GetDeviceDriverBaseNameW	no	6.1 and higher
+K32GetDeviceDriverFileNameA	no	6.1 and higher
+K32GetDeviceDriverFileNameW	no	6.1 and higher
+K32GetMappedFileNameA	no	6.1 and higher
+K32GetMappedFileNameW	no	6.1 and higher
+K32GetModuleBaseNameA	no	6.1 and higher
+K32GetModuleBaseNameW	no	6.1 and higher
+K32GetModuleFileNameExA	no	6.1 and higher
+K32GetModuleFileNameExW	no	6.1 and higher
+K32GetModuleInformation	no	6.1 and higher
+K32GetPerformanceInfo	no	6.1 and higher
+K32GetProcessImageFileNameA	no	6.1 and higher
+K32GetProcessImageFileNameW	no	6.1 and higher
+K32GetProcessMemoryInfo	no	6.1 and higher
+K32GetWsChanges	no	6.1 and higher
+K32GetWsChangesEx	no	6.1 and higher
+K32InitializeProcessForWsWatch	no	6.1 and higher
+K32QueryWorkingSet	no	6.1 and higher
+K32QueryWorkingSetEx	no	6.1 and higher
+K32Thk1632Epilog	no	4.0 to 4.90 (Windows only)
+K32Thk1632Prolog	no	4.0 to 4.90 (Windows only)
+K32_NtCreateFile	xp	4.10 and 4.90
+K32_RtlNtStatusToDosError	xp	4.10 and 4.90
+LCIDToLocaleName	no	6.0 and higher
+LCMapStringA	xp	3.51 and higher
+LCMapStringEx	no	6.0 and higher
+LCMapStringW	xp	3.51 and higher
+LZClose	xp	5.1 and higher
+LZCloseFile	xp	5.1 and higher
+LZCopy	xp	5.1 and higher
+LZCreateFileW	xp	5.1 and higher
+LZDone	xp	5.1 and higher
+LZInit	xp	5.1 and higher
+LZOpenFileA	xp	5.1 and higher
+LZOpenFileW	xp	5.1 and higher
+LZRead	xp	5.1 and higher
+LZSeek	xp	5.1 and higher
+LZStart	xp	5.1 and higher
+LeaveCriticalSection	xp	3.51 and higher
+LeaveCriticalSectionWhenCallbackReturns	no	6.0 and higher
+LoadAppInitDlls	no	6.1 and higher
+LoadLibraryA	xp	3.51 and higher
+LoadLibraryExA	xp	3.51 and higher
+LoadLibraryExW	xp	3.51 and higher
+LoadLibraryW	xp	3.51 and higher
+LoadModule	xp	3.51 and higher
+LoadPackagedLibrary	no	6.2 and higher
+LoadResource	xp	3.51 and higher
+LoadStringBaseExW	no	6.0 and higher
+LoadStringBaseW	no	6.0 and higher
+LocalAlloc	xp	3.51 and higher
+LocalCompact	xp	3.51 and higher
+LocalFileTimeToFileTime	xp	3.51 and higher
+LocalFlags	xp	3.51 and higher
+LocalFree	xp	3.51 and higher
+LocalHandle	xp	3.51 and higher
+LocalLock	xp	3.51 and higher
+LocalReAlloc	xp	3.51 and higher
+LocalShrink	xp	3.51 and higher
+LocalSize	xp	3.51 and higher
+LocalUnlock	xp	3.51 and higher
+LocaleNameToLCID	no	6.0 and higher
+LocateExtendedFeature	no	6.1 before Windows 7 SP1
+LocateLegacyContext	no	6.1 before Windows 7 SP1
+LocateXStateFeature	no	6.1 from Windows 7 SP1, and higher
+LockFile	xp	3.51 and higher
+LockFileEx	xp	3.51 and higher
+LockResource	xp	3.51 and higher
+MakeCriticalSectionGlobal	no	4.0 to 4.90 (Windows only)
+MapHInstLS	no	4.0 to 4.90 (Windows only)
+MapHInstLS_PN	no	4.0 to 4.90 (Windows only)
+MapHInstSL	no	4.0 to 4.90 (Windows only)
+MapHInstSL_PN	no	4.0 to 4.90 (Windows only)
+MapHModuleLS	no	4.0 to 4.90 (Windows only)
+MapHModuleSL	no	4.0 to 4.90 (Windows only)
+MapSL	no	4.0 to 4.90 (Windows only)
+MapSLFix	no	4.0 to 4.90 (Windows only)
+MapUserPhysicalPages	xp	5.0 and higher
+MapUserPhysicalPagesScatter	xp	5.0 and higher
+MapViewOfFile	xp	3.51 and higher
+MapViewOfFileEx	xp	3.51 and higher
+MapViewOfFileExNuma	no	6.0 and higher
+MapViewOfFileFromApp	no	6.2 and higher
+Module32First	xp	4.0 and higher
+Module32FirstW	xp	5.0 and higher
+Module32Next	xp	4.0 and higher
+Module32NextW	xp	5.0 and higher
+MoveFileA	xp	3.51 and higher
+MoveFileExA	xp	3.51 and higher
+MoveFileExW	xp	3.51 and higher
+MoveFileTransactedA	no	6.0 and higher
+MoveFileTransactedW	no	6.0 and higher
+MoveFileW	xp	3.51 and higher
+MoveFileWithProgressA	xp	5.0 and higher
+MoveFileWithProgressW	xp	5.0 and higher
+MulDiv	xp	3.51 and higher
+MultiByteToWideChar	xp	3.51 and higher
+NeedCurrentDirectoryForExePathA	no	5.2 and higher
+NeedCurrentDirectoryForExePathW	no	5.2 and higher
+NlsCheckPolicy	no	6.0 and higher
+NlsConvertIntegerToString	xp	5.0 to 6.0
+NlsEventDataDescCreate	no	6.0 and higher
+NlsGetCacheUpdateCount	xp	5.0 and higher
+NlsResetProcessLocale	xp	5.0 to 5.2
+NlsUpdateLocale	no	6.0 and higher
+NlsUpdateSystemLocale	no	6.0 and higher
+NlsWriteEtwEvent	no	6.0 and higher
+NormalizeString	no	6.0 and higher
+NotifyMountMgr	no	6.1 and higher
+NotifyNLSUserCache	no	4.0 to 4.90 (Windows only)
+NotifyUILanguageChange	no	6.0 and higher
+NtVdm64CreateProcessInternalW	no	6.2 and higher
+NumaVirtualQueryNode	xp	5.1 only
+OOBEComplete	no	6.3 and higher
+OfferVirtualMemory	no	10.0 and higher
+OpenConsoleW	no	3.51 and higher (NT only)
+OpenConsoleWStub	no	6.2 and higher
+OpenDataFile	xp	5.0 to 5.2
+OpenEventA	xp	3.51 and higher
+OpenEventW	xp	3.51 and higher
+OpenFile	xp	3.51 and higher
+OpenFileById	no	6.0 and higher
+OpenFileMappingA	xp	3.51 and higher
+OpenFileMappingW	xp	3.51 and higher
+OpenJobObjectA	xp	5.0 and higher
+OpenJobObjectW	xp	5.0 and higher
+OpenMutexA	xp	3.51 and higher
+OpenMutexW	xp	3.51 and higher
+OpenPackageInfoByFullName	no	6.2 and higher
+OpenPrivateNamespaceA	no	6.0 and higher
+OpenPrivateNamespaceW	no	6.0 and higher
+OpenProcess	xp	3.51 and higher
+OpenProcessToken	no	6.1 and higher; 
+    earlier in ADVAPI32
+OpenProfileUserMapping	xp	3.51 and higher
+OpenSemaphoreA	xp	3.51 and higher
+OpenSemaphoreW	xp	3.51 and higher
+OpenState	no	6.2 and higher
+OpenStateAtom	no	6.2 only
+OpenStateExplicit	no	6.2 and higher
+OpenThread	xp	4.90 and higher
+OpenThreadToken	no	6.1 and higher; 
+    earlier in ADVAPI32
+OpenVxDHandle	no	4.0 to 4.90 (Windows only)
+OpenWaitableTimerA	xp	4.0 from Windows NT 4.0, and higher
+OpenWaitableTimerW	xp	4.0 from Windows NT 4.0, and higher
+OutputDebugStringA	xp	3.51 and higher
+OutputDebugStringW	xp	3.51 and higher
+OverrideRoamingDataModificationTimesInRange	no	6.2 only
+PackageFamilyNameFromFullName	no	6.2 and higher
+PackageFamilyNameFromId	no	6.2 and higher
+PackageFullNameFromId	no	6.2 and higher
+PackageIdFromFullName	no	6.2 and higher
+PackageNameAndPublisherIdFromFamilyName	no	6.2 and higher
+ParseApplicationUserModelId	no	6.3 and higher
+PeekConsoleInputA	xp	3.51 and higher
+PeekConsoleInputW	xp	3.51 and higher
+PeekNamedPipe	xp	3.51 and higher
+PostQueuedCompletionStatus	xp	3.51 and higher
+PowerClearRequest	no	6.1 and higher
+PowerCreateRequest	no	6.1 and higher
+PowerSetRequest	no	6.1 and higher
+PrefetchVirtualMemory	no	6.2 and higher
+PrepareTape	xp	3.51 and higher
+PrivCopyFileExW	xp	5.0 and higher
+PrivMoveFileIdentityW	xp	5.0 and higher
+Process32First	xp	4.0 and higher
+Process32FirstW	xp	5.0 and higher
+Process32Next	xp	4.0 and higher
+Process32NextW	xp	5.0 and higher
+ProcessIdToSessionId	xp	5.0 and higher
+PssCaptureSnapshot	no	6.3 and higher
+PssDuplicateSnapshot	no	6.3 and higher
+PssFreeSnapshot	no	6.3 and higher
+PssQuerySnapshot	no	6.3 and higher
+PssWalkMarkerCreate	no	6.3 and higher
+PssWalkMarkerFree	no	6.3 and higher
+PssWalkMarkerGetPosition	no	6.3 and higher
+PssWalkMarkerRewind	no	6.3 and higher
+PssWalkMarkerSeek	no	6.3 and higher
+PssWalkMarkerSeekToBeginning	no	6.3 and higher
+PssWalkMarkerSetPosition	no	6.3 and higher
+PssWalkMarkerTell	no	6.3 and higher
+PssWalkSnapshot	no	6.3 and higher
+PublishStateChangeNotification	no	6.2 only
+PulseEvent	xp	3.51 and higher
+PurgeComm	xp	3.51 and higher
+QT_Thunk	no	4.0 to 4.90 (Windows only)
+QueryActCtxSettingsW	no	6.0 and higher
+QueryActCtxSettingsWWorker	no	6.2 and higher
+QueryActCtxW	xp	5.1 and higher
+QueryActCtxWWorker	no	6.2 and higher
+QueryDepthSList	xp	5.1 and higher
+QueryDosDeviceA	xp	3.51 and higher
+QueryDosDeviceW	xp	3.51 and higher
+QueryFullProcessImageNameA	no	6.0 and higher
+QueryFullProcessImageNameW	no	6.0 and higher
+QueryIdleProcessorCycleTime	no	6.0 and higher
+QueryIdleProcessorCycleTimeEx	no	6.1 and higher
+QueryInformationJobObject	xp	5.0 and higher
+QueryIoRateControlInformationJobObject	no	10.0 and higher
+QueryMemoryResourceNotification	xp	5.1 and higher
+QueryNumberOfEventLogRecords	no	4.0 to 4.90 (Windows only)
+QueryOldestEventLogRecord	no	4.0 to 4.90 (Windows only)
+QueryPerformanceCounter	xp	3.51 and higher
+QueryPerformanceFrequency	xp	3.51 and higher
+QueryProcessAffinityUpdateMode	no	6.0 from Windows Vista SP1, and higher
+QueryProcessCycleTime	no	6.0 and higher
+QueryProtectedPolicy	no	10.0 and higher
+QueryStateAtomValueInfo	no	6.2 only
+QueryStateContainerItemInfo	no	6.2 only
+QueryThreadCycleTime	no	6.0 and higher
+QueryThreadProfiling	no	6.1 and higher
+QueryThreadpoolStackInformation	no	6.1 and higher
+QueryUmsThreadInformation	no	6.1 and higher (x64 only)
+QueryUnbiasedInterruptTime	no	6.1 and higher
+QueryWin31IniFilesMappedToRegistry	no	3.51 to 5.1 (NT only)
+QueueUserAPC	xp	4.0 and higher
+QueueUserWorkItem	xp	5.0 and higher
+QuirkGetData2Worker	no	6.3 and higher
+QuirkGetDataWorker	no	6.3 and higher
+QuirkIsEnabled2Worker	no	6.3 and higher
+QuirkIsEnabled3Worker	no	6.3 and higher
+QuirkIsEnabledForPackage2Worker	no	6.3 and higher
+QuirkIsEnabledForPackage3Worker	no	10.0 and higher
+QuirkIsEnabledForPackage4Worker	no	10.0 and higher
+QuirkIsEnabledForPackageWorker	no	6.3 and higher
+QuirkIsEnabledForProcessWorker	no	6.3 and higher
+QuirkIsEnabledWorker	no	6.3 and higher
+RaiseException	xp	3.51 and higher
+RaiseFailFastException	no	6.1 and higher
+RaiseInvalid16BitExeError	no	6.2 and higher
+ReOpenFile	no	5.2 and higher
+ReadConsoleA	xp	3.51 and higher
+ReadConsoleInputA	xp	3.51 and higher
+ReadConsoleInputExA	no	4.0 and higher (NT only)
+ReadConsoleInputExW	no	4.0 and higher (NT only)
+ReadConsoleInputW	xp	3.51 and higher
+ReadConsoleOutputA	xp	3.51 and higher
+ReadConsoleOutputAttribute	xp	3.51 and higher
+ReadConsoleOutputCharacterA	xp	3.51 and higher
+ReadConsoleOutputCharacterW	xp	3.51 and higher
+ReadConsoleOutputW	xp	3.51 and higher
+ReadConsoleW	xp	3.51 and higher
+ReadDirectoryChangesW	xp	3.51 from Windows NT 3.51 SP5, and higher (NT); 
+    4.10 to 4.90 (Windows)
+ReadFile	xp	3.51 and higher
+ReadFileEx	xp	3.51 and higher
+ReadFileScatter	xp	4.0 from Windows NT 4.0 SP3, and higher
+ReadProcessMemory	xp	3.51 and higher
+ReadStateAtomValue	no	6.2 only
+ReadStateContainerValue	no	6.2 only
+ReadThreadProfilingData	no	6.1 and higher
+ReclaimVirtualMemory	no	10.0 and higher
+RegCloseKey	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegCopyTreeW	no	6.2 and higher; 
+    earlier in ADVAPI32
+RegCreateKeyExA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegCreateKeyExW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegDeleteKeyExA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegDeleteKeyExW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegDeleteTreeA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegDeleteTreeW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegDeleteValueA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegDeleteValueW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegDisablePredefinedCacheEx	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegEnumKeyExA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegEnumKeyExW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegEnumValueA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegEnumValueW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegFlushKey	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegGetKeySecurity	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegGetValueA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegGetValueW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegKrnGetGlobalState	no	6.1 only
+RegKrnInitialize	no	6.1 only
+RegLoadKeyA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegLoadKeyW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegLoadMUIStringA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegLoadMUIStringW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegNotifyChangeKeyValue	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegOpenCurrentUser	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegOpenKeyExA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegOpenKeyExW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegOpenUserClassesRoot	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegQueryInfoKeyA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegQueryInfoKeyW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegQueryValueExA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegQueryValueExW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegRestoreKeyA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegRestoreKeyW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegSaveKeyExA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegSaveKeyExW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegSetKeySecurity	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegSetValueExA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegSetValueExW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegUnLoadKeyA	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegUnLoadKeyW	no	6.1 and higher; 
+    earlier in ADVAPI32
+RegisterApplicationRecoveryCallback	no	6.0 and higher
+RegisterApplicationRestart	no	6.0 and higher
+RegisterBadMemoryNotification	no	6.2 and higher
+RegisterConsoleIME	xp	5.0 and higher
+RegisterConsoleOS2	xp	5.0 and higher
+RegisterConsoleVDM	no	3.51 and higher; 
+    NT only
+RegisterServiceProcess	no	4.0 to 4.90 (Windows only)
+RegisterStateChangeNotification	no	6.2 only
+RegisterStateLock	no	6.2 only
+RegisterSysMsgHandler	xp	4.10 and 4.90
+RegisterWaitForInputIdle	no	3.51 and higher (NT only)
+RegisterWaitForSingleObject	xp	5.0 and higher
+RegisterWaitForSingleObjectEx	xp	5.0 and higher
+RegisterWaitUntilOOBECompleted	no	6.3 and higher
+RegisterWowBaseHandlers	no	3.51 and higher (NT only)
+RegisterWowExec	no	3.51 and higher (NT only)
+ReinitializeCriticalSection	no	4.0 to 4.90 (Windows only)
+ReleaseActCtx	xp	5.1 and higher
+ReleaseActCtxWorker	no	6.2 and higher
+ReleaseMutex	xp	3.51 and higher
+ReleaseMutexWhenCallbackReturns	no	6.0 and higher
+ReleaseSRWLockExclusive	no	6.0 and higher
+ReleaseSRWLockShared	no	6.0 and higher
+ReleaseSemaphore	xp	3.51 and higher
+ReleaseSemaphoreWhenCallbackReturns	no	6.0 and higher
+ReleaseStateLock	no	6.2 only
+RemoveDirectoryA	xp	3.51 and higher
+RemoveDirectoryTransactedA	no	6.0 and higher
+RemoveDirectoryTransactedW	no	6.0 and higher
+RemoveDirectoryW	xp	3.51 and higher
+RemoveDllDirectory	no	6.2 and higher
+RemoveLocalAlternateComputerNameA	xp	5.1 and higher
+RemoveLocalAlternateComputerNameW	xp	5.1 and higher
+RemoveSecureMemoryCacheCallback	no	6.0 from Windows Vista SP1, and higher
+RemoveVectoredContinueHandler	no	5.2 from Windows Server 2003 SP1, and higher
+RemoveVectoredExceptionHandler	xp	5.1 and higher
+ReplaceFile	xp	5.0 and higher
+ReplaceFileA	xp	5.0 and higher
+ReplaceFileW	xp	5.0 and higher
+ReplacePartitionUnit	no	6.0 from Windows Vista SP1, and higher (x86 only)
+RequestDeviceWakeup	xp	4.10 and higher
+RequestWakeupLatency	xp	4.10 and higher
+ResetEvent	xp	3.51 and higher
+ResetNLSUserInfoCache	xp	4.10 and 4.90
+ResetState	no	6.2 only
+ResetWriteWatch	xp	4.10 and higher
+ResolveDelayLoadedAPI	no	6.2 and higher
+ResolveDelayLoadsFromDll	no	6.2 and higher
+ResolveLocaleName	no	6.1 and higher
+RestoreLastError	xp	5.1 and higher
+ResumeThread	xp	3.51 and higher
+RtlAddFunctionTable	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+RtlCaptureContext	xp	5.1 and higher
+RtlCaptureStackBackTrace	xp	5.1 and higher
+RtlCompareMemory	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+RtlCopyMemory	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+RtlDeleteFunctionTable	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+RtlFillMemory	xp	3.51 and higher
+RtlInstallFunctionTableCallback	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+RtlLookupFunctionEntry	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+RtlMoveMemory	xp	3.51 and higher
+RtlPcToFileHeader	no	5.2 from Windows Server 2003 SP1, and higher (x64); 
+    10.0 and higher (x86)
+RtlRaiseException	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+RtlRestoreContext	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+RtlUnwind	xp	3.51 and higher
+RtlUnwindEx	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+RtlVirtualUnwind	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+RtlZeroMemory	xp	3.51 and higher
+SMapLS	no	4.0 to 4.90 (Windows only)
+SMapLS_IP_EBP_12	no	4.0 to 4.90 (Windows only)
+SMapLS_IP_EBP_16	no	4.0 to 4.90 (Windows only)
+SMapLS_IP_EBP_20	no	4.0 to 4.90 (Windows only)
+SMapLS_IP_EBP_24	no	4.0 to 4.90 (Windows only)
+SMapLS_IP_EBP_28	no	4.0 to 4.90 (Windows only)
+SMapLS_IP_EBP_32	no	4.0 to 4.90 (Windows only)
+SMapLS_IP_EBP_36	no	4.0 to 4.90 (Windows only)
+SMapLS_IP_EBP_40	no	4.0 to 4.90 (Windows only)
+SMapLS_IP_EBP_8	no	4.0 to 4.90 (Windows only)
+SUnMapLS	no	4.0 to 4.90 (Windows only)
+SUnMapLS_IP_EBP_12	no	4.0 to 4.90 (Windows only)
+SUnMapLS_IP_EBP_16	no	4.0 to 4.90 (Windows only)
+SUnMapLS_IP_EBP_20	no	4.0 to 4.90 (Windows only)
+SUnMapLS_IP_EBP_24	no	4.0 to 4.90 (Windows only)
+SUnMapLS_IP_EBP_28	no	4.0 to 4.90 (Windows only)
+SUnMapLS_IP_EBP_32	no	4.0 to 4.90 (Windows only)
+SUnMapLS_IP_EBP_36	no	4.0 to 4.90 (Windows only)
+SUnMapLS_IP_EBP_40	no	4.0 to 4.90 (Windows only)
+SUnMapLS_IP_EBP_8	no	4.0 to 4.90 (Windows only)
+ScrollConsoleScreenBufferA	xp	3.51 and higher
+ScrollConsoleScreenBufferW	xp	3.51 and higher
+SearchPathA	xp	3.51 and higher
+SearchPathW	xp	3.51 and higher
+SetCPGlobal	xp	5.0 to 5.2
+SetCachedSigningLevel	no	6.2 and higher
+SetCalendarInfoA	xp	4.10 and higher
+SetCalendarInfoW	xp	4.10 and higher
+SetClientTimeZoneInformation	xp	5.1 to 6.1
+SetComPlusPackageInstallStatus	xp	5.1 and higher
+SetCommBreak	xp	3.51 and higher
+SetCommConfig	xp	3.51 and higher
+SetCommMask	xp	3.51 and higher
+SetCommState	xp	3.51 and higher
+SetCommTimeouts	xp	3.51 and higher
+SetComputerNameA	xp	3.51 and higher
+SetComputerNameEx2W	no	6.3 and higher
+SetComputerNameExA	xp	5.0 and higher
+SetComputerNameExW	xp	5.0 and higher
+SetComputerNameW	xp	3.51 and higher
+SetConsoleActiveScreenBuffer	xp	3.51 and higher
+SetConsoleCP	xp	3.51 and higher
+SetConsoleCommandHistoryMode	no	3.51 to 5.2 (NT only)
+SetConsoleCtrlHandler	xp	3.51 and higher
+SetConsoleCursor	no	3.51 and higher (NT only)
+SetConsoleCursorInfo	xp	3.51 and higher
+SetConsoleCursorMode	xp	5.0 and higher
+SetConsoleCursorPosition	xp	3.51 and higher
+SetConsoleDisplayMode	no	3.51 and higher (NT only)
+SetConsoleFont	no	3.51 and higher (NT only)
+SetConsoleHardwareState	no	3.51 and higher (NT only)
+SetConsoleHistoryInfo	no	6.0 and higher
+SetConsoleIcon	no	4.0 and higher (NT only)
+SetConsoleInputExeNameA	no	4.0 and higher (NT only)
+SetConsoleInputExeNameW	no	4.0 and higher (NT only)
+SetConsoleKeyShortcuts	no	3.51 and higher (NT only)
+SetConsoleLocalEUDC	xp	5.0 and higher
+SetConsoleMaximumWindowSize	no	3.51 and higher (NT only)
+SetConsoleMenuClose	no	3.51 and higher (NT only)
+SetConsoleMode	xp	3.51 and higher
+SetConsoleNlsMode	xp	5.0 and higher
+SetConsoleNumberOfCommandsA	no	3.51 and higher (NT only)
+SetConsoleNumberOfCommandsW	no	3.51 and higher (NT only)
+SetConsoleOS2OemFormat	xp	5.0 and higher
+SetConsoleOutputCP	xp	3.51 and higher
+SetConsolePalette	no	3.51 and higher (NT only)
+SetConsoleScreenBufferInfoEx	no	6.0 and higher
+SetConsoleScreenBufferSize	xp	3.51 and higher
+SetConsoleTextAttribute	xp	3.51 and higher
+SetConsoleTitleA	xp	3.51 and higher
+SetConsoleTitleW	xp	3.51 and higher
+SetConsoleWindowInfo	xp	3.51 and higher
+SetCriticalSectionSpinCount	xp	4.0 from Windows NT 4.0 SP3, and higher
+SetCurrentConsoleFontEx	no	6.0 and higher
+SetCurrentDirectoryA	xp	3.51 and higher
+SetCurrentDirectoryW	xp	3.51 and higher
+SetDaylightFlag	no	4.0 to 4.90 (Windows only)
+SetDefaultCommConfigA	xp	3.51 and higher
+SetDefaultCommConfigW	xp	3.51 and higher
+SetDefaultDllDirectories	no	6.2 and higher
+SetDllDirectoryA	xp	5.1 from Windows XP SP1, and higher
+SetDllDirectoryW	xp	5.1 from Windows XP SP1, and higher
+SetDynamicTimeZoneInformation	no	6.0 and higher
+SetEndOfFile	xp	3.51 and higher
+SetEnvironmentStringsA	no	5.2 and higher
+SetEnvironmentStringsW	no	5.2 and higher
+SetEnvironmentVariableA	xp	3.51 and higher
+SetEnvironmentVariableW	xp	3.51 and higher
+SetErrorMode	xp	3.51 and higher
+SetEvent	xp	3.51 and higher
+SetEventWhenCallbackReturns	no	6.0 and higher
+SetExtendedFeaturesMask	no	6.1 before Windows 7 SP1
+SetFileApisToANSI	xp	3.51 and higher
+SetFileApisToOEM	xp	3.51 and higher
+SetFileAttributesA	xp	3.51 and higher
+SetFileAttributesTransactedA	no	6.0 and higher
+SetFileAttributesTransactedW	no	6.0 and higher
+SetFileAttributesW	xp	3.51 and higher
+SetFileBandwidthReservation	no	6.0 and higher
+SetFileCompletionNotificationModes	no	5.2 from Windows Server 2003 SP2, and higher
+SetFileInformationByHandle	no	6.0 and higher
+SetFileIoOverlappedRange	no	6.0 and higher
+SetFilePointer	xp	3.51 and higher
+SetFilePointerEx	xp	5.0 and higher
+SetFileShortNameA	xp	5.1 and higher
+SetFileShortNameW	xp	5.1 and higher
+SetFileTime	xp	3.51 and higher
+SetFileValidData	xp	5.1 and higher
+SetFirmwareEnvironmentVariableA	xp	5.1 and higher
+SetFirmwareEnvironmentVariableExA	no	6.2 and higher
+SetFirmwareEnvironmentVariableExW	no	6.2 and higher
+SetFirmwareEnvironmentVariableW	xp	5.1 and higher
+SetHandleContext	no	4.0 to 4.90 (Windows); 
+    5.1 and higher (NT, x86 only)
+SetHandleCount	xp	3.51 and higher
+SetHandleInformation	xp	3.51 and higher
+SetInformationJobObject	xp	5.0 and higher
+SetIoRateControlInformationJobObject	no	10.0 and higher
+SetLastConsoleEventActive	no	3.51 and higher (NT only)
+SetLastError	xp	3.51 and higher
+SetLocalPrimaryComputerNameA	xp	5.1 and higher
+SetLocalPrimaryComputerNameW	xp	5.1 and higher
+SetLocalTime	xp	3.51 and higher
+SetLocaleInfoA	xp	3.51 and higher
+SetLocaleInfoW	xp	3.51 and higher
+SetMailslotInfo	xp	3.51 and higher
+SetMessageWaitingIndicator	xp	4.10 and higher
+SetNamedPipeAttribute	no	6.0 and higher
+SetNamedPipeHandleState	xp	3.51 and higher
+SetPriorityClass	xp	3.51 and higher
+SetProcessAffinityMask	xp	4.0 from Windows NT 4.0, and higher
+SetProcessAffinityUpdateMode	no	6.0 from Windows Vista SP1, and higher
+SetProcessDEPPolicy	?	some 5.1 and 6.0, and higher; 
+    begins in 5.1 from Windows XP SP3; 
+    begins in 6.0 from Windows Vista SP1
+SetProcessDefaultCpuSets	no	10.0 and higher
+SetProcessInformation	no	6.2 and higher
+SetProcessMitigationPolicy	no	6.2 and higher
+SetProcessPreferredUILanguages	no	6.1 and higher
+SetProcessPriorityBoost	xp	4.0 from Windows NT 4.0, and higher
+SetProcessShutdownParameters	xp	3.51 and higher
+SetProcessUserModeExceptionPolicy	no	6.1 from Windows 7 SP1 only
+SetProcessWorkingSetSize	xp	3.51 and higher
+SetProcessWorkingSetSizeEx	no	5.2 and higher
+SetProtectedPolicy	no	10.0 and higher
+SetRoamingLastObservedChangeTime	no	6.2 only
+SetSearchPathMode	no	6.0 from Windows Vista SP2, and higher
+SetStateVersion	no	6.2 only
+SetStdHandle	xp	3.51 and higher
+SetStdHandleEx	no	6.0 and higher
+SetSystemFileCacheSize	no	5.2 from Windows Server 2003 SP1, and higher
+SetSystemPowerState	xp	3.51 and higher
+SetSystemTime	xp	3.51 and higher
+SetSystemTimeAdjustment	xp	3.51 and higher
+SetTapeParameters	xp	3.51 and higher
+SetTapePosition	xp	3.51 and higher
+SetTermsrvAppInstallMode	xp	5.0 and higher
+SetThreadAffinityMask	xp	3.51 and higher
+SetThreadContext	xp	3.51 and higher
+SetThreadErrorMode	no	6.1 and higher
+SetThreadExecutionState	xp	4.10 and higher
+SetThreadGroupAffinity	no	6.1 and higher
+SetThreadIdealProcessor	xp	4.0 from Windows NT 4.0, and higher
+SetThreadIdealProcessorEx	no	6.1 and higher
+SetThreadInformation	no	6.2 and higher
+SetThreadLocale	xp	3.51 and higher
+SetThreadPreferredUILanguages	no	6.0 and higher
+SetThreadPriority	xp	3.51 and higher
+SetThreadPriorityBoost	xp	4.0 from Windows NT 4.0, and higher
+SetThreadSelectedCpuSets	no	10.0 and higher
+SetThreadStackGuarantee	no	5.2 from Windows Server 2003 SP1, and higher
+SetThreadToken	no	6.1 and higher; 
+    earlier in ADVAPI32
+SetThreadUILanguage	xp	5.1 and higher
+SetThreadpoolStackInformation	no	6.1 and higher
+SetThreadpoolThreadMaximum	no	6.0 and higher
+SetThreadpoolThreadMinimum	no	6.0 and higher
+SetThreadpoolTimer	no	6.0 and higher
+SetThreadpoolTimerEx	no	6.2 and higher
+SetThreadpoolWait	no	6.0 and higher
+SetThreadpoolWaitEx	no	6.2 and higher
+SetTimeZoneInformation	xp	3.51 and higher
+SetTimerQueueTimer	xp	5.0 and higher
+SetUmsThreadInformation	no	6.1 and higher (x64 only)
+SetUnhandledExceptionFilter	xp	3.51 and higher
+SetUserGeoID	no	4.90 only (Windows); 
+    5.1 and higher (NT)
+SetVDMCurrentDirectories	no	3.51 and higher (NT only)
+SetVolumeLabelA	xp	3.51 and higher
+SetVolumeLabelW	xp	3.51 and higher
+SetVolumeMountPointA	xp	5.0 and higher
+SetVolumeMountPointW	xp	5.0 and higher
+SetVolumeMountPointWStub	no	6.2 and higher
+SetWaitableTimer	xp	4.0 from Windows NT 4.0, and higher
+SetWaitableTimerEx	no	6.1 and higher
+SetXStateFeaturesMask	no	6.1 from Windows 7 SP1, and higher
+SetupComm	xp	3.51 and higher
+ShowConsoleCursor	no	3.51 and higher (NT only)
+SignalObjectAndWait	xp	4.0 from Windows NT 4.0, and higher
+SignalSysMsgHandlers	xp	4.10 and 4.90
+SizeofResource	xp	3.51 and higher
+Sleep	xp	3.51 and higher
+SleepConditionVariableCS	no	6.0 and higher
+SleepConditionVariableSRW	no	6.0 and higher
+SleepEx	xp	3.51 and higher
+SortCloseHandle	no	6.1 and higher
+SortGetHandle	no	6.1 and higher
+StartThreadpoolIo	no	6.0 and higher
+SubmitThreadpoolWork	no	6.0 and higher
+SubscribeStateChangeNotification	no	6.2 only
+SuspendThread	xp	3.51 and higher
+SwitchToFiber	xp	3.51 from Windows NT 3.51 SP5, and higher (NT); 
+    4.10 to 4.90 (Windows)
+SwitchToThread	xp	4.0 from Windows NT 4.0, and higher
+SystemTimeToFileTime	xp	3.51 and higher
+SystemTimeToTzSpecificLocalTime	xp	3.51 and higher
+SystemTimeToTzSpecificLocalTimeEx	no	6.2 and higher
+TerminateJobObject	xp	5.0 and higher
+TerminateProcess	xp	3.51 and higher
+TerminateThread	xp	3.51 and higher
+TermsrvAppInstallMode	xp	5.0 and higher
+TermsrvConvertSysRootToUserDir	no	6.2 and higher
+TermsrvCreateRegEntry	no	6.2 and higher
+TermsrvDeleteKey	no	6.2 and higher
+TermsrvDeleteValue	no	6.2 and higher
+TermsrvGetPreSetValue	no	6.2 and higher
+TermsrvGetWindowsDirectoryA	no	6.2 and higher
+TermsrvGetWindowsDirectoryW	no	6.2 and higher
+TermsrvOpenRegEntry	no	6.2 and higher
+TermsrvOpenUserClasses	no	6.2 and higher
+TermsrvRestoreKey	no	6.2 and higher
+TermsrvSetKeySecurity	no	6.2 and higher
+TermsrvSetValueKey	no	6.2 and higher
+TermsrvSyncUserIniFileExt	no	6.2 and higher
+Thread32First	xp	4.0 and higher
+Thread32Next	xp	4.0 and higher
+ThunkConnect32	no	4.0 to 4.90 (Windows only)
+TlsAlloc	xp	3.51 and higher
+TlsAllocInternal	no	4.0 to 4.90 (Windows only)
+TlsFree	xp	3.51 and higher
+TlsFreeInternal	no	4.0 to 4.90 (Windows only)
+TlsGetValue	xp	3.51 and higher
+TlsSetValue	xp	3.51 and higher
+Toolhelp32ReadProcessMemory	xp	4.0 and higher
+TransactNamedPipe	xp	3.51 and higher
+TransmitCommChar	xp	3.51 and higher
+TrimVirtualBuffer	no	3.51 to 5.2 before Windows Server 2003 SP1 (NT only)
+TryAcquireSRWLockExclusive	no	6.1 and higher
+TryAcquireSRWLockShared	no	6.1 and higher
+TryEnterCriticalSection	xp	4.0 from Windows NT 4.0, and higher
+TrySubmitThreadpoolCallback	no	6.0 and higher
+TzSpecificLocalTimeToSystemTime	xp	5.1 and higher
+TzSpecificLocalTimeToSystemTimeEx	no	6.2 and higher
+UTRegister	xp	4.0 and higher
+UTUnRegister	xp	4.0 and higher
+UmsThreadYield	no	6.1 and higher (x64 only)
+UnMapLS	no	4.0 to 4.90 (Windows only)
+UnMapLSFixArray	no	4.0 to 4.90 (Windows only)
+UnhandledExceptionFilter	xp	3.51 and higher
+UninitializeCriticalSection	no	4.0 to 4.90 (Windows only)
+UnlockFile	xp	3.51 and higher
+UnlockFileEx	xp	3.51 and higher
+UnmapViewOfFile	xp	3.51 and higher
+UnmapViewOfFileEx	no	6.2 and higher
+UnregisterApplicationRecoveryCallback	no	6.0 and higher
+UnregisterApplicationRestart	no	6.0 and higher
+UnregisterBadMemoryNotification	no	6.2 and higher
+UnregisterConsoleIME	xp	5.0 and higher
+UnregisterStateChangeNotification	no	6.2 only
+UnregisterStateLock	no	6.2 only
+UnregisterWait	xp	5.0 and higher
+UnregisterWaitEx	xp	5.0 and higher
+UnregisterWaitUntilOOBECompleted	no	6.3 and higher
+UnsubscribeStateChangeNotification	no	6.2 only
+UpdateCalendarDayOfWeek	no	6.0 and higher
+UpdateProcThreadAttribute	no	6.0 and higher
+UpdateResourceA	xp	3.51 and higher
+UpdateResourceW	xp	3.51 and higher
+VDMConsoleOperation	no	3.51 and higher (NT only)
+VDMOperationStarted	no	3.51 and higher (NT only)
+ValidateLCType	xp	5.0 to 5.2
+ValidateLocale	xp	5.0 to 5.2
+VerLanguageNameA	xp	3.51 and higher
+VerLanguageNameW	xp	3.51 and higher
+VerSetConditionMask	xp	5.0 and higher
+VerifyConsoleIoHandle	no	3.51 and higher (NT only)
+VerifyScripts	no	6.0 and higher
+VerifyVersionInfoA	no	4.0 from Windows NT 4.0 SP4, and higher (NT only)
+VerifyVersionInfoW	no	4.0 from Windows NT 4.0 SP4, and higher (NT only)
+VirtualAlloc	xp	3.51 and higher
+VirtualAllocEx	xp	4.0 from Windows NT 4.0, and higher
+VirtualAllocExNuma	no	6.0 and higher
+VirtualBufferExceptionHandler	no	3.51 to 5.2 before Windows Server 2003 SP1 (NT only)
+VirtualFree	xp	3.51 and higher
+VirtualFreeEx	xp	4.0 from Windows NT 4.0, and higher
+VirtualLock	xp	3.51 and higher
+VirtualProtect	xp	3.51 and higher
+VirtualProtectEx	xp	3.51 and higher
+VirtualQuery	xp	3.51 and higher
+VirtualQueryEx	xp	3.51 and higher
+VirtualUnlock	xp	3.51 and higher
+WTSGetActiveConsoleSessionId	xp	5.1 and higher
+WaitCommEvent	xp	3.51 and higher
+WaitForDebugEvent	xp	3.51 and higher
+WaitForDebugEventEx	no	10.0 and higher
+WaitForMultipleObjects	xp	3.51 and higher
+WaitForMultipleObjectsEx	xp	3.51 and higher
+WaitForSingleObject	xp	3.51 and higher
+WaitForSingleObjectEx	xp	3.51 and higher
+WaitForThreadpoolIoCallbacks	no	6.0 and higher
+WaitForThreadpoolTimerCallbacks	no	6.0 and higher
+WaitForThreadpoolWaitCallbacks	no	6.0 and higher
+WaitForThreadpoolWorkCallbacks	no	6.0 and higher
+WaitNamedPipeA	xp	3.51 and higher
+WaitNamedPipeW	xp	3.51 and higher
+WakeAllConditionVariable	no	6.0 and higher
+WakeConditionVariable	no	6.0 and higher
+WerGetFlags	no	6.0 and higher
+WerGetFlagsWorker	no	10.0 and higher
+WerRegisterFile	no	6.0 and higher
+WerRegisterFileWorker	no	6.2 and higher
+WerRegisterMemoryBlock	no	6.0 and higher
+WerRegisterMemoryBlockWorker	no	6.2 and higher
+WerRegisterRuntimeExceptionModule	no	6.1 and higher
+WerRegisterRuntimeExceptionModuleWorker	no	6.2 and higher
+WerSetFlags	no	6.0 and higher
+WerSetFlagsWorker	no	10.0 and higher
+WerUnregisterFile	no	6.0 and higher
+WerUnregisterFileWorker	no	6.2 and higher
+WerUnregisterMemoryBlock	no	6.0 and higher
+WerUnregisterMemoryBlockWorker	no	6.2 and higher
+WerUnregisterRuntimeExceptionModule	no	6.1 and higher
+WerUnregisterRuntimeExceptionModuleWorker	no	6.2 and higher
+WerpCleanupMessageMapping	no	6.0 and higher
+WerpGetDebugger	no	6.2 and higher
+WerpInitiateRemoteRecovery	no	6.0 and higher
+WerpLaunchAeDebug	no	6.2 and higher
+WerpNotifyLoadStringResource	no	6.0 and higher
+WerpNotifyLoadStringResourceEx	no	6.0 and higher
+WerpNotifyLoadStringResourceWorker	no	6.2 and higher
+WerpNotifyUseStringResource	no	6.0 and higher
+WerpNotifyUseStringResourceWorker	no	6.2 and higher
+WerpStringLookup	no	6.0 and higher
+WideCharToMultiByte	xp	3.51 and higher
+WinExec	xp	3.51 and higher
+Wow64DisableWow64FsRedirection	no	5.2 from Windows Server 2003 SP1, and higher
+Wow64EnableWow64FsRedirection	no	5.2 and higher
+Wow64GetThreadContext	no	6.0 and higher
+Wow64GetThreadSelectorEntry	no	6.1 and higher
+Wow64RevertWow64FsRedirection	no	5.2 from Windows Server 2003 SP1, and higher
+Wow64SetThreadContext	no	6.0 and higher
+Wow64SuspendThread	no	6.0 and higher
+WriteConsoleA	xp	3.51 and higher
+WriteConsoleInputA	xp	3.51 and higher
+WriteConsoleInputVDMA	no	3.51 and higher (NT only)
+WriteConsoleInputVDMW	no	3.51 and higher (NT only)
+WriteConsoleInputW	xp	3.51 and higher
+WriteConsoleOutputA	xp	3.51 and higher
+WriteConsoleOutputAttribute	xp	3.51 and higher
+WriteConsoleOutputCharacterA	xp	3.51 and higher
+WriteConsoleOutputCharacterW	xp	3.51 and higher
+WriteConsoleOutputW	xp	3.51 and higher
+WriteConsoleW	xp	3.51 and higher
+WriteFile	xp	3.51 and higher
+WriteFileEx	xp	3.51 and higher
+WriteFileGather	xp	4.0 from Windows NT 4.0 SP3, and higher
+WritePrivateProfileSectionA	xp	3.51 and higher
+WritePrivateProfileSectionW	xp	3.51 and higher
+WritePrivateProfileStringA	xp	3.51 and higher
+WritePrivateProfileStringW	xp	3.51 and higher
+WritePrivateProfileStructA	xp	3.51 and higher
+WritePrivateProfileStructW	xp	3.51 and higher
+WriteProcessMemory	xp	3.51 and higher
+WriteProfileSectionA	xp	3.51 and higher
+WriteProfileSectionW	xp	3.51 and higher
+WriteProfileStringA	xp	3.51 and higher
+WriteProfileStringW	xp	3.51 and higher
+WriteStateAtomValue	no	6.2 only
+WriteStateContainerValue	no	6.2 only
+WriteTapemark	xp	3.51 and higher
+ZombifyActCtx	xp	5.1 and higher
+ZombifyActCtxWorker	no	6.2 and higher
+_DebugOut	no	4.0 to 4.90 (Windows only)
+_DebugPrintf	no	4.0 to 4.90 (Windows only)
+__C_specific_handler	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+__chkstk	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+__misaligned_access	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+_hread	xp	3.51 and higher
+_hwrite	xp	3.51 and higher
+_lclose	xp	3.51 and higher
+_lcreat	xp	3.51 and higher
+_llseek	xp	3.51 and higher
+_local_unwind	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+_lopen	xp	3.51 and higher
+_lread	xp	3.51 and higher
+_lwrite	xp	3.51 and higher
+dprintf	no	4.0 to 4.90 (Windows only)
+lstrcat	xp	3.51 and higher
+lstrcatA	xp	3.51 and higher
+lstrcatW	xp	3.51 and higher
+lstrcmp	xp	3.51 and higher
+lstrcmpA	xp	3.51 and higher
+lstrcmpW	xp	3.51 and higher
+lstrcmpi	xp	3.51 and higher
+lstrcmpiA	xp	3.51 and higher
+lstrcmpiW	xp	3.51 and higher
+lstrcpy	xp	3.51 and higher
+lstrcpyA	xp	3.51 and higher
+lstrcpyW	xp	3.51 and higher
+lstrcpyn	xp	3.51 and higher
+lstrcpynA	xp	3.51 and higher
+lstrcpynW	xp	3.51 and higher
+lstrlen	xp	3.51 and higher
+lstrlenA	xp	3.51 and higher
+lstrlenW	xp	3.51 and higher
+timeBeginPeriod	no	6.2 and higher
+timeEndPeriod	no	6.2 and higher
+timeGetDevCaps	no	6.2 and higher
+timeGetSystemTime	no	6.2 and higher
+timeGetTime	no	6.2 and higher
+uaw_lstrcmpW	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+uaw_lstrcmpiW	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+uaw_lstrlenW	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+uaw_wcschr	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+uaw_wcscpy	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+uaw_wcsicmp	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+uaw_wcslen	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)
+uaw_wcsrchr	no	5.2 from Windows Server 2003 SP1, and higher (x64 only)

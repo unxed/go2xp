@@ -23,6 +23,13 @@ func main() {
 	case "patch":
 		// go2xp patch -profile profiles/xp.json in.exe out.exe
 		err = patchCmd(os.Args[2:])
+	case "audit":
+		// go2xp audit app.exe [profiles/kernel32-exports.tsv]
+		exp := "profiles/kernel32-exports.tsv"
+		if len(os.Args) > 3 {
+			exp = os.Args[3]
+		}
+		err = audit(os.Args[2], exp)
 	case "verify":
 		// go2xp verify -profile profiles/xp.json app.exe
 		err = verifyCmd(os.Args[2:])
@@ -36,7 +43,13 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage:\n  go2xp inspect app.exe      PE header + import table with IAT slot RVAs\n  go2xp exports kernel32.dll  list exported names (to build a target-OS profile)")
+	fmt.Fprint(os.Stderr, `usage:
+  go2xp inspect app.exe               PE header, import table with IAT slot RVAs, GO2XPTBL
+  go2xp exports kernel32.dll          exported names (to build a target-OS profile)
+  go2xp patch -profile P in.exe [out.exe]
+  go2xp verify -profile P app.exe
+  go2xp audit app.exe [exports.tsv]   lazily resolved kernel32 names the target lacks, and whether the shim covers them
+`)
 	os.Exit(2)
 }
 

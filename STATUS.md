@@ -16,6 +16,8 @@
 | 2 | `shim` минимальный + таблица GO2XPTBL | [x] |
 | 3 | `go2xp patch` + `verify`, профиль xp | [x] + проходит под Wine (winxp) |
 | 3.5 | Wine smoke test (`scripts/wine-test.sh`) | [x] |
+| 3.6 | static audit (`go2xp audit`, kernel32 export history) | [x] |
+| 3.7 | old-Wine stage | [ ] deferred; PlayOnLinux archive gone, alternatives costed in SPEC |
 | 4 | ранние asm-полифиллы, `probes/hello` | [x] |
 | 5 | Go-полифиллы, `probes/exec`, `probes/files` | [x] |
 | 6 | `probes/net`, `probes/console`, `probes/signals` | [x] |
@@ -303,3 +305,27 @@ events actually reach os/signal, and which lazily resolved imports XP really lac
 - 18 runs (6 probes x 3), all green.
 - Dropped from the plan as not requested by f4: GetTickCount64, SetThreadDescription,
   GetSystemTimePreciseAsFileTime.
+
+### 2026-09-04 - step 5c: ground truth for XP, and `go2xp audit`
+
+- The idea of an old Wine (before Vista+ exports) as an XP proxy was checked first:
+  PlayOnLinux's binary archive answers 404 and the Wayback Machine has only its index
+  page, no .pol files. Remaining routes (Debian snapshot packages in a chroot, or building
+  Wine 1.6 with patches) are costed in SPEC 3.7 and deferred: an old Wine is still just
+  another approximation of XP.
+- What is *not* an approximation: the kernel32 export history with the version each
+  function first appeared in (Geoff Chappell). Fetched and turned into
+  `profiles/kernel32-exports.tsv` (1820 exports, 856 present on XP) by
+  `scripts/fetch-exports.py`.
+- `go2xp audit app.exe`: reads every `proc*` symbol from the binary (each LazyProc is a
+  package-level variable, so the whole lazy surface is visible statically), checks it
+  against the export list and against GO2XPTBL, and prints what the target lacks and
+  whether the shim covers it. Names kernel32 only forwards since Vista but which live in
+  advapi32 on XP - where Go resolves them from anyway - are recognised and not reported.
+- Result on f4: the machine check agrees with the hand audit in docs/api-audit.md to the
+  name, and additionally confirms GetCurrentConsoleFontEx and FindFirstStreamW as absent.
+  On the exec probe with the shim, the only uncovered name is
+  SetFileCompletionNotificationModes, which Go tolerates.
+- Limits, stated plainly: the export list covers kernel32 only (the other DLLs f4 uses
+  are XP-era throughout, per the audit), and the audit sees names, not call sites - it
+  cannot tell whether an absent function is actually reached.
