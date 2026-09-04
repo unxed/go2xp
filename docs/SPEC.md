@@ -297,6 +297,18 @@ dead-code-elimination'ом, `shim.init()` ссылается на неё (`keepa
 - `runtime/sys_windows_386.s` — образец stdcall-asm (`asmstdcall`, `callbackasm1`, `sigtramp`).
 - MS PE/COFF spec — импорт-описатели, `.reloc`, `DllCharacteristics`.
 
+### 7.1 Сверка перед релизом (обязательный чек-лист)
+
+Перед первым релизом сверить **каждый** наш полифилл и список профиля с:
+- https://github.com/thongtech/go-legacy-win7 — Go 1.26.6 на Win7 (эталон для профиля `win7`);
+- https://github.com/syncguy/go-legacy-winxp — Go 1.24 на XP, ветка `winxp-compat` (эталон для `xp`);
+- проекты бинарного патчинга Win7→XP из предыдущей попытки:
+  - https://github.com/syncguy/go-legacy-winxp
+  - https://github.com/thongtech/go-legacy-win7
+
+Что сверять: (1) полный список функций, которые они подменяют/резолвят лениво — у нас не должно быть пропусков;
+(2) семантика фоллбэков (что возвращают, какие LastError); (3) правки PE-заголовка. Расхождения — в STATUS.
+
 ---
 
 ## 8. Риски и открытые вопросы (закрываются по ходу, ответы — в STATUS)

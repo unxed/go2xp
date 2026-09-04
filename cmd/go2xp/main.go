@@ -1,0 +1,65 @@
+// go2xp — патчер Go-бинарников для старых Windows. Пока: inspect, exports.
+package main
+
+import (
+	"fmt"
+	"os"
+	"sort"
+
+	"github.com/unxed/go2xp/internal/pe"
+)
+
+func main() {
+	if len(os.Args) < 3 {
+		usage()
+	}
+	var err error
+	switch os.Args[1] {
+	case "inspect":
+		err = inspect(os.Args[2])
+	case "exports":
+		err = exports(os.Args[2])
+	default:
+		usage()
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "go2xp:", err)
+		os.Exit(1)
+	}
+}
+
+func usage() {
+	fmt.Fprintln(os.Stderr, "usage:\n  go2xp inspect app.exe      PE header + import table with IAT slot RVAs\n  go2xp exports kernel32.dll  list exported names (to build a target-OS profile)")
+	os.Exit(2)
+}
+
+func inspect(path string) error {
+	in, err := pe.Open(path)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("machine=%#x imagebase=%#x os=%d.%d subsystem=%d.%d dllchar=%#x reloc=%v\n",
+		in.Machine, in.ImageBase, in.OSMajor, in.OSMinor, in.SubsysMajor, in.SubsysMinor, in.DllCharacteristics, in.HasReloc)
+	fmt.Printf("sections=%v\n", in.Sections)
+	fmt.Printf("import dir rva=%#x size=%#x, %d imports:\n", in.ImportDirRVA, in.ImportDirSize, len(in.Imports))
+	for _, im := range in.Imports {
+		name := im.Name
+		if name == "" {
+			name = fmt.Sprintf("#%d", im.Ordinal)
+		}
+		fmt.Printf("  desc%d slot=%#08x %-24s %s\n", im.DescIdx, im.SlotRVA, im.DLL, name)
+	}
+	return nil
+}
+
+func exports(path string) error {
+	names, err := pe.Exports(path)
+	if err != nil {
+		return err
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		fmt.Println(n)
+	}
+	return nil
+}

@@ -11,8 +11,8 @@
 
 | # | Шаг | Статус |
 |---|---|---|
-| 0 | ТЗ, STATUS, README, go.mod | [~] ждёт подтверждения |
-| 1 | `go2xp inspect` / `exports` | [ ] |
+| 0 | ТЗ, STATUS, README, go.mod | [x] |
+| 1 | `go2xp inspect` / `exports` | [~] написано, НЕ проверено на реальном exe |
 | 2 | `shim` минимальный + таблица GO2XPTBL | [ ] |
 | 3 | `go2xp patch` + `verify`, профиль xp | [ ] |
 | 4 | ранние asm-полифиллы, `probes/hello` | [ ] |
@@ -50,3 +50,17 @@
   ломающихся символов и фоллбэков.
 - Проверено: ничего (кода нет).
 - Следующий шаг: 1 (`go2xp inspect`).
+
+### 2026-09-04 — шаг 1
+- `internal/pe`: свой парсер импорта (dll, name/ordinal, **RVA слота IAT**, индекс
+  описателя) и таблицы экспорта поверх `debug/pe` (`debug/pe` даёт только строки
+  `name:dll`, экспорта не читает — проверено по документации через Context7).
+  Только PE32 (386), как и заявлено в ТЗ.
+- `cmd/go2xp`: команды `inspect app.exe` и `exports kernel32.dll`.
+- **Не проверено**: в среде исполнителя не было Go. Нужно прогнать:
+  `mkdir -p /tmp/hw && cd /tmp/hw && go mod init hw && printf 'package main\nimport "fmt"\nfunc main(){fmt.Println("hi")}\n' > main.go`
+  `GOOS=windows GOARCH=386 CGO_ENABLED=0 go build -o hw.exe . && go run github.com/unxed/go2xp/cmd/go2xp inspect hw.exe`
+  Ожидание: `os=6.x`, импорты только `kernel32.dll` (список из SPEC §1.2) — записать
+  фактический список сюда, в «Фактические данные». Также `exports` на любой DLL с XP
+  (или с Win10 для проверки парсера).
+- Следующий шаг: 2 (пакет `shim`, таблица GO2XPTBL) — после подтверждения шага 1.
