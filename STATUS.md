@@ -18,7 +18,7 @@
 | 3.5 | Wine smoke test (`scripts/wine-test.sh`) | [x] |
 | 4 | ранние asm-полифиллы, `probes/hello` | [x] |
 | 5 | Go-полифиллы, `probes/exec`, `probes/files` | [x] |
-| 6 | `probes/net`, `probes/console`, `probes/signals` | [~] console и signals готовы, net остался |
+| 6 | `probes/net`, `probes/console`, `probes/signals` | [x] |
 | 7 | CI / reusable action | [ ] |
 | 8 | профиль win7 | [ ] |
 | 8.5 | перевод репозитория на английский (после первого запуска на XP) | [ ] |
@@ -269,3 +269,37 @@ Two things Wine has now told us it cannot check, both waiting on hardware: wheth
 events actually reach os/signal, and which lazily resolved imports XP really lacks.
 
 - Next: `probes/net`, then step 7 (CI) or the first run on real XP, whichever comes first.
+
+### 2026-09-04 - step 5b: the f4 audit, and the polyfills it demanded
+
+- Built f4 (`./cmd/f4`) with stock Go 1.26.6 for windows/386 - it builds clean, 98 MB -
+  and took its full API surface statically: 46 static imports (all kernel32, identical to
+  hello-world) and 312 lazily resolved names, read from the `proc*` variables with
+  `go tool nm`. Every name classified in `docs/api-audit.md`; raw list in
+  `docs/f4-lazy-imports.txt`.
+- Three findings that would each have stopped f4 dead on XP, all confirmed in the Go
+  sources rather than assumed: `os.ReadDir` uses GetFileInformationByHandleEx with no
+  fallback; every os/exec child needs the ProcThreadAttributeList trio; net creates every
+  socket with WSA_FLAG_NO_HANDLE_INHERIT, which XP rejects, so no socket could be made.
+- Polyfills, all in Go: GetFileInformationByHandleEx and SetFileInformationByHandle map
+  onto NtQueryDirectoryFile / NtQueryInformationFile / NtSetInformationFile, whose
+  structures are layout-identical to the Win32 classes; STATUS_PENDING is waited out for
+  overlapped handles. ProcThreadAttributeList trio as in go-legacy-winxp. CreateEventExW.
+- **Override mechanism.** WSASocketW exists on XP, so the real-first hook would never let
+  a wrapper run. `go2xp_overrides` lists names the table answers ahead of the real export;
+  the wrapper retries without the flag on WSAEINVAL and makes the socket non-inheritable
+  afterwards.
+- Real functions inside Go polyfills are resolved through the shim's own GetProcAddress
+  slot (`realProc`), never through the hooks - otherwise the WSASocketW wrapper would
+  find itself. This also keeps ws2_32 out of the static imports.
+- Caught by the Wine stage: a fake attribute list handed to a CreateProcessW that does
+  parse them (Wine, Win7) crashes it. The stubs now forward to the real functions where
+  those exist and fake the list only where they do not, so forced-polyfill runs stay
+  honest and one binary is correct everywhere.
+- The readdir polyfill passing under forced polyfills also settles the open question of
+  whether a last-error set inside a NewCallback survives the way back to the caller:
+  ERROR_NO_MORE_FILES reaches os, WalkDir terminates correctly.
+- `probes/net`: loopback echo, local net/http, external http and https - all pass.
+- 18 runs (6 probes x 3), all green.
+- Dropped from the plan as not requested by f4: GetTickCount64, SetThreadDescription,
+  GetSystemTimePreciseAsFileTime.

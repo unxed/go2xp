@@ -35,7 +35,7 @@
 
 DATA go2xp_table+0(SB)/8, $"GO2XPTBL"
 DATA go2xp_table+8(SB)/4, $1
-DATA go2xp_table+12(SB)/4, $15
+DATA go2xp_table+12(SB)/4, $22
 // kernel32.dll!WerSetFlags -> xp_WerSetFlags
 DATA go2xp_table+16(SB)/4, $go2xp_s_kernel32_dll(SB)
 DATA go2xp_table+20(SB)/4, $go2xp_s_WerSetFlags(SB)
@@ -66,52 +66,87 @@ DATA go2xp_table+96(SB)/4, $go2xp_s_kernel32_dll(SB)
 DATA go2xp_table+100(SB)/4, $go2xp_s_GetQueuedCompletionStatusEx(SB)
 DATA go2xp_table+104(SB)/4, $·xp_GetQueuedCompletionStatusEx(SB)
 DATA go2xp_table+108(SB)/4, $0
-// kernel32.dll!CancelIoEx -> xp_CancelIoEx
-DATA go2xp_table+112(SB)/4, $go2xp_s_kernel32_dll(SB)
-DATA go2xp_table+116(SB)/4, $go2xp_s_CancelIoEx(SB)
-DATA go2xp_table+120(SB)/4, $·xp_CancelIoEx(SB)
-DATA go2xp_table+124(SB)/4, $0
 // kernel32.dll!LoadLibraryExW -> xp_LoadLibraryExW  (and the shim's own slot)
-DATA go2xp_table+128(SB)/4, $go2xp_s_kernel32_dll(SB)
-DATA go2xp_table+132(SB)/4, $go2xp_s_LoadLibraryExW(SB)
-DATA go2xp_table+136(SB)/4, $·xp_LoadLibraryExW(SB)
-DATA go2xp_table+140(SB)/4, $go2xp_LoadLibraryExW(SB)
+DATA go2xp_table+112(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+116(SB)/4, $go2xp_s_LoadLibraryExW(SB)
+DATA go2xp_table+120(SB)/4, $·xp_LoadLibraryExW(SB)
+DATA go2xp_table+124(SB)/4, $go2xp_LoadLibraryExW(SB)
 // kernel32.dll!GetProcAddress -> xp_GetProcAddress  (and the shim's own slot)
-DATA go2xp_table+144(SB)/4, $go2xp_s_kernel32_dll(SB)
-DATA go2xp_table+148(SB)/4, $go2xp_s_GetProcAddress(SB)
-DATA go2xp_table+152(SB)/4, $·xp_GetProcAddress(SB)
-DATA go2xp_table+156(SB)/4, $go2xp_GetProcAddress(SB)
+DATA go2xp_table+128(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+132(SB)/4, $go2xp_s_GetProcAddress(SB)
+DATA go2xp_table+136(SB)/4, $·xp_GetProcAddress(SB)
+DATA go2xp_table+140(SB)/4, $go2xp_GetProcAddress(SB)
 // bcryptprimitives.dll!ProcessPrng -> xp_ProcessPrng
-DATA go2xp_table+160(SB)/4, $go2xp_s_bcryptprimitives_dll(SB)
-DATA go2xp_table+164(SB)/4, $go2xp_s_ProcessPrng(SB)
-DATA go2xp_table+168(SB)/4, $·xp_ProcessPrng(SB)
+DATA go2xp_table+144(SB)/4, $go2xp_s_bcryptprimitives_dll(SB)
+DATA go2xp_table+148(SB)/4, $go2xp_s_ProcessPrng(SB)
+DATA go2xp_table+152(SB)/4, $·xp_ProcessPrng(SB)
+DATA go2xp_table+156(SB)/4, $0
+// kernel32.dll!CancelIoEx -> xp_CancelIoEx
+DATA go2xp_table+160(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+164(SB)/4, $go2xp_s_CancelIoEx(SB)
+DATA go2xp_table+168(SB)/4, $·xp_CancelIoEx(SB)
 DATA go2xp_table+172(SB)/4, $0
-// kernel32.dll!SetErrorMode: the shim's own import slot; the patcher must not redirect it
+// kernel32.dll!GetFileInformationByHandleEx -> xp_GetFileInformationByHandleEx
 DATA go2xp_table+176(SB)/4, $go2xp_s_kernel32_dll(SB)
-DATA go2xp_table+180(SB)/4, $go2xp_s_SetErrorMode(SB)
-DATA go2xp_table+184(SB)/4, $0
-DATA go2xp_table+188(SB)/4, $go2xp_SetErrorMode(SB)
-// kernel32.dll!TerminateProcess: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+180(SB)/4, $go2xp_s_GetFileInformationByHandleEx(SB)
+DATA go2xp_table+184(SB)/4, $·xp_GetFileInformationByHandleEx(SB)
+DATA go2xp_table+188(SB)/4, $0
+// kernel32.dll!SetFileInformationByHandle -> xp_SetFileInformationByHandle
 DATA go2xp_table+192(SB)/4, $go2xp_s_kernel32_dll(SB)
-DATA go2xp_table+196(SB)/4, $go2xp_s_TerminateProcess(SB)
-DATA go2xp_table+200(SB)/4, $0
-DATA go2xp_table+204(SB)/4, $go2xp_TerminateProcess(SB)
-// kernel32.dll!GetQueuedCompletionStatus: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+196(SB)/4, $go2xp_s_SetFileInformationByHandle(SB)
+DATA go2xp_table+200(SB)/4, $·xp_SetFileInformationByHandle(SB)
+DATA go2xp_table+204(SB)/4, $0
+// kernel32.dll!InitializeProcThreadAttributeList -> xp_InitializeProcThreadAttributeList
 DATA go2xp_table+208(SB)/4, $go2xp_s_kernel32_dll(SB)
-DATA go2xp_table+212(SB)/4, $go2xp_s_GetQueuedCompletionStatus(SB)
-DATA go2xp_table+216(SB)/4, $0
-DATA go2xp_table+220(SB)/4, $go2xp_GetQueuedCompletionStatus(SB)
-// kernel32.dll!CancelIo: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+212(SB)/4, $go2xp_s_InitializeProcThreadAttributeList(SB)
+DATA go2xp_table+216(SB)/4, $·xp_InitializeProcThreadAttributeList(SB)
+DATA go2xp_table+220(SB)/4, $0
+// kernel32.dll!UpdateProcThreadAttribute -> xp_UpdateProcThreadAttribute
 DATA go2xp_table+224(SB)/4, $go2xp_s_kernel32_dll(SB)
-DATA go2xp_table+228(SB)/4, $go2xp_s_CancelIo(SB)
-DATA go2xp_table+232(SB)/4, $0
-DATA go2xp_table+236(SB)/4, $go2xp_CancelIo(SB)
+DATA go2xp_table+228(SB)/4, $go2xp_s_UpdateProcThreadAttribute(SB)
+DATA go2xp_table+232(SB)/4, $·xp_UpdateProcThreadAttribute(SB)
+DATA go2xp_table+236(SB)/4, $0
+// kernel32.dll!DeleteProcThreadAttributeList -> xp_DeleteProcThreadAttributeList
+DATA go2xp_table+240(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+244(SB)/4, $go2xp_s_DeleteProcThreadAttributeList(SB)
+DATA go2xp_table+248(SB)/4, $·xp_DeleteProcThreadAttributeList(SB)
+DATA go2xp_table+252(SB)/4, $0
+// ws2_32.dll!WSASocketW -> xp_WSASocketW
+DATA go2xp_table+256(SB)/4, $go2xp_s_ws2_32_dll(SB)
+DATA go2xp_table+260(SB)/4, $go2xp_s_WSASocketW(SB)
+DATA go2xp_table+264(SB)/4, $·xp_WSASocketW(SB)
+DATA go2xp_table+268(SB)/4, $0
+// kernel32.dll!CreateEventExW -> xp_CreateEventExW
+DATA go2xp_table+272(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+276(SB)/4, $go2xp_s_CreateEventExW(SB)
+DATA go2xp_table+280(SB)/4, $·xp_CreateEventExW(SB)
+DATA go2xp_table+284(SB)/4, $0
+// kernel32.dll!SetErrorMode: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+288(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+292(SB)/4, $go2xp_s_SetErrorMode(SB)
+DATA go2xp_table+296(SB)/4, $0
+DATA go2xp_table+300(SB)/4, $go2xp_SetErrorMode(SB)
+// kernel32.dll!TerminateProcess: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+304(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+308(SB)/4, $go2xp_s_TerminateProcess(SB)
+DATA go2xp_table+312(SB)/4, $0
+DATA go2xp_table+316(SB)/4, $go2xp_TerminateProcess(SB)
+// kernel32.dll!GetQueuedCompletionStatus: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+320(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+324(SB)/4, $go2xp_s_GetQueuedCompletionStatus(SB)
+DATA go2xp_table+328(SB)/4, $0
+DATA go2xp_table+332(SB)/4, $go2xp_GetQueuedCompletionStatus(SB)
+// kernel32.dll!CancelIo: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+336(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+340(SB)/4, $go2xp_s_CancelIo(SB)
+DATA go2xp_table+344(SB)/4, $0
+DATA go2xp_table+348(SB)/4, $go2xp_CancelIo(SB)
 // advapi32.dll!SystemFunction036: the shim's own import slot; the patcher must not redirect it
-DATA go2xp_table+240(SB)/4, $go2xp_s_advapi32_dll(SB)
-DATA go2xp_table+244(SB)/4, $go2xp_s_SystemFunction036(SB)
-DATA go2xp_table+248(SB)/4, $0
-DATA go2xp_table+252(SB)/4, $go2xp_SystemFunction036(SB)
-GLOBL go2xp_table(SB), NOPTR, $256
+DATA go2xp_table+352(SB)/4, $go2xp_s_advapi32_dll(SB)
+DATA go2xp_table+356(SB)/4, $go2xp_s_SystemFunction036(SB)
+DATA go2xp_table+360(SB)/4, $0
+DATA go2xp_table+364(SB)/4, $go2xp_SystemFunction036(SB)
+GLOBL go2xp_table(SB), NOPTR, $368
 
 // DLLs that do not exist on the target at all. xp_LoadLibraryExW answers with the
 // sentinel handle for these, and xp_GetProcAddress serves their exports from the
@@ -119,6 +154,13 @@ GLOBL go2xp_table(SB), NOPTR, $256
 DATA go2xp_missing_dlls+0(SB)/4, $go2xp_s_bcryptprimitives_dll(SB)
 DATA go2xp_missing_dlls+4(SB)/4, $0
 GLOBL go2xp_missing_dlls(SB), RODATA|NOPTR, $8
+
+// Functions that the target does have but that need a wrapper anyway (an argument
+// the old OS rejects, say). xp_GetProcAddress lets the table win for these even
+// though the real export exists; the wrapper itself forwards to the real function.
+DATA go2xp_overrides+0(SB)/4, $go2xp_s_WSASocketW(SB)
+DATA go2xp_overrides+4(SB)/4, $0
+GLOBL go2xp_overrides(SB), RODATA|NOPTR, $8
 
 DATA go2xp_s_CancelIo+0(SB)/8, $"CancelIo"
 DATA go2xp_s_CancelIo+8(SB)/8, $"\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -128,14 +170,30 @@ DATA go2xp_s_CancelIoEx+0(SB)/8, $"CancelIo"
 DATA go2xp_s_CancelIoEx+8(SB)/8, $"Ex\x00\x00\x00\x00\x00\x00"
 GLOBL go2xp_s_CancelIoEx(SB), RODATA|NOPTR, $16
 
+DATA go2xp_s_CreateEventExW+0(SB)/8, $"CreateEv"
+DATA go2xp_s_CreateEventExW+8(SB)/8, $"entExW\x00\x00"
+GLOBL go2xp_s_CreateEventExW(SB), RODATA|NOPTR, $16
+
 DATA go2xp_s_CreateWaitableTimerExW+0(SB)/8, $"CreateWa"
 DATA go2xp_s_CreateWaitableTimerExW+8(SB)/8, $"itableTi"
 DATA go2xp_s_CreateWaitableTimerExW+16(SB)/8, $"merExW\x00\x00"
 GLOBL go2xp_s_CreateWaitableTimerExW(SB), RODATA|NOPTR, $24
 
+DATA go2xp_s_DeleteProcThreadAttributeList+0(SB)/8, $"DeletePr"
+DATA go2xp_s_DeleteProcThreadAttributeList+8(SB)/8, $"ocThread"
+DATA go2xp_s_DeleteProcThreadAttributeList+16(SB)/8, $"Attribut"
+DATA go2xp_s_DeleteProcThreadAttributeList+24(SB)/8, $"eList\x00\x00\x00"
+GLOBL go2xp_s_DeleteProcThreadAttributeList(SB), RODATA|NOPTR, $32
+
 DATA go2xp_s_GetErrorMode+0(SB)/8, $"GetError"
 DATA go2xp_s_GetErrorMode+8(SB)/8, $"Mode\x00\x00\x00\x00"
 GLOBL go2xp_s_GetErrorMode(SB), RODATA|NOPTR, $16
+
+DATA go2xp_s_GetFileInformationByHandleEx+0(SB)/8, $"GetFileI"
+DATA go2xp_s_GetFileInformationByHandleEx+8(SB)/8, $"nformati"
+DATA go2xp_s_GetFileInformationByHandleEx+16(SB)/8, $"onByHand"
+DATA go2xp_s_GetFileInformationByHandleEx+24(SB)/8, $"leEx\x00\x00\x00\x00"
+GLOBL go2xp_s_GetFileInformationByHandleEx(SB), RODATA|NOPTR, $32
 
 DATA go2xp_s_GetProcAddress+0(SB)/8, $"GetProcA"
 DATA go2xp_s_GetProcAddress+8(SB)/8, $"ddress\x00\x00"
@@ -152,6 +210,13 @@ DATA go2xp_s_GetQueuedCompletionStatusEx+8(SB)/8, $"dComplet"
 DATA go2xp_s_GetQueuedCompletionStatusEx+16(SB)/8, $"ionStatu"
 DATA go2xp_s_GetQueuedCompletionStatusEx+24(SB)/8, $"sEx\x00\x00\x00\x00\x00"
 GLOBL go2xp_s_GetQueuedCompletionStatusEx(SB), RODATA|NOPTR, $32
+
+DATA go2xp_s_InitializeProcThreadAttributeList+0(SB)/8, $"Initiali"
+DATA go2xp_s_InitializeProcThreadAttributeList+8(SB)/8, $"zeProcTh"
+DATA go2xp_s_InitializeProcThreadAttributeList+16(SB)/8, $"readAttr"
+DATA go2xp_s_InitializeProcThreadAttributeList+24(SB)/8, $"ibuteLis"
+DATA go2xp_s_InitializeProcThreadAttributeList+32(SB)/8, $"t\x00\x00\x00\x00\x00\x00\x00"
+GLOBL go2xp_s_InitializeProcThreadAttributeList(SB), RODATA|NOPTR, $40
 
 DATA go2xp_s_LoadLibraryExW+0(SB)/8, $"LoadLibr"
 DATA go2xp_s_LoadLibraryExW+8(SB)/8, $"aryExW\x00\x00"
@@ -170,6 +235,12 @@ DATA go2xp_s_SetErrorMode+0(SB)/8, $"SetError"
 DATA go2xp_s_SetErrorMode+8(SB)/8, $"Mode\x00\x00\x00\x00"
 GLOBL go2xp_s_SetErrorMode(SB), RODATA|NOPTR, $16
 
+DATA go2xp_s_SetFileInformationByHandle+0(SB)/8, $"SetFileI"
+DATA go2xp_s_SetFileInformationByHandle+8(SB)/8, $"nformati"
+DATA go2xp_s_SetFileInformationByHandle+16(SB)/8, $"onByHand"
+DATA go2xp_s_SetFileInformationByHandle+24(SB)/8, $"le\x00\x00\x00\x00\x00\x00"
+GLOBL go2xp_s_SetFileInformationByHandle(SB), RODATA|NOPTR, $32
+
 DATA go2xp_s_SystemFunction036+0(SB)/8, $"SystemFu"
 DATA go2xp_s_SystemFunction036+8(SB)/8, $"nction03"
 DATA go2xp_s_SystemFunction036+16(SB)/8, $"6\x00\x00\x00\x00\x00\x00\x00"
@@ -179,6 +250,16 @@ DATA go2xp_s_TerminateProcess+0(SB)/8, $"Terminat"
 DATA go2xp_s_TerminateProcess+8(SB)/8, $"eProcess"
 DATA go2xp_s_TerminateProcess+16(SB)/8, $"\x00\x00\x00\x00\x00\x00\x00\x00"
 GLOBL go2xp_s_TerminateProcess(SB), RODATA|NOPTR, $24
+
+DATA go2xp_s_UpdateProcThreadAttribute+0(SB)/8, $"UpdatePr"
+DATA go2xp_s_UpdateProcThreadAttribute+8(SB)/8, $"ocThread"
+DATA go2xp_s_UpdateProcThreadAttribute+16(SB)/8, $"Attribut"
+DATA go2xp_s_UpdateProcThreadAttribute+24(SB)/8, $"e\x00\x00\x00\x00\x00\x00\x00"
+GLOBL go2xp_s_UpdateProcThreadAttribute(SB), RODATA|NOPTR, $32
+
+DATA go2xp_s_WSASocketW+0(SB)/8, $"WSASocke"
+DATA go2xp_s_WSASocketW+8(SB)/8, $"tW\x00\x00\x00\x00\x00\x00"
+GLOBL go2xp_s_WSASocketW(SB), RODATA|NOPTR, $16
 
 DATA go2xp_s_WerGetFlags+0(SB)/8, $"WerGetFl"
 DATA go2xp_s_WerGetFlags+8(SB)/8, $"ags\x00\x00\x00\x00\x00"
@@ -200,6 +281,10 @@ GLOBL go2xp_s_bcryptprimitives_dll(SB), RODATA|NOPTR, $24
 DATA go2xp_s_kernel32_dll+0(SB)/8, $"kernel32"
 DATA go2xp_s_kernel32_dll+8(SB)/8, $".dll\x00\x00\x00\x00"
 GLOBL go2xp_s_kernel32_dll(SB), RODATA|NOPTR, $16
+
+DATA go2xp_s_ws2_32_dll+0(SB)/8, $"ws2_32.d"
+DATA go2xp_s_ws2_32_dll+8(SB)/8, $"ll\x00\x00\x00\x00\x00\x00"
+GLOBL go2xp_s_ws2_32_dll(SB), RODATA|NOPTR, $16
 
 // func tableAddr() uintptr
 TEXT ·tableAddr(SB), NOSPLIT, $0-4
@@ -288,8 +373,11 @@ llx_ret:
 // sentinel handle, which belongs to a DLL that is not there at all and can only be
 // answered from the table.
 //
-// Setting forcePolyfills reverses the order, so a name the table knows is answered from
-// the table even where the OS exports it. Anything the table does not know still goes to
+// Two things reverse that order. A name in go2xp_overrides is answered from the table
+// even though the OS has it: those are functions that exist on the target but reject an
+// argument modern Go always passes (WSASocketW and its inheritance flag), so the wrapper
+// has to sit in front of the real one. And setting forcePolyfills does it for every
+// name the table knows. Anything the table does not know still goes to
 // the real function - the point is to exercise the polyfills on a system that has the
 // real ones, not to break every other lookup (see scripts/wine-test.sh).
 TEXT ·xp_GetProcAddress(SB), NOSPLIT|NOFRAME, $0-0
@@ -304,8 +392,34 @@ TEXT ·xp_GetProcAddress(SB), NOSPLIT|NOFRAME, $0-0
 	JEQ	gpa_table		// a DLL that is not there: only the table can answer
 	MOVL	·forcePolyfills(SB), AX
 	TESTL	AX, AX
-	JZ	gpa_real_first
-	MOVL	$1, 0(SP)		// forced: a miss still has to reach the real export
+	JNZ	gpa_table_first
+	MOVL	24(SP), BX
+	CMPL	BX, $0x10000
+	JB	gpa_real_first		// by ordinal: never an override
+	LEAL	go2xp_overrides(SB), DX	// is this one of the names that need a wrapper?
+
+gpa_ovr_entry:
+	MOVL	(DX), DI
+	TESTL	DI, DI
+	JZ	gpa_real_first		// not an override: the real export wins
+	MOVL	BX, SI
+
+gpa_ovr_cmp:
+	MOVBLZX	(DI), AX
+	CMPB	(SI), AL
+	JNE	gpa_ovr_next
+	TESTL	AX, AX
+	JZ	gpa_table_first		// matched: the table wins for this name
+	INCL	SI
+	INCL	DI
+	JMP	gpa_ovr_cmp
+
+gpa_ovr_next:
+	ADDL	$4, DX
+	JMP	gpa_ovr_entry
+
+gpa_table_first:
+	MOVL	$1, 0(SP)		// a miss still has to reach the real export
 	JMP	gpa_table
 
 gpa_real_first:
@@ -448,21 +562,6 @@ gqe_ret:
 	POPL	BX
 	STDRET(24)
 
-// BOOL WINAPI CancelIoEx(HANDLE hFile, LPOVERLAPPED lpOverlapped) - Vista+.
-// A late polyfill: it is only ever called from ordinary goroutine context, so it is
-// written in Go (polyCancelIoEx) and reached through this trampoline. Until init has
-// installed the callback the trampoline reports failure, which is the correct answer for
-// anything that manages to call it that early.
-TEXT ·xp_CancelIoEx(SB), NOSPLIT|NOFRAME, $0-0
-	MOVL	·cbCancelIoEx(SB), AX
-	TESTL	AX, AX
-	JZ	cix_early
-	JMP	AX			// the callback pops the arguments itself
-
-cix_early:
-	XORL	AX, AX
-	STDRET(8)
-
 // BOOL WINAPI ProcessPrng(PBYTE pbData, SIZE_T cbData) - Win10+, bcryptprimitives.dll.
 // XP's equivalent is advapi32!SystemFunction036, better known as RtlGenRandom: same
 // argument layout, same cryptographic role, present since XP SP1. It returns BOOLEAN in
@@ -535,3 +634,99 @@ TEXT ·xp_RaiseFailFastException(SB), NOSPLIT|NOFRAME, $0-0
 	CALL	AX
 	INT	$3			// unreachable
 	STDRET(12)
+
+// kernel32.dll!CancelIoEx: trampoline into the Go polyfill (polyCancelIoEx). Until init has
+// installed the callback it reports failure, which is the right answer for anything
+// that manages to call it that early.
+TEXT ·xp_CancelIoEx(SB), NOSPLIT|NOFRAME, $0-0
+	MOVL	·cbCancelIoEx(SB), AX
+	TESTL	AX, AX
+	JZ	t_CancelIoEx_early
+	JMP	AX			// the callback pops the arguments itself
+t_CancelIoEx_early:
+	XORL	AX, AX
+	STDRET(8)
+
+// kernel32.dll!GetFileInformationByHandleEx: trampoline into the Go polyfill (polyGetFileInformationByHandleEx). Until init has
+// installed the callback it reports failure, which is the right answer for anything
+// that manages to call it that early.
+TEXT ·xp_GetFileInformationByHandleEx(SB), NOSPLIT|NOFRAME, $0-0
+	MOVL	·cbGetFileInformationByHandleEx(SB), AX
+	TESTL	AX, AX
+	JZ	t_GetFileInformationByHandleEx_early
+	JMP	AX			// the callback pops the arguments itself
+t_GetFileInformationByHandleEx_early:
+	XORL	AX, AX
+	STDRET(16)
+
+// kernel32.dll!SetFileInformationByHandle: trampoline into the Go polyfill (polySetFileInformationByHandle). Until init has
+// installed the callback it reports failure, which is the right answer for anything
+// that manages to call it that early.
+TEXT ·xp_SetFileInformationByHandle(SB), NOSPLIT|NOFRAME, $0-0
+	MOVL	·cbSetFileInformationByHandle(SB), AX
+	TESTL	AX, AX
+	JZ	t_SetFileInformationByHandle_early
+	JMP	AX			// the callback pops the arguments itself
+t_SetFileInformationByHandle_early:
+	XORL	AX, AX
+	STDRET(16)
+
+// kernel32.dll!InitializeProcThreadAttributeList: trampoline into the Go polyfill (polyInitializeProcThreadAttributeList). Until init has
+// installed the callback it reports failure, which is the right answer for anything
+// that manages to call it that early.
+TEXT ·xp_InitializeProcThreadAttributeList(SB), NOSPLIT|NOFRAME, $0-0
+	MOVL	·cbInitializeProcThreadAttributeList(SB), AX
+	TESTL	AX, AX
+	JZ	t_InitializeProcThreadAttributeList_early
+	JMP	AX			// the callback pops the arguments itself
+t_InitializeProcThreadAttributeList_early:
+	XORL	AX, AX
+	STDRET(16)
+
+// kernel32.dll!UpdateProcThreadAttribute: trampoline into the Go polyfill (polyUpdateProcThreadAttribute). Until init has
+// installed the callback it reports failure, which is the right answer for anything
+// that manages to call it that early.
+TEXT ·xp_UpdateProcThreadAttribute(SB), NOSPLIT|NOFRAME, $0-0
+	MOVL	·cbUpdateProcThreadAttribute(SB), AX
+	TESTL	AX, AX
+	JZ	t_UpdateProcThreadAttribute_early
+	JMP	AX			// the callback pops the arguments itself
+t_UpdateProcThreadAttribute_early:
+	XORL	AX, AX
+	STDRET(28)
+
+// kernel32.dll!DeleteProcThreadAttributeList: trampoline into the Go polyfill (polyDeleteProcThreadAttributeList). Until init has
+// installed the callback it reports failure, which is the right answer for anything
+// that manages to call it that early.
+TEXT ·xp_DeleteProcThreadAttributeList(SB), NOSPLIT|NOFRAME, $0-0
+	MOVL	·cbDeleteProcThreadAttributeList(SB), AX
+	TESTL	AX, AX
+	JZ	t_DeleteProcThreadAttributeList_early
+	JMP	AX			// the callback pops the arguments itself
+t_DeleteProcThreadAttributeList_early:
+	XORL	AX, AX
+	STDRET(4)
+
+// ws2_32.dll!WSASocketW: trampoline into the Go polyfill (polyWSASocketW). Until init has
+// installed the callback it reports failure, which is the right answer for anything
+// that manages to call it that early.
+TEXT ·xp_WSASocketW(SB), NOSPLIT|NOFRAME, $0-0
+	MOVL	·cbWSASocketW(SB), AX
+	TESTL	AX, AX
+	JZ	t_WSASocketW_early
+	JMP	AX			// the callback pops the arguments itself
+t_WSASocketW_early:
+	XORL	AX, AX
+	STDRET(24)
+
+// kernel32.dll!CreateEventExW: trampoline into the Go polyfill (polyCreateEventExW). Until init has
+// installed the callback it reports failure, which is the right answer for anything
+// that manages to call it that early.
+TEXT ·xp_CreateEventExW(SB), NOSPLIT|NOFRAME, $0-0
+	MOVL	·cbCreateEventExW(SB), AX
+	TESTL	AX, AX
+	JZ	t_CreateEventExW_early
+	JMP	AX			// the callback pops the arguments itself
+t_CreateEventExW_early:
+	XORL	AX, AX
+	STDRET(16)

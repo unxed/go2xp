@@ -11,20 +11,27 @@
       "CreateWaitableTimerExW",
       "RaiseFailFastException",
       "GetQueuedCompletionStatusEx",
-      "CancelIoEx"
+      "CancelIoEx",
+      "GetFileInformationByHandleEx",
+      "SetFileInformationByHandle",
+      "InitializeProcThreadAttributeList",
+      "UpdateProcThreadAttribute",
+      "DeleteProcThreadAttributeList",
+      "CreateEventExW"
     ]
   },
   "missingWholeDLL": [
     "bcryptprimitives.dll"
   ],
+  "overrides": {
+    "comment": "present on XP but wrapped anyway; served from the shim table ahead of the real export (see go2xp_overrides in shim)",
+    "ws2_32.dll": ["WSASocketW"]
+  },
   "pending": {
-    "comment": "absent on XP SP3, polyfill still TODO (steps 4-5)",
-    "kernel32.dll": [
-      "GetTickCount64", "SetThreadDescription", "GetSystemTimePreciseAsFileTime",
-      "InitializeProcThreadAttributeList", "UpdateProcThreadAttribute",
-      "DeleteProcThreadAttributeList", "GetFileInformationByHandleEx",
-      "SetFileInformationByHandle", "GetFinalPathNameByHandleW",
-      "SetFileCompletionNotificationModes", "CreateSymbolicLinkW"
-    ]
+    "comment": "absent on XP SP3 and requested by f4 (lazily), but deliberately left to fail: Go or f4 handles the error, or there is no XP equivalent",
+    "graceful_in_go": ["GetTempPath2W", "SetFileCompletionNotificationModes", "GetVolumeInformationByHandleW"],
+    "fails_with_error": ["GetFinalPathNameByHandleW", "CreateSymbolicLinkW", "ReOpenFile", "QueryFullProcessImageNameW", "GetCurrentConsoleFontEx", "RegLoadMUIStringW", "WSAPoll", "FindFirstStreamW", "FindNextStreamW"],
+    "no_xp_equivalent": ["CreatePseudoConsole", "ResizePseudoConsole", "ClosePseudoConsole", "DwmSetWindowAttribute", "GetDpiForWindow"],
+    "not_requested_by_f4": ["GetTickCount64", "SetThreadDescription", "GetSystemTimePreciseAsFileTime"]
   }
 }

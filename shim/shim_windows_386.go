@@ -63,11 +63,27 @@ func xp_LoadLibraryExW()
 func xp_GetProcAddress()
 func xp_ProcessPrng()
 func xp_CancelIoEx()
+func xp_GetFileInformationByHandleEx()
+func xp_SetFileInformationByHandle()
+func xp_InitializeProcThreadAttributeList()
+func xp_UpdateProcThreadAttribute()
+func xp_DeleteProcThreadAttributeList()
+func xp_WSASocketW()
+func xp_CreateEventExW()
 
 // Late polyfills are written in Go and installed as stdcall callbacks by init; the
 // assembly trampoline of each one jumps to the address kept here. Only functions that
 // can never be called before the runtime exists may use this path.
-var cbCancelIoEx uintptr
+var (
+	cbCancelIoEx                        uintptr
+	cbGetFileInformationByHandleEx      uintptr
+	cbSetFileInformationByHandle        uintptr
+	cbInitializeProcThreadAttributeList uintptr
+	cbUpdateProcThreadAttribute         uintptr
+	cbDeleteProcThreadAttributeList     uintptr
+	cbWSASocketW                        uintptr
+	cbCreateEventExW                    uintptr
+)
 
 // forcePolyfills makes xp_GetProcAddress answer from the table instead of preferring the
 // real export. It exists so the test harness can exercise the polyfills on a system that
@@ -84,6 +100,13 @@ var Table uintptr
 func init() {
 	Table = tableAddr()
 	cbCancelIoEx = syscall.NewCallback(polyCancelIoEx)
+	cbGetFileInformationByHandleEx = syscall.NewCallback(polyGetFileInformationByHandleEx)
+	cbSetFileInformationByHandle = syscall.NewCallback(polySetFileInformationByHandle)
+	cbInitializeProcThreadAttributeList = syscall.NewCallback(polyInitializeProcThreadAttributeList)
+	cbUpdateProcThreadAttribute = syscall.NewCallback(polyUpdateProcThreadAttribute)
+	cbDeleteProcThreadAttributeList = syscall.NewCallback(polyDeleteProcThreadAttributeList)
+	cbWSASocketW = syscall.NewCallback(polyWSASocketW)
+	cbCreateEventExW = syscall.NewCallback(polyCreateEventExW)
 	if os.Getenv("GO2XP_FORCE_POLYFILLS") != "" {
 		forcePolyfills = 1
 	}
