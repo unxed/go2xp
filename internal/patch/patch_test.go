@@ -9,7 +9,7 @@ import (
 	xpe "github.com/unxed/go2xp/internal/pe"
 )
 
-// buildProbe компилирует крошечный windows/386 exe с влинкованным shim.
+// buildProbe compiles a tiny windows/386 exe with the shim linked in.
 func buildProbe(t *testing.T) string {
 	t.Helper()
 	root, err := filepath.Abs("../..")

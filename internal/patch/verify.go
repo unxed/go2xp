@@ -6,7 +6,7 @@ import (
 	xpe "github.com/unxed/go2xp/internal/pe"
 )
 
-// Verify перечитывает пропатченный файл и проверяет инварианты для профиля.
+// Verify re-reads a patched file and checks the profile's invariants.
 func Verify(path, profilePath string) error {
 	prof, err := LoadProfile(profilePath)
 	if err != nil {
@@ -26,9 +26,9 @@ func Verify(path, profilePath string) error {
 	if info.DllCharacteristics&0x0040 != 0 {
 		problems = append(problems, "DYNAMIC_BASE still set")
 	}
-	// в таблице импорта не должно остаться отсутствующих на целевой ОС функций
+	// nothing that is missing on the target may remain in the import table
 	ownSlot := map[uint32]bool{}
-	hookReady := map[string]bool{} // dll!func -> есть полифилл-хук
+	hookReady := map[string]bool{} // dll!func -> a hook polyfill exists
 	for _, e := range info.Table {
 		if e.OwnSlot != 0 {
 			ownSlot[e.OwnSlot] = true

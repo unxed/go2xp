@@ -5,16 +5,19 @@
   "subsystemMajor": 5, "subsystemMinor": 1,
   "missing": {
     "kernel32.dll": [
-      "WerSetFlags"
+      "WerSetFlags",
+      "WerGetFlags",
+      "GetErrorMode",
+      "CreateWaitableTimerExW",
+      "RaiseFailFastException"
     ]
   },
   "missingWholeDLL": [],
   "pending": {
     "comment": "absent on XP SP3, polyfill still TODO (steps 4-5)",
     "kernel32.dll": [
-      "WerGetFlags", "RaiseFailFastException", "GetQueuedCompletionStatusEx",
-      "GetErrorMode", "CreateWaitableTimerExW", "AddVectoredContinueHandler",
-      "GetTickCount64", "SetThreadDescription", "GetSystemTimePreciseAsFileTime"
+      "GetQueuedCompletionStatusEx", "GetTickCount64", "SetThreadDescription",
+      "GetSystemTimePreciseAsFileTime"
     ],
     "bcryptprimitives.dll": ["ProcessPrng"]
   }

@@ -1,6 +1,6 @@
-// Package patch реализует go2xp patch/verify: правит PE-заголовок под старую ОС,
-// перенаправляет IAT-слоты отсутствующих функций на полифиллы shim и удаляет их
-// из таблицы импорта, чтобы загрузчик не искал их в системных DLL.
+// Package patch implements go2xp patch and verify: it rewrites the PE header for an
+// older Windows, redirects the IAT slots of missing functions to the shim polyfills and
+// removes those slots from the import table so the loader never looks them up.
 package patch
 
 import (
@@ -13,7 +13,7 @@ import (
 	xpe "github.com/unxed/go2xp/internal/pe"
 )
 
-// Profile — профиль целевой ОС (profiles/*.json).
+// Profile describes a target OS (profiles/*.json).
 type Profile struct {
 	Name            string              `json:"name"`
 	OSMajor         uint16              `json:"osMajor"`
@@ -72,14 +72,14 @@ func eqFold(a, b string) bool {
 	return true
 }
 
-// Result — что сделал патчер (для отчёта и verify).
+// Result reports what the patcher did.
 type Result struct {
 	Redirected  []string // dll!func -> polyfill
 	KeptImports int
 	DroppedDLLs []string
 }
 
-// Patch патчит файл на месте (in path -> out path).
+// Patch reads inPath, patches it and writes outPath.
 func Patch(inPath, outPath, profilePath string) (*Result, error) {
 	prof, err := LoadProfile(profilePath)
 	if err != nil {
@@ -92,7 +92,7 @@ func Patch(inPath, outPath, profilePath string) (*Result, error) {
 	if len(info.Table) == 0 {
 		return nil, fmt.Errorf("GO2XPTBL not found: the shim package is not linked into %s (add: import _ \"github.com/unxed/go2xp/shim\")", inPath)
 	}
-	// карта полифиллов: dll!func -> VA; и множество собственных слотов shim.
+	// polyfill map (dll!func -> VA) and the set of the shim's own slots
 	poly := map[string]uint32{}
 	ownSlot := map[uint32]bool{}
 	for _, e := range info.Table {
@@ -114,37 +114,37 @@ func Patch(inPath, outPath, profilePath string) (*Result, error) {
 	}
 
 	res := &Result{}
-	// 1) заголовок
+	// 1) header
 	r.SetVersions(prof.OSMajor, prof.OSMinor, prof.SubsystemMajor, prof.SubsystemMinor)
 	r.ClearDynamicBase()
 	r.ZeroCheckSum()
 
-	// 2) пройти импорты, для отсутствующих: записать VA полифилла в слот (в файле),
-	//    пометить слот как «убрать из таблицы импорта».
+	// 2) walk the imports; for the missing ones write the polyfill VA into the slot
+	//    and mark the slot for removal from the import table
 	imageBase := info.ImageBase
-	badSlots := map[uint32]bool{} // slotRVA, которые надо исключить из перестроенной таблицы
+	badSlots := map[uint32]bool{} // slot RVAs to leave out of the rebuilt table
 	for _, im := range info.Imports {
 		slotVA := imageBase + im.SlotRVA
 		if ownSlot[slotVA] {
-			continue // это слот самого shim — не трогаем
+			continue // the shim's own slot: never touch it
 		}
 		fn := im.Name
 		redirect := false
 		var pva uint32
 		switch {
 		case prof.missing(im.DLL, fn):
-			// нужен полифилл. Для отсутствующей целиком DLL — тоже ищем полифилл по имени.
+			// A polyfill is required; for a wholly missing DLL we look it up by name too.
 			if v, ok := poly[key(im.DLL, fn)]; ok {
 				pva, redirect = v, true
 			} else {
-				// критично для функций, которые реально зовутся; но заглушку может
-				// не быть на раннем этапе. Пишем 0-заглушку? Нет — это опасно.
+				// Refuse rather than leave a slot pointing at nothing: a null slot
+				// would crash at the first call instead of failing the build.
 				return nil, fmt.Errorf("%s!%s is missing on target %q but no polyfill is present in the shim table", im.DLL, fn, prof.Name)
 			}
 		case forceHook(im.DLL, fn):
-			// GetProcAddress/LoadLibraryExW рантайма — на хук, НО только когда
-			// соответствующий полифилл-хук уже есть в таблице (появится на шаге 4).
-			// Иначе оставляем импорт как есть: сама функция на XP присутствует.
+			// The runtime's GetProcAddress/LoadLibraryExW go to our hooks, but only
+			// once those hooks exist in the table (step 4). Until then the import is
+			// left alone: the functions themselves do exist on XP.
 			if v, ok := poly[key(im.DLL, fn)]; ok {
 				pva, redirect = v, true
 			}
@@ -160,7 +160,7 @@ func Patch(inPath, outPath, profilePath string) (*Result, error) {
 		}
 	}
 
-	// 3) перестроить таблицу импорта без bad-слотов, положить в новую секцию .go2xp
+	// 3) rebuild the import table without the bad slots into a new .go2xp section
 	newImp, dropped, kept, err := rebuildImports(r, info, badSlots)
 	if err != nil {
 		return nil, err
@@ -172,10 +172,11 @@ func Patch(inPath, outPath, profilePath string) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	// DataDirectory[IMPORT] -> новая таблица описателей (в начале секции)
+	// DataDirectory[IMPORT] -> the new descriptor array at the start of the section
 	r.SetDataDir(1, newRVA, uint32(descBytesLen))
-	// IAT-директорию (12) обнуляем как размер, чтобы загрузчик не ругался на несоответствие; RVA оставим.
-	// (не критично; XP не строг)
+	// DataDirectory[IAT] (12) is left as it was. The loader walks the import
+	// descriptors, not that directory; only stdlib helpers such as
+	// debug/pe.ImportedLibraries read it. See STATUS.md for the follow-up.
 
 	if err := os.WriteFile(outPath, r.Buf, 0o755); err != nil {
 		return nil, err
@@ -190,15 +191,14 @@ func forceHook(dll, fn string) bool {
 
 func key(dll, fn string) string { return dll + "!" + fn }
 
-var descBytesLen int // длина блока IMAGE_IMPORT_DESCRIPTOR[], заполняется в rebuildImports
+var descBytesLen int // size of the IMAGE_IMPORT_DESCRIPTOR array, set by rebuildImports
 
-// rebuildImports собирает новую таблицу импорта, исключая badSlots.
-// Возвращает байты секции: [descriptors][INT arrays][name strings], с RVA-ссылками,
-// рассчитанными относительно места, куда AddSection положит секцию. Так как RVA
-// секции ещё не известен на этом шаге, ссылки пишем как смещения и правим после
-// размещения — поэтому rebuild работает в два прохода через placeholder + фиксап.
+// rebuildImports builds a new import table that leaves out badSlots. It returns the
+// section bytes laid out as [descriptors][INT arrays][name strings]. Internal RVAs are
+// computed up front from plannedSectionRVA, which mirrors the placement AddSection
+// will perform, so no fixup pass is needed afterwards.
 func rebuildImports(r *xpe.Raw, info *xpe.Info, badSlots map[uint32]bool) (section []byte, droppedDLLs []string, kept int, err error) {
-	// сгруппировать импорты по описателю (dll), сохранить порядок слотов.
+	// group imports by descriptor (one DLL each), keeping the slot order
 	type imp struct {
 		name string
 		ord  uint16
@@ -206,7 +206,7 @@ func rebuildImports(r *xpe.Raw, info *xpe.Info, badSlots map[uint32]bool) (secti
 	}
 	type grp struct {
 		dll   string
-		ftRVA uint32 // FirstThunk оригинала — оставляем как есть, слоты уже на месте
+		ftRVA uint32 // original FirstThunk: kept as is, the slots stay where they are
 		imps  []imp
 	}
 	var groups []*grp
@@ -219,22 +219,23 @@ func rebuildImports(r *xpe.Raw, info *xpe.Info, badSlots map[uint32]bool) (secti
 			groups = append(groups, g)
 		}
 		if badSlots[im.SlotRVA] {
-			continue // исключаем
+			continue // dropped
 		}
 		if len(g.imps) == 0 {
-			// FirstThunk этой (под)группы = RVA первого сохранённого слота
+			// FirstThunk of this (sub)group is the RVA of its first surviving slot
 			g.ftRVA = im.SlotRVA
 		}
 		g.imps = append(g.imps, imp{im.Name, im.Ordinal, im.SlotRVA})
 	}
 
-	// Проблема: если внутри одной DLL bad-слот стоит В СЕРЕДИНЕ, оставшиеся слоты
-	// не непрерывны -> одного FirstThunk мало, нужно расщепление на несколько
-	// описателей с непрерывными участками. Реализуем расщепление по непрерывности.
+	// If a dropped slot sits in the middle of a DLL's run, the surviving slots are no
+	// longer contiguous and a single FirstThunk cannot describe them. Split the DLL into
+	// several descriptors, one per contiguous run of slots. Multiple descriptors naming
+	// the same DLL are legal and the loader processes them in turn.
 	type piece struct {
 		dll   string
 		ftRVA uint32
-		names []imp // только именованные, в порядке; для INT
+		names []imp // the run's imports in order, used to build the INT
 	}
 	var pieces []piece
 	for _, g := range groups {
@@ -242,7 +243,7 @@ func rebuildImports(r *xpe.Raw, info *xpe.Info, badSlots map[uint32]bool) (secti
 			droppedDLLs = append(droppedDLLs, g.dll)
 			continue
 		}
-		// разбить g.imps на непрерывные по slot (шаг 4 байта) серии
+		// split g.imps into runs whose slots are contiguous (4 bytes apart)
 		start := 0
 		for i := 1; i <= len(g.imps); i++ {
 			if i == len(g.imps) || g.imps[i].slot != g.imps[i-1].slot+4 {
@@ -253,17 +254,16 @@ func rebuildImports(r *xpe.Raw, info *xpe.Info, badSlots map[uint32]bool) (secti
 		}
 	}
 
-	// Разметка секции: [N+1 дескрипторов по 20][для каждого piece: INT (k+1)*4][имена].
-	// Все *RVA* абсолютные (в терминах RVA образа) — их можно вычислить только зная
-	// RVA секции. AddSection кладёт секцию в конец; вычислим её RVA заранее тем же
-	// способом, что и AddSection, чтобы проставить корректные RVA сразу.
+	// Layout: [N+1 descriptors of 20 bytes][per run: INT of (k+1)*4][name strings].
+	// Every RVA below is an image RVA, so the section's own RVA has to be known first;
+	// plannedSectionRVA reproduces the placement AddSection will use.
 	secRVA := plannedSectionRVA(r)
 
 	nDesc := len(pieces)
 	descBytesLen = (nDesc + 1) * 20
-	// сначала посчитать layout
+	// compute the layout first
 	intOff := descBytesLen
-	// зарезервировать INT
+	// reserve the INT arrays
 	intSizes := make([]int, len(pieces))
 	cur := intOff
 	intStart := make([]int, len(pieces))
@@ -273,9 +273,9 @@ func rebuildImports(r *xpe.Raw, info *xpe.Info, badSlots map[uint32]bool) (secti
 		cur += intSizes[i]
 	}
 	nameStart := cur
-	// собрать строки: имя DLL + IMAGE_IMPORT_BY_NAME для каждого именованного импорта
+	// string area: one DLL name per descriptor plus IMAGE_IMPORT_BY_NAME per import
 	buf := make([]byte, nameStart)
-	// имена DLL
+	// DLL names
 	dllNameOff := map[string]int{}
 	appendStr := func(s string) int {
 		off := len(buf)
@@ -291,7 +291,7 @@ func rebuildImports(r *xpe.Raw, info *xpe.Info, badSlots map[uint32]bool) (secti
 			dllNameOff[p.dll] = appendStr(p.dll)
 		}
 	}
-	// IMAGE_IMPORT_BY_NAME: hint(2)+name; запомнить offset для INT
+	// IMAGE_IMPORT_BY_NAME is hint(2 bytes) + name; remember the offset for the INT
 	nameEntryOff := map[string]int{}
 	for _, p := range pieces {
 		for _, im := range p.names {
@@ -313,14 +313,14 @@ func rebuildImports(r *xpe.Raw, info *xpe.Info, badSlots map[uint32]bool) (secti
 
 	rva := func(off int) uint32 { return secRVA + uint32(off) }
 
-	// заполнить дескрипторы и INT
+	// fill in the descriptors and the INTs
 	for i, p := range pieces {
 		d := i * 20
-		binary.LittleEndian.PutUint32(buf[d:], rva(intStart[i])) // OriginalFirstThunk -> наш INT
+		binary.LittleEndian.PutUint32(buf[d:], rva(intStart[i])) // OriginalFirstThunk -> our INT
 		binary.LittleEndian.PutUint32(buf[d+4:], 0)              // TimeDateStamp
 		binary.LittleEndian.PutUint32(buf[d+8:], 0)              // ForwarderChain
 		binary.LittleEndian.PutUint32(buf[d+12:], rva(dllNameOff[p.dll]))
-		binary.LittleEndian.PutUint32(buf[d+16:], p.ftRVA) // FirstThunk = существующий IAT
+		binary.LittleEndian.PutUint32(buf[d+16:], p.ftRVA) // FirstThunk = the existing IAT
 		// INT
 		io := intStart[i]
 		for j, im := range p.names {
@@ -333,13 +333,13 @@ func rebuildImports(r *xpe.Raw, info *xpe.Info, badSlots map[uint32]bool) (secti
 			binary.LittleEndian.PutUint32(buf[io+j*4:], v)
 			kept++
 		}
-		binary.LittleEndian.PutUint32(buf[io+len(p.names)*4:], 0) // терминатор INT
+		binary.LittleEndian.PutUint32(buf[io+len(p.names)*4:], 0) // INT terminator
 	}
-	// последний дескриптор — нулевой (уже нули)
+	// the trailing descriptor stays all zeroes
 	return buf, droppedDLLs, kept, nil
 }
 
-// plannedSectionRVA повторяет расчёт RVA новой секции из AddSection БЕЗ модификации.
+// plannedSectionRVA mirrors AddSection's RVA computation without modifying anything.
 func plannedSectionRVA(r *xpe.Raw) uint32 {
 	var maxRVAEnd uint32
 	sa := r.SectAlign()

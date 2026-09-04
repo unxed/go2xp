@@ -14,8 +14,9 @@
 | 0 | ТЗ, STATUS, README, go.mod | [x] |
 | 1 | `go2xp inspect` / `exports` | [x] проверено на hello-world (Go 1.26.6, 386) |
 | 2 | `shim` минимальный + таблица GO2XPTBL | [x] |
-| 3 | `go2xp patch` + `verify`, профиль xp | [~] реализовано и протестировано структурно; ждёт подтверждения + запуска на XP |
-| 4 | ранние asm-полифиллы, `probes/hello` | [ ] |
+| 3 | `go2xp patch` + `verify`, профиль xp | [x] + проходит под Wine (winxp) |
+| 3.5 | Wine smoke test (`scripts/wine-test.sh`) | [x] |
+| 4 | ранние asm-полифиллы, `probes/hello` | [~] 5 из ~9 сделаны (простые); хуки и GQCSEx — следующий заход |
 | 5 | Go-полифиллы, `probes/exec`, `probes/files` | [ ] |
 | 6 | `probes/net`, `probes/console`, `probes/signals` | [ ] |
 | 7 | CI / reusable action | [ ] |
@@ -29,7 +30,7 @@
 | 1 | `cgo_import_dynamic "kernel32.dll"` в стороннем пакете | **да**, компилируется и даёт IAT-слот | шаг 2, `shim/shim_windows_386.go` |
 | 2 | два одноимённых импорта → два слота? | **да**, линкер не сливает (даже сам рантайм импортирует `GetProcAddress` дважды) | шаг 1/2, вывод `inspect` |
 | 3 | `RET $n` в asm 386 | **нет** («invalid instruction»); используем `BYTE $0xC2; WORD $n` (макрос `STDRET`), objdump показывает `RET $0x4` | шаг 2 |
-| 4 | XP-загрузчик и расщеплённые описатели импорта | описатель расщепляется на несколько при вырезании слота из середины; результат читается штатным `debug/pe` (`ImportedSymbols` ok). Проверку живым загрузчиком XP — на стенде | шаг 3 |
+| 4 | XP-загрузчик и расщеплённые описатели импорта | Wine-загрузчик принимает; описатель расщепляется на несколько при вырезании слота из середины; результат читается штатным `debug/pe` (`ImportedSymbols` ok). Проверку живым загрузчиком XP — на стенде | шаг 3 |
 | 5 | `NewCallback` изнутри `syscall.Syscall` | — | — |
 | 6 | `.reloc` при снятом DYNAMIC_BASE | — | — |
 
@@ -122,3 +123,39 @@
   `ProcessPrng`→SystemFunction036, `GetErrorMode`, `AddVectoredContinueHandler`,
   `CreateWaitableTimerExW`→0, `RaiseFailFastException`, `GetQueuedCompletionStatusEx`),
   перенос соответствующих функций из `pending` в `missing`, `probes/hello`.
+
+### 2026-09-04 - step 4a (early polyfills, the simple half) and the Wine stage
+
+All new text in this file is English from here on; the Russian entries above predate
+that decision. Translating the older entries and docs/SPEC.md is a separate step.
+
+- Code comments across the repository translated to English.
+- `shim/shim_other.go`: on anything but windows/386 the package is now empty, so an
+  application (f4 included) can keep a single unconditional `import _ ".../shim"`.
+- Five early polyfills, all in assembly because they run inside `runtime.osinit`:
+  * `WerSetFlags`, `WerGetFlags` - no-ops; error dialogs are still suppressed by
+    `SetErrorMode`, which XP has.
+  * `GetErrorMode` - XP has no getter, so it calls `SetErrorMode(0)` and restores the
+    value it returns. Racy in principle, called once during osinit in practice.
+  * `CreateWaitableTimerExW` - returns NULL, which makes the runtime clear
+    `haveHighResTimer` and fall back to winmm `timeBeginPeriod` (pre-1.23 behaviour).
+  * `RaiseFailFastException` - `TerminateProcess(GetCurrentProcess(), STATUS_FAIL_FAST_EXCEPTION)`.
+- The shim now imports `SetErrorMode` and `TerminateProcess` for its own use; verified
+  by disassembly that the polyfills call through the shim's own IAT slots
+  (`0x0056b124`, `0x0056b120`) and not through the runtime's.
+- **Assembler note:** the Go 386 assembler rejects a function whose PUSH/POP counts do
+  not match, which stdcall argument pushes always break because the callee pops them.
+  Arguments are therefore written with `SUBL $n, SP` + `MOVL`, never `PUSHL`.
+- `AddVectoredContinueHandler` dropped from the pending list: on 386 the runtime always
+  takes the `SetUnhandledExceptionFilter` path, and the import is not present at all.
+- `probes/hello`: goroutine + timer + `crypto/rand`, prints `OK hello`, also logs to
+  `hello.log` next to the exe.
+- **`scripts/wine-test.sh`** - new mandatory stage before any VM work. Installed wine +
+  wine32 here and ran it: hello passes both unpatched and patched with `winecfg /v winxp`,
+  which means the rebuilt import table loads, the `.go2xp` section is well formed and the
+  five polyfills run without corrupting the stack (`GetErrorMode` really does perform a
+  call through its own slot during osinit). What Wine does not prove: the PE version
+  fields, the real XP export set, XP semantics.
+- Next: step 4b - the `LoadLibraryExW`/`GetProcAddress` hooks (which unlock `ProcessPrng`
+  via `SystemFunction036` and every lazily resolved import at once) and
+  `GetQueuedCompletionStatusEx`.

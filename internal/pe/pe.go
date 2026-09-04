@@ -1,5 +1,5 @@
-// Package pe: чтение PE поверх debug/pe там, где стандартного пакета не хватает
-// (RVA слотов IAT, таблица экспорта, версии заголовка). Только 32-битные образы (v1).
+// Package pe reads PE files where debug/pe is not enough: IAT slot RVAs, the export
+// table and header versions. PE32 (386) images only for now.
 package pe
 
 import (
@@ -10,16 +10,16 @@ import (
 	"os"
 )
 
-// Import — одна запись таблицы импорта.
+// Import is one entry of the import table.
 type Import struct {
 	DLL     string
-	Name    string // пусто, если по ординалу
+	Name    string // empty when imported by ordinal
 	Ordinal uint16
-	SlotRVA uint32 // RVA слота IAT (FirstThunk[i])
-	DescIdx int    // индекс IMAGE_IMPORT_DESCRIPTOR
+	SlotRVA uint32 // RVA of the IAT slot (FirstThunk[i])
+	DescIdx int    // index of the IMAGE_IMPORT_DESCRIPTOR
 }
 
-// Info — сводка по образу.
+// Info summarises an image.
 type Info struct {
 	Machine                                    uint16
 	OSMajor, OSMinor, SubsysMajor, SubsysMinor uint16
@@ -32,11 +32,11 @@ type Info struct {
 	Table                                      []TableEntry // GO2XPTBL, nil if shim not linked in
 }
 
-// TableEntry — запись GO2XPTBL из пакета shim (см. shim/shim_windows_386.s).
+// TableEntry is one GO2XPTBL record emitted by the shim package (shim/shim_windows_386.s).
 type TableEntry struct {
 	DLL, Func string
-	Polyfill  uint32 // VA полифилла, 0 если запись только помечает собственный слот
-	OwnSlot   uint32 // VA собственного IAT-слота shim (не трогать), 0 если нет
+	Polyfill  uint32 // VA of the polyfill; 0 if the record only marks an own slot
+	OwnSlot   uint32 // VA of the shim's own IAT slot (never redirect it); 0 if none
 }
 
 const tableMagic = "GO2XPTBL"
@@ -47,7 +47,7 @@ const (
 	dirReloc  = 5
 )
 
-// Open читает файл и собирает Info.
+// Open reads the file and collects Info.
 func Open(path string) (*Info, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {
@@ -84,7 +84,7 @@ func Open(path string) (*Info, error) {
 	return in, nil
 }
 
-// table ищет GO2XPTBL сырым сканом файла и разбирает записи.
+// table locates GO2XPTBL by scanning the raw file for its magic and parses the records.
 func (r *reader) table(imageBase uint32) ([]TableEntry, error) {
 	o := bytes.Index(r.raw, []byte(tableMagic))
 	if o < 0 {
@@ -116,7 +116,7 @@ type reader struct {
 	f   *pe.File
 }
 
-// off переводит RVA в смещение в файле.
+// off maps an RVA to a file offset.
 func (r *reader) off(rva uint32) (int, error) {
 	for _, s := range r.f.Sections {
 		if rva >= s.VirtualAddress && rva < s.VirtualAddress+s.VirtualSize {
@@ -164,7 +164,7 @@ func (r *reader) imports(dir uint32) ([]Import, error) {
 			return nil, err
 		}
 		lookup := oft
-		if lookup == 0 { // нет INT — читаем имена из IAT (до загрузки там те же значения)
+		if lookup == 0 { // no INT: read names from the IAT (identical before loading)
 			lookup = ft
 		}
 		for i := uint32(0); ; i++ {
@@ -189,7 +189,7 @@ func (r *reader) imports(dir uint32) ([]Import, error) {
 	return out, nil
 }
 
-// Exports возвращает имена экспортов DLL (для снятия эталона с живой XP).
+// Exports returns the exported names of a DLL (used to dump a reference list from a live XP).
 func Exports(path string) ([]string, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {

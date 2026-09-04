@@ -1,4 +1,4 @@
-// go2xp — патчер Go-бинарников для старых Windows. Пока: inspect, exports.
+// go2xp patches Go binaries for old Windows releases. Commands: inspect, exports, patch, verify.
 package main
 
 import (

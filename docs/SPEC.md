@@ -251,6 +251,7 @@ dead-code-elimination'ом, `shim.init()` ссылается на неё (`keepa
 | 1 | `go2xp inspect app.exe`: PE-версии, полная таблица импортов (dll, name, RVA слота), `.reloc`-сводка; `go2xp exports kernel32.dll` для снятия эталона. Только `debug/pe` + свой код | запуск на hello-world с `GOARCH=386`; список импортов совпадает с §1.2 (или расхождения записаны в STATUS) |
 | 2 | Пакет `shim` минимальный: собственные `cgo_import_dynamic`, таблица `GO2XPTBL`, keepalive, 1 тривиальный asm-полифилл (`WerSetFlags` → `return 0`). Патчер находит таблицу | `go build` проходит; `inspect` печатает таблицу и подтверждает, что shim получил **свой** слот `GetProcAddress` отдельно от рантаймовского |
 | 3 | `go2xp patch`: заголовок + расщепление импортов + запись слотов + `verify` + новая секция. Профиль `xp.json` с 7 функциями из §1.2 и `bcryptprimitives.dll`. Полифиллы — пока заглушки | пропатченный hello-world **загружается** на XP (даже если сразу падает в `throw`). Baseline-скриншот — в STATUS |
+| 3.5 | **Wine smoke test** (`scripts/wine-test.sh`): build probes → patch → verify → run under Wine with `winecfg /v winxp`. Catches malformed import tables, broken sections and stack-corrupting polyfills without a VM | `PASS` for every probe, patched and unpatched |
 | 4 | Ранние asm-полифиллы: `LoadLibraryExW`-хук, `GetProcAddress`-хук, `ProcessPrng`, `GetErrorMode`, `AddVectoredContinueHandler`, `CreateWaitableTimerExW` (→0, штатный откат на winmm), `RaiseFailFastException`, `GetQueuedCompletionStatusEx` | `probes/hello` печатает `OK` на XP |
 | 5 | Go-полифиллы (поздние): `CancelIoEx`, `*ProcThreadAttributeList*` + снятие флага в `CreateProcessW`, `GetTickCount64`, файловые `*ByHandle*` | `probes/exec`, `probes/files` — `OK` |
 | 6 | Сеть/консоль: `probes/net` (http.Get, listen), `probes/console` (ReadConsoleInput, режимы) — чинить по логу | все пробники `OK` |
@@ -275,6 +276,14 @@ dead-code-elimination'ом, `shim.init()` ссылается на неё (`keepa
 - `console` — `x/sys/windows` `GetConsoleMode/SetConsoleMode`, `ReadConsoleInputW`,
   `WriteConsoleOutputW` — то, что понадобится f4 на XP.
 - `signals` — Ctrl+C через `os/signal`.
+
+**Wine first, always.** Before anything is carried to a VM, run `scripts/wine-test.sh`.
+Wine's loader is far more permissive than XP's (it exports Vista+ functions regardless of
+the reported Windows version and does not enforce the PE subsystem version), so a pass
+proves only that the binary is structurally sound and that the polyfills do not corrupt
+the stack. A failure, however, is always a real bug, and finding it costs seconds instead
+of a VM round-trip. What Wine cannot check: the PE version fields actually gating the
+load, the real set of exports on XP SP3, and any XP-specific semantics.
 
 Стенд: XP SP3 **x86**, VM (VirtualBox/86Box/VMware). Перенос файлов — общая папка/ISO.
 Отдельно проверить, что `ntdll`/`kernel32` — оригинальные (не One-Core-API/расширенное

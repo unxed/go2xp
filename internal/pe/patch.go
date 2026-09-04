@@ -6,20 +6,20 @@ import (
 	"fmt"
 )
 
-// Raw дает доступ к сырым байтам и ключевым смещениям для записи.
+// Raw gives write access to the raw bytes and to the header offsets we care about.
 type Raw struct {
 	Buf          []byte
-	peOff        int // смещение сигнатуры "PE\0\0"
-	optOff       int // смещение Optional Header
+	peOff        int // offset of the "PE\0\0" signature
+	optOff       int // offset of the optional header
 	numSections  int
 	sectAlign    uint32
 	fileAlign    uint32
 	imageBase    uint32
 	sizeOfImage  uint32
-	firstSectOff int // смещение первого section header
+	firstSectOff int // offset of the first section header
 }
 
-// OpenRaw парсит минимум заголовков для записи (PE32 only).
+// OpenRaw parses the minimum needed to write to the image (PE32 only).
 func OpenRaw(buf []byte) (*Raw, error) {
 	if len(buf) < 0x40 {
 		return nil, fmt.Errorf("too small")
@@ -63,7 +63,7 @@ func (r *Raw) u32(off int) uint32       { return binary.LittleEndian.Uint32(r.Bu
 func (r *Raw) setU16(off int, v uint16) { binary.LittleEndian.PutUint16(r.Buf[off:], v) }
 func (r *Raw) setU32(off int, v uint32) { binary.LittleEndian.PutUint32(r.Buf[off:], v) }
 
-// SetVersions пишет OS/Subsystem версии.
+// SetVersions writes the OS and subsystem version fields.
 func (r *Raw) SetVersions(osMaj, osMin, subMaj, subMin uint16) {
 	r.setU16(r.optOff+ohMajorOS, osMaj)
 	r.setU16(r.optOff+ohMinorOS, osMin)
@@ -71,8 +71,8 @@ func (r *Raw) SetVersions(osMaj, osMin, subMaj, subMin uint16) {
 	r.setU16(r.optOff+ohMinorSubsys, subMin)
 }
 
-// ClearDynamicBase снимает ASLR/high-entropy, чтобы слоты можно было писать
-// абсолютными VA (XP не релоцирует exe в любом случае). Возвращает прежнее значение.
+// ClearDynamicBase drops ASLR and high-entropy so that slots can hold absolute VAs
+// (XP would not relocate an exe anyway). It returns the previous value.
 func (r *Raw) ClearDynamicBase() uint16 {
 	off := r.optOff + ohDllChar
 	old := r.u16(off)
@@ -82,7 +82,7 @@ func (r *Raw) ClearDynamicBase() uint16 {
 	return old
 }
 
-// ZeroCheckSum обнуляет CheckSum (валиден для не-драйверов, не-boot).
+// ZeroCheckSum clears CheckSum, which is valid for anything but drivers and boot images.
 func (r *Raw) ZeroCheckSum() { r.setU32(r.optOff+ohCheckSum, 0) }
 
 func (r *Raw) DataDir(i int) (rva, size uint32) {
@@ -95,7 +95,7 @@ func (r *Raw) SetDataDir(i int, rva, size uint32) {
 	r.setU32(o+4, size)
 }
 
-// Section — сырой заголовок секции.
+// Section is a raw section header.
 type Section struct {
 	Name                        string
 	VirtualSize, VirtualAddress uint32
@@ -130,7 +130,7 @@ func cstr8(b []byte) string {
 	return string(b)
 }
 
-// FileOff переводит RVA в смещение в файле по таблице секций.
+// FileOff maps an RVA to a file offset using the section table.
 func (r *Raw) FileOff(rva uint32) (int, bool) {
 	for _, s := range r.Sections() {
 		if rva >= s.VirtualAddress && rva < s.VirtualAddress+alignUp(s.VirtualSize, r.sectAlign) {
@@ -147,12 +147,12 @@ func alignUp(v, a uint32) uint32 {
 	return (v + a - 1) &^ (a - 1)
 }
 
-// AddSection добавляет секцию с данными data по RVA/файловому смещению в конец.
-// Требует наличия свободного места в заголовке под ещё один SectionHeader (40 байт).
-// Возвращает RVA новой секции.
+// AddSection appends a section holding data at the end of the image and of the file.
+// It needs 40 spare bytes of header padding for one more section header.
+// It returns the RVA of the new section.
 func (r *Raw) AddSection(name string, data []byte, characteristics uint32) (uint32, error) {
 	secs := r.Sections()
-	// проверить, что после последнего заголовка секции есть 40 свободных байт
+	// make sure 40 free bytes follow the last section header
 	lastHdrEnd := r.firstSectOff + r.numSections*40
 	firstRaw := int(^uint32(0))
 	var maxRVAEnd, maxRawEnd uint32
@@ -174,13 +174,13 @@ func (r *Raw) AddSection(name string, data []byte, characteristics uint32) (uint
 	newRaw := alignUp(maxRawEnd, r.fileAlign)
 	rawSize := alignUp(uint32(len(data)), r.fileAlign)
 
-	// дописать данные (файл должен физически вырасти)
+	// append the data; the file has to grow physically
 	if int(newRaw)+int(rawSize) > len(r.Buf) {
 		r.Buf = append(r.Buf, make([]byte, int(newRaw)+int(rawSize)-len(r.Buf))...)
 	}
 	copy(r.Buf[newRaw:], data)
 
-	// записать заголовок секции
+	// write the section header
 	o := lastHdrEnd
 	var nb [8]byte
 	copy(nb[:], name)
@@ -210,5 +210,5 @@ const (
 
 var _ = pe.IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE
 
-// SectAlign — SectionAlignment образа.
+// SectAlign returns the image's SectionAlignment.
 func (r *Raw) SectAlign() uint32 { return r.sectAlign }
