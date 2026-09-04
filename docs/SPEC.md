@@ -257,6 +257,7 @@ dead-code-elimination'ом, `shim.init()` ссылается на неё (`keepa
 | 6 | Сеть/консоль: `probes/net` (http.Get, listen), `probes/console` (ReadConsoleInput, режимы) — чинить по логу | все пробники `OK` |
 | 7 | CI: reusable GitHub Action (`go2xp-action`): build 386 → patch → verify → артефакт. Smoke-тест патчера в Linux CI (структурные проверки, без XP) | зелёный workflow в go2xp |
 | 8 | Профиль `win7` (подмножество `xp`) — дёшево, раз всё есть | `verify` для win7 |
+| 8.5 | **Translate the repository to English** (docs/SPEC.md, the older STATUS.md entries, any remaining Russian). Deliberately scheduled after the first working XP run, so it never competes with getting there | no Russian text left outside the historical log |
 | 9 | f4: `import _ shim`, джоба `build-xp`; отдельно — Console-API бэкенд в f4 (вне этого ТЗ) | f4 стартует на XP |
 
 ---

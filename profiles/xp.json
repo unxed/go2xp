@@ -12,13 +12,14 @@
       "RaiseFailFastException"
     ]
   },
-  "missingWholeDLL": [],
+  "missingWholeDLL": [
+    "bcryptprimitives.dll"
+  ],
   "pending": {
     "comment": "absent on XP SP3, polyfill still TODO (steps 4-5)",
     "kernel32.dll": [
       "GetQueuedCompletionStatusEx", "GetTickCount64", "SetThreadDescription",
       "GetSystemTimePreciseAsFileTime"
-    ],
-    "bcryptprimitives.dll": ["ProcessPrng"]
+    ]
   }
 }

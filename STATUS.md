@@ -16,11 +16,12 @@
 | 2 | `shim` минимальный + таблица GO2XPTBL | [x] |
 | 3 | `go2xp patch` + `verify`, профиль xp | [x] + проходит под Wine (winxp) |
 | 3.5 | Wine smoke test (`scripts/wine-test.sh`) | [x] |
-| 4 | ранние asm-полифиллы, `probes/hello` | [~] 5 из ~9 сделаны (простые); хуки и GQCSEx — следующий заход |
+| 4 | ранние asm-полифиллы, `probes/hello` | [~] сделаны простые + оба хука + ProcessPrng; остаётся GetQueuedCompletionStatusEx |
 | 5 | Go-полифиллы, `probes/exec`, `probes/files` | [ ] |
 | 6 | `probes/net`, `probes/console`, `probes/signals` | [ ] |
 | 7 | CI / reusable action | [ ] |
 | 8 | профиль win7 | [ ] |
+| 8.5 | перевод репозитория на английский (после первого запуска на XP) | [ ] |
 | 9 | f4 showcase | [ ] |
 
 ## Открытые вопросы (из SPEC §8)
@@ -159,3 +160,42 @@ that decision. Translating the older entries and docs/SPEC.md is a separate step
 - Next: step 4b - the `LoadLibraryExW`/`GetProcAddress` hooks (which unlock `ProcessPrng`
   via `SystemFunction036` and every lazily resolved import at once) and
   `GetQueuedCompletionStatusEx`.
+
+### 2026-09-04 - step 4b: the LoadLibraryExW and GetProcAddress hooks
+
+This is the step the whole design was built around, and it works.
+
+- `xp_LoadLibraryExW`: clears the LOAD_LIBRARY_SEARCH_* flags (0x1F00), which XP rejects
+  with ERROR_INVALID_PARAMETER, and answers with a sentinel handle (0x476F3258, chosen
+  because module handles are 64K-aligned image bases and can never collide with it) for
+  any DLL listed in `go2xp_missing_dlls`. That list currently holds bcryptprimitives.dll,
+  so the runtime's `throw("bcryptprimitives.dll not found")` can no longer happen.
+- `xp_GetProcAddress`: walks GO2XPTBL and returns the polyfill for a matching function
+  name. Matching is by name only, ignoring the module handle, so a lookup works whether
+  the caller holds a real handle or the sentinel; unmatched names are forwarded to the
+  real GetProcAddress, unless the handle is the sentinel, which fails cleanly.
+- `xp_ProcessPrng` forwards to advapi32!SystemFunction036 (RtlGenRandom), zero-extending
+  the BOOLEAN it returns in AL.
+- An entry may now carry a polyfill and an own slot at once, which is how the two hooks
+  cover the runtime's slots while leaving the shim's own ones alone. Confirmed by patch
+  output: both runtime GetProcAddress slots and both LoadLibraryExW slots are redirected,
+  the four shim slots are not.
+- **Verified under Wine (winxp), and this is the real result:** the unpatched hello loads
+  bcryptprimitives.dll, the patched one does not load it at all, advapi32 is loaded
+  instead, and crypto/rand still returns bytes. The sentinel path, the name matching and
+  the SystemFunction036 forwarding therefore all execute correctly end to end.
+- Consequence worth restating: because every lazy import in the program - the runtime's
+  windowsFindfunc, syscall.GetProcAddress and all of golang.org/x/sys/windows - funnels
+  through this one slot, any future polyfill only needs a GO2XPTBL entry. No generated
+  zsyscall code has to be patched, ever.
+
+Known deviations, to fix before release:
+1. Clearing LOAD_LIBRARY_SEARCH_SYSTEM32 widens the DLL search order back to the default,
+   which is the planting risk the flag exists to prevent. The proper fix is to prepend the
+   system directory the way Go did before 1.21; it needs GetSystemDirectoryW and a wide
+   string append in assembly.
+2. xp_GetProcAddress does not call SetLastError on the sentinel-miss path.
+
+- Next: step 5 - GetQueuedCompletionStatusEx (the last static import missing on XP) and
+  the late polyfills that can be written in Go via syscall.NewCallback: CancelIoEx,
+  the ProcThreadAttributeList trio, GetTickCount64.

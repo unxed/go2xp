@@ -22,6 +22,7 @@ import _ "unsafe" // for go:linkname
 //go:cgo_import_dynamic go2xp_LoadLibraryExW LoadLibraryExW%3 "kernel32.dll"
 //go:cgo_import_dynamic go2xp_SetErrorMode SetErrorMode%1 "kernel32.dll"
 //go:cgo_import_dynamic go2xp_TerminateProcess TerminateProcess%2 "kernel32.dll"
+//go:cgo_import_dynamic go2xp_SystemFunction036 SystemFunction036%2 "advapi32.dll"
 
 //go:linkname procGetProcAddress go2xp_GetProcAddress
 var procGetProcAddress uintptr
@@ -35,6 +36,9 @@ var procSetErrorMode uintptr
 //go:linkname procTerminateProcess go2xp_TerminateProcess
 var procTerminateProcess uintptr
 
+//go:linkname procSystemFunction036 go2xp_SystemFunction036
+var procSystemFunction036 uintptr
+
 // Early polyfills, implemented in assembly because they run before the Go runtime
 // is up. See shim_windows_386.s for what each one does.
 func xp_WerSetFlags()
@@ -42,6 +46,9 @@ func xp_WerGetFlags()
 func xp_GetErrorMode()
 func xp_CreateWaitableTimerExW()
 func xp_RaiseFailFastException()
+func xp_LoadLibraryExW()
+func xp_GetProcAddress()
+func xp_ProcessPrng()
 
 // tableAddr is implemented in assembly and returns the address of GO2XPTBL.
 func tableAddr() uintptr
