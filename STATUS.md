@@ -343,3 +343,6 @@ events actually reach os/signal, and which lazily resolved imports XP really lac
   and what to expect on the first XP run.
 - Not verified on GitHub Actions itself yet; the workflow runs the same scripts that pass
   here. The first push will tell.
+- First GitHub run: every Wine probe failed with "'/tmp' is not owned by you" - Wine
+  refuses to create a prefix under a directory it does not own, and /tmp is root's on the
+  runner. The default prefix now lives inside the script's own mktemp scratch dir.

@@ -14,11 +14,17 @@ set -eu
 
 PROFILE=${1:-profiles/xp.json}
 WINVER=${2:-winxp}
-WINEPREFIX=${WINEPREFIX:-/tmp/go2xp-wine}
-export WINEPREFIX
 export WINEDEBUG=${WINEDEBUG:--all}
 
 command -v wine >/dev/null || { echo "wine not found"; exit 1; }
+
+out=$(mktemp -d)
+trap 'rm -rf "$out"' EXIT
+
+# Wine refuses to create a prefix whose parent directory it does not own, and /tmp is
+# root's on GitHub runners, so the default prefix lives inside our own scratch dir.
+WINEPREFIX=${WINEPREFIX:-$out/prefix}
+export WINEPREFIX
 
 # The console and signal probes need a real console, which Wine only provides when its
 # stdio is a terminal. script(1) supplies one; without it those probes report SKIP.
@@ -37,9 +43,6 @@ check() {
 	*) echo "FAIL $1: $(echo "$2" | tr -s "\n" " ")"; fail=1 ;;
 	esac
 }
-
-out=$(mktemp -d)
-trap 'rm -rf "$out"' EXIT
 
 go build -o "$out/go2xp" ./cmd/go2xp
 wine winecfg /v "$WINVER" >/dev/null 2>&1 || true
