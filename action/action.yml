@@ -1,0 +1,42 @@
+name: go2xp
+description: >
+  Patch a Go windows/386 binary (built with the go2xp shim linked in) so it runs on
+  Windows XP or Windows 7: fixes the PE header, redirects missing imports to the
+  polyfills and verifies the result.
+inputs:
+  input:
+    description: Path to the windows/386 executable to patch
+    required: true
+  output:
+    description: Where to write the patched executable (default: <input> with -xp before the extension)
+    required: false
+  profile:
+    description: Target profile, xp or win7
+    required: false
+    default: xp
+  go2xp-ref:
+    description: git ref of github.com/unxed/go2xp to build the patcher from
+    required: false
+    default: main
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        set -eu
+        tmp=$(mktemp -d)
+        git clone -q --depth 1 --branch "${{ inputs.go2xp-ref }}" https://github.com/unxed/go2xp "$tmp/go2xp"
+        (cd "$tmp/go2xp" && go build -o "$tmp/go2xp-bin" ./cmd/go2xp)
+        in="${{ inputs.input }}"
+        out="${{ inputs.output }}"
+        if [ -z "$out" ]; then out="${in%.exe}-${{ inputs.profile }}.exe"; fi
+        prof="$tmp/go2xp/profiles/${{ inputs.profile }}.json"
+        "$tmp/go2xp-bin" patch -profile "$prof" "$in" "$out"
+        "$tmp/go2xp-bin" verify -profile "$prof" "$out"
+        "$tmp/go2xp-bin" audit "$out" "$tmp/go2xp/profiles/kernel32-exports.tsv" || true
+        echo "patched=$out" >> "$GITHUB_OUTPUT"
+      id: patch
+outputs:
+  patched:
+    description: Path of the patched executable
+    value: ${{ steps.patch.outputs.patched }}

@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build, vet, unit tests
+        run: |
+          go build ./...
+          go vet ./cmd/... ./internal/...
+          GOOS=windows GOARCH=386 go vet ./shim/ ./probes/... 2>&1 | grep -v 'possible misuse of unsafe.Pointer' || true
+          go test ./...
+
+      # Wine is far more permissive than an XP loader, but a failure here is always a
+      # real bug, and it is the only way to run the polyfills without a VM.
+      - name: Install Wine (32-bit)
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update -q
+          sudo apt-get install -y --no-install-recommends wine wine32 bsdutils
+
+      - name: Wine smoke test
+        run: sh scripts/wine-test.sh
+
+      # The audit gate: every probe, patched, must have no uncovered kernel32 name that
+      # is not on the accepted list.
+      - name: Audit probes
+        run: |
+          go build -o go2xp ./cmd/go2xp
+          for dir in probes/*/; do
+            name=$(basename "$dir")
+            GOOS=windows GOARCH=386 CGO_ENABLED=0 go build -o "$name.exe" "./$dir"
+            ./go2xp audit "$name.exe" | tee "audit-$name.txt"
+          done
+          ! grep -h 'NOT covered' audit-*.txt | grep -vE 'SetFileCompletionNotificationModes|GetVolumeInformationByHandleW|GetTempPath2W'

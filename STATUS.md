@@ -21,7 +21,7 @@
 | 4 | ранние asm-полифиллы, `probes/hello` | [x] |
 | 5 | Go-полифиллы, `probes/exec`, `probes/files` | [x] |
 | 6 | `probes/net`, `probes/console`, `probes/signals` | [x] |
-| 7 | CI / reusable action | [ ] |
+| 7 | CI / reusable action | [~] written, not yet run on GitHub |
 | 8 | профиль win7 | [ ] |
 | 8.5 | перевод репозитория на английский (после первого запуска на XP) | [ ] |
 | 9 | f4 showcase | [ ] |
@@ -329,3 +329,17 @@ events actually reach os/signal, and which lazily resolved imports XP really lac
 - Limits, stated plainly: the export list covers kernel32 only (the other DLLs f4 uses
   are XP-era throughout, per the audit), and the audit sees names, not call sites - it
   cannot tell whether an absent function is actually reached.
+
+### 2026-09-04 - step 7: CI and the reusable action
+
+- `.github/workflows/ci.yml`: build, vet, unit tests, then the Wine stage (installs
+  wine32 on the runner and runs `scripts/wine-test.sh`), then the audit gate: every probe
+  is built and audited, and any "NOT covered" name outside the accepted list fails the
+  job.
+- `action/action.yml`: a composite action for other repositories - clones go2xp, builds
+  the patcher, patches, verifies and audits the given exe. Used by f4 as
+  `uses: unxed/go2xp/action@main`.
+- `docs/f4-integration.md`: the two f4-side changes (the import and the `build-xp` job)
+  and what to expect on the first XP run.
+- Not verified on GitHub Actions itself yet; the workflow runs the same scripts that pass
+  here. The first push will tell.
