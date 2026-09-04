@@ -2,6 +2,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"sort"
@@ -19,6 +20,12 @@ func main() {
 		err = inspect(os.Args[2])
 	case "exports":
 		err = exports(os.Args[2])
+	case "patch":
+		// go2xp patch -profile profiles/xp.json in.exe out.exe
+		err = patchCmd(os.Args[2:])
+	case "verify":
+		// go2xp verify -profile profiles/xp.json app.exe
+		err = verifyCmd(os.Args[2:])
 	default:
 		usage()
 	}
@@ -31,6 +38,31 @@ func main() {
 func usage() {
 	fmt.Fprintln(os.Stderr, "usage:\n  go2xp inspect app.exe      PE header + import table with IAT slot RVAs\n  go2xp exports kernel32.dll  list exported names (to build a target-OS profile)")
 	os.Exit(2)
+}
+
+func patchCmd(args []string) error {
+	fs := flag.NewFlagSet("patch", flag.ExitOnError)
+	profile := fs.String("profile", "profiles/xp.json", "target OS profile")
+	fs.Parse(args)
+	if fs.NArg() < 1 {
+		return fmt.Errorf("usage: go2xp patch -profile P in.exe [out.exe]")
+	}
+	in := fs.Arg(0)
+	out := fs.Arg(1)
+	if out == "" {
+		out = in
+	}
+	return doPatch(in, out, *profile)
+}
+
+func verifyCmd(args []string) error {
+	fs := flag.NewFlagSet("verify", flag.ExitOnError)
+	profile := fs.String("profile", "profiles/xp.json", "target OS profile")
+	fs.Parse(args)
+	if fs.NArg() < 1 {
+		return fmt.Errorf("usage: go2xp verify -profile P app.exe")
+	}
+	return doVerify(fs.Arg(0), *profile)
 }
 
 func inspect(path string) error {

@@ -1,0 +1,21 @@
+{
+  "name": "xp",
+  "comment": "Windows XP SP3 x86. Header 5.1. 'missing' lists kernel32 funcs absent on XP that the shim currently polyfills. Functions absent on XP but not yet polyfilled are in 'pending' (informational; add to 'missing' once a polyfill exists in GO2XPTBL). Source: MS Learn 'Minimum supported client' + go-legacy-winxp; verify against a live XP export dump before release (SPEC 7.1).",
+  "osMajor": 5, "osMinor": 1,
+  "subsystemMajor": 5, "subsystemMinor": 1,
+  "missing": {
+    "kernel32.dll": [
+      "WerSetFlags"
+    ]
+  },
+  "missingWholeDLL": [],
+  "pending": {
+    "comment": "absent on XP SP3, polyfill still TODO (steps 4-5)",
+    "kernel32.dll": [
+      "WerGetFlags", "RaiseFailFastException", "GetQueuedCompletionStatusEx",
+      "GetErrorMode", "CreateWaitableTimerExW", "AddVectoredContinueHandler",
+      "GetTickCount64", "SetThreadDescription", "GetSystemTimePreciseAsFileTime"
+    ],
+    "bcryptprimitives.dll": ["ProcessPrng"]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "win7",
+  "comment": "Windows 7 SP1 x86. Header 6.1. Subset of xp: most Vista APIs exist on Win7. Verify against go-legacy-win7 before release (SPEC 7.1).",
+  "osMajor": 6, "osMinor": 1,
+  "subsystemMajor": 6, "subsystemMinor": 1,
+  "missing": {
+    "kernel32.dll": [
+      "SetThreadDescription",
+      "GetSystemTimePreciseAsFileTime"
+    ]
+  },
+  "missingWholeDLL": []
+}
