@@ -42,12 +42,30 @@ func inspect(path string) error {
 		in.Machine, in.ImageBase, in.OSMajor, in.OSMinor, in.SubsysMajor, in.SubsysMinor, in.DllCharacteristics, in.HasReloc)
 	fmt.Printf("sections=%v\n", in.Sections)
 	fmt.Printf("import dir rva=%#x size=%#x, %d imports:\n", in.ImportDirRVA, in.ImportDirSize, len(in.Imports))
+	own := map[uint32]bool{}
+	for _, t := range in.Table {
+		if t.OwnSlot != 0 {
+			own[t.OwnSlot-in.ImageBase] = true
+		}
+	}
 	for _, im := range in.Imports {
 		name := im.Name
 		if name == "" {
 			name = fmt.Sprintf("#%d", im.Ordinal)
 		}
-		fmt.Printf("  desc%d slot=%#08x %-24s %s\n", im.DescIdx, im.SlotRVA, im.DLL, name)
+		mark := ""
+		if own[im.SlotRVA] {
+			mark = "  [shim own slot]"
+		}
+		fmt.Printf("  desc%d slot=%#08x %-24s %s%s\n", im.DescIdx, im.SlotRVA, im.DLL, name, mark)
+	}
+	if in.Table == nil {
+		fmt.Println("GO2XPTBL: not found (shim not linked in)")
+		return nil
+	}
+	fmt.Printf("GO2XPTBL: %d entries\n", len(in.Table))
+	for _, t := range in.Table {
+		fmt.Printf("  %-14s %-28s polyfill=%#08x ownslot=%#08x\n", t.DLL, t.Func, t.Polyfill, t.OwnSlot)
 	}
 	return nil
 }

@@ -21,15 +21,25 @@ type Import struct {
 
 // Info — сводка по образу.
 type Info struct {
-	Machine                                  uint16
+	Machine                                    uint16
 	OSMajor, OSMinor, SubsysMajor, SubsysMinor uint16
-	DllCharacteristics                       uint16
-	ImageBase                                uint32
-	ImportDirRVA, ImportDirSize              uint32
-	HasReloc                                 bool
-	Sections                                 []string
-	Imports                                  []Import
+	DllCharacteristics                         uint16
+	ImageBase                                  uint32
+	ImportDirRVA, ImportDirSize                uint32
+	HasReloc                                   bool
+	Sections                                   []string
+	Imports                                    []Import
+	Table                                      []TableEntry // GO2XPTBL, nil if shim not linked in
 }
+
+// TableEntry — запись GO2XPTBL из пакета shim (см. shim/shim_windows_386.s).
+type TableEntry struct {
+	DLL, Func string
+	Polyfill  uint32 // VA полифилла, 0 если запись только помечает собственный слот
+	OwnSlot   uint32 // VA собственного IAT-слота shim (не трогать), 0 если нет
+}
+
+const tableMagic = "GO2XPTBL"
 
 const (
 	dirExport = 0
@@ -68,7 +78,37 @@ func Open(path string) (*Info, error) {
 			return nil, err
 		}
 	}
+	if in.Table, err = r.table(in.ImageBase); err != nil {
+		return nil, err
+	}
 	return in, nil
+}
+
+// table ищет GO2XPTBL сырым сканом файла и разбирает записи.
+func (r *reader) table(imageBase uint32) ([]TableEntry, error) {
+	o := bytes.Index(r.raw, []byte(tableMagic))
+	if o < 0 {
+		return nil, nil
+	}
+	if binary.LittleEndian.Uint32(r.raw[o+8:]) != 1 {
+		return nil, fmt.Errorf("unsupported GO2XPTBL version")
+	}
+	n := int(binary.LittleEndian.Uint32(r.raw[o+12:]))
+	var out []TableEntry
+	for i := 0; i < n; i++ {
+		e := r.raw[o+16+i*16:]
+		dll, err := r.cstr(binary.LittleEndian.Uint32(e) - imageBase)
+		if err != nil {
+			return nil, fmt.Errorf("GO2XPTBL entry %d: %w", i, err)
+		}
+		fn, err := r.cstr(binary.LittleEndian.Uint32(e[4:]) - imageBase)
+		if err != nil {
+			return nil, fmt.Errorf("GO2XPTBL entry %d: %w", i, err)
+		}
+		out = append(out, TableEntry{DLL: dll, Func: fn,
+			Polyfill: binary.LittleEndian.Uint32(e[8:]), OwnSlot: binary.LittleEndian.Uint32(e[12:])})
+	}
+	return out, nil
 }
 
 type reader struct {
