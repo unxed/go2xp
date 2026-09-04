@@ -86,17 +86,40 @@ func Open(path string) (*Info, error) {
 
 // table locates GO2XPTBL by scanning the raw file for its magic and parses the records.
 func (r *reader) table(imageBase uint32) ([]TableEntry, error) {
-	o := bytes.Index(r.raw, []byte(tableMagic))
-	if o < 0 {
-		return nil, nil
+	// The patcher itself contains the magic in strings and machine code. Validate
+	// each candidate and keep searching rather than treating the first as a table.
+	var invalid error
+	for start := 0; start < len(r.raw); {
+		i := bytes.Index(r.raw[start:], []byte(tableMagic))
+		if i < 0 {
+			break
+		}
+		o := start + i
+		start = o + len(tableMagic)
+		if len(r.raw)-o < 16 || binary.LittleEndian.Uint32(r.raw[o+8:]) != 1 {
+			continue
+		}
+		out, err := r.tableAt(o, imageBase)
+		if err == nil {
+			return out, nil
+		}
+		invalid = err
 	}
-	if binary.LittleEndian.Uint32(r.raw[o+8:]) != 1 {
-		return nil, fmt.Errorf("unsupported GO2XPTBL version")
+	return nil, invalid
+}
+
+func (r *reader) tableAt(o int, imageBase uint32) ([]TableEntry, error) {
+	count := binary.LittleEndian.Uint32(r.raw[o+12:])
+	if count == 0 || uint64(count) > uint64((len(r.raw)-o-16)/16) {
+		return nil, fmt.Errorf("truncated or empty GO2XPTBL")
 	}
-	n := int(binary.LittleEndian.Uint32(r.raw[o+12:]))
+	n := int(count)
 	var out []TableEntry
 	for i := 0; i < n; i++ {
 		e := r.raw[o+16+i*16:]
+		if binary.LittleEndian.Uint32(e) < imageBase || binary.LittleEndian.Uint32(e[4:]) < imageBase {
+			return nil, fmt.Errorf("GO2XPTBL entry %d: invalid name VA", i)
+		}
 		dll, err := r.cstr(binary.LittleEndian.Uint32(e) - imageBase)
 		if err != nil {
 			return nil, fmt.Errorf("GO2XPTBL entry %d: %w", i, err)
@@ -104,6 +127,9 @@ func (r *reader) table(imageBase uint32) ([]TableEntry, error) {
 		fn, err := r.cstr(binary.LittleEndian.Uint32(e[4:]) - imageBase)
 		if err != nil {
 			return nil, fmt.Errorf("GO2XPTBL entry %d: %w", i, err)
+		}
+		if dll == "" || fn == "" {
+			return nil, fmt.Errorf("GO2XPTBL entry %d: empty name", i)
 		}
 		out = append(out, TableEntry{DLL: dll, Func: fn,
 			Polyfill: binary.LittleEndian.Uint32(e[8:]), OwnSlot: binary.LittleEndian.Uint32(e[12:])})
@@ -119,8 +145,13 @@ type reader struct {
 // off maps an RVA to a file offset.
 func (r *reader) off(rva uint32) (int, error) {
 	for _, s := range r.f.Sections {
-		if rva >= s.VirtualAddress && rva < s.VirtualAddress+s.VirtualSize {
-			return int(rva - s.VirtualAddress + s.Offset), nil
+		if rva >= s.VirtualAddress && uint64(rva) < uint64(s.VirtualAddress)+uint64(s.VirtualSize) {
+			delta := rva - s.VirtualAddress
+			off := uint64(delta) + uint64(s.Offset)
+			if delta < s.Size && off < uint64(len(r.raw)) {
+				return int(off), nil
+			}
+			break
 		}
 	}
 	return 0, fmt.Errorf("RVA %#x not in any section", rva)

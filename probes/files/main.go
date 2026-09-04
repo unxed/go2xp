@@ -14,7 +14,7 @@ import (
 func main() {
 	dir, err := os.MkdirTemp("", "go2xp")
 	check(err, "MkdirTemp")
-	defer os.RemoveAll(dir)
+	defer os.RemoveAll(dir) // best-effort only after a failure; success is checked below
 
 	name := filepath.Join(dir, "probe.txt")
 	check(os.WriteFile(name, []byte("go2xp"), 0o644), "WriteFile")
@@ -51,6 +51,13 @@ func main() {
 	}
 	if _, err := os.UserHomeDir(); err != nil {
 		fail("UserHomeDir: %v", err)
+	}
+	// Nonempty recursive deletion takes Go 1.26's handle-relative path.
+	check(os.MkdirAll(filepath.Join(dir, "nested", "child"), 0o755), "MkdirAll")
+	check(os.WriteFile(filepath.Join(dir, "nested", "child", "file"), []byte("x"), 0o644), "Write nested")
+	check(os.RemoveAll(dir), "RemoveAll nonempty tree")
+	if _, err := os.Stat(dir); !os.IsNotExist(err) {
+		fail("RemoveAll left tree: %v", err)
 	}
 	fmt.Println("OK files")
 }

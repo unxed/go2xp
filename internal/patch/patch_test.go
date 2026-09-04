@@ -25,7 +25,7 @@ func buildProbe(t *testing.T) string {
 	must("main.go", "package main\n\nimport _ \"github.com/unxed/go2xp/shim\"\n\nfunc main() {}\n")
 	must("go.mod", "module probe\n\ngo 1.26.6\n\nrequire github.com/unxed/go2xp v0.0.0\n\nreplace github.com/unxed/go2xp => "+root+"\n")
 	out := filepath.Join(dir, "probe.exe")
-	cmd := exec.Command("go", "build", "-o", out, ".")
+	cmd := exec.Command("go", "build", "-buildvcs=false", "-o", out, ".")
 	cmd.Dir = dir
 	cmd.Env = append(os.Environ(), "GOOS=windows", "GOARCH=386", "CGO_ENABLED=0")
 	if b, err := cmd.CombinedOutput(); err != nil {

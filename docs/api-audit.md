@@ -1,5 +1,9 @@
 # API audit: what f4 asks of Windows, and what XP SP3 can answer
 
+> Historical inventory. The [2026-09-05 reference review](reference-review.md) corrects
+> the claims below about ordinary errors, CancelIo equivalence, complete coverage and
+> the missing console backend. Do not use this inventory as an acceptance report.
+
 Done without an XP machine, from a stock Go 1.26.6 windows/386 build of f4 (`./cmd/f4`).
 Two sources: the static import table (`go2xp inspect`) and the full set of lazily
 resolved names, which are visible statically because every `NewProc` is a package-level

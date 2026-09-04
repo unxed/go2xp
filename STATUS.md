@@ -360,3 +360,50 @@ events actually reach os/signal, and which lazily resolved imports XP really lac
   (each list's key is the reason, shown in the output) and exits non-zero only for a
   name that is neither polyfilled nor accepted; the CI step is one line and the action
   uses the same flag.
+
+### 2026-09-05 — finish the interrupted XP handoff and review Go 1.26 references
+
+- Resumed from published `4e75640757188aee0fbebc50fb1de5d650b71b07`. The changes
+  described at the end of the prior session were not present in that commit.
+- Fixed the 386 integer overflow and linked the shim into cmd/go2xp. Found the next
+  self-hosting failure: the patcher's own GO2XPTBL string was mistaken for its table.
+  The scanner now validates candidates, continues past non-tables, bounds offsets,
+  and has regressions for collisions and truncated data.
+- Restored system-directory prefixing for SYSTEM32 DLL loads, with failures and
+  oversized names failing closed; sentinel GetProcAddress misses set error 127.
+- CreateProcessW strips the extended-startup flag and copies a plain STARTUPINFO only
+  when the real attribute-list API is absent, preserving caller memory and forwarding
+  unchanged on modern systems. Generated table/trampolines now have a checked generator.
+- Read all nine patches in thongtech/go-legacy-win7 v1.26.6-1 (`87e1f288`) and the
+  four syncguy XP commits through `5571222`; also distinguished the current 1.27.1
+  reference snapshot. Full reconciliation and remaining limits: docs/reference-review.md.
+- Added a bounded NtCreateFile fallback for rejected OBJ_DONT_REPARSE in synchronous
+  FILE_OPEN of a single parent-relative component; intermediate paths are not retried,
+  and final reparse points are refused. The files probe checks nonempty recursive
+  deletion rather than ignoring the cleanup error.
+- New bundle.sh builds/patches/verifies/audits all six probes, the self-patched
+  Windows patcher and optional f4 via an isolated modfile. test-xp.cmd captures output,
+  exit codes and four export dumps; the bundle contains the test plan and checksums.
+- Wine harness now preserves exit codes and rejects FAIL/panic output. It also runs
+  Windows shim regressions and the Windows patcher's inspect/exports/patch/verify.
+  CI exercises the bundle and generator, uploads evidence, and no longer masks all
+  Windows vet failures. The reusable action no longer ignores a failed audit.
+- Local validation with stock Go 1.26.6 and Wine 9: go test ./..., native vet,
+  windows/386 vet (unsafeptr disabled for ABI conversions), generator stability and
+  diff checks passed. All 18 probe invocations passed the harness; the three signal
+  runs explicitly SKIP under Wine. Four Windows shim tests and four Windows patcher
+  commands passed. Reparse refusal is tested with injected metadata, not a native XP
+  junction. Relative output/F4 paths and an absolute output path containing spaces
+  were exercised by bundle builds.
+- f4 `650ad10a78ec39dd52853b7587277ebb4fcb567c` with the companion import patch builds,
+  patches, verifies and audits. Unpatched/patched --help and forced --version pass.
+  A Wine WinAPI-mode run produced a screen dump showing both file panels and local
+  entries; it was intentionally stopped by the 15-second runner timeout. This does
+  not establish interactive operations or XP acceptance. test-xp.cmd itself ran under
+  Wine and captured all six zero exit codes (including the signal SKIP).
+- **Still unverified / incomplete:** original XP loader and exports, native signals,
+  cross-thread CancelIoEx emulation, full os.Root/readonly/old-SMB behavior, and the
+  Win7 profile/console-handle/process-wait semantics. The old statements that every
+  absent lazy export returns an ordinary error and that f4 lacks a WinAPI backend
+  were corrected. Hosted CI for this revision is pending publication; it is not
+  implied by these local results.

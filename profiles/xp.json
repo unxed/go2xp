@@ -25,7 +25,9 @@
   ],
   "overrides": {
     "comment": "present on XP but wrapped anyway; served from the shim table ahead of the real export (see go2xp_overrides in shim)",
-    "ws2_32.dll": ["WSASocketW"]
+    "ws2_32.dll": ["WSASocketW"],
+    "kernel32.dll": ["CreateProcessW"],
+    "ntdll.dll": ["NtCreateFile"]
   },
   "pending": {
     "comment": "absent on XP SP3 and requested by f4 (lazily), but deliberately left to fail: Go or f4 handles the error, or there is no XP equivalent",

@@ -1,39 +1,27 @@
-# Adding an XP build to f4
+# Experimental XP build for f4
 
-Two changes on the f4 side, plus the console backend f4 needs regardless.
+The companion f4 patch adds a `go2xp` build-tag import, a real published module
+version (no placeholder), and a manual **Windows XP handoff** workflow. It checks
+out go2xp at the requested ref and builds both shim and patcher from that same
+checkout using `scripts/bundle.sh` and an isolated modfile. Normal f4 builds do not
+include the shim. Apply the go2xp patch before selecting its published ref.
 
-1. In `cmd/f4/main.go`:
+Locally, after applying the f4 patch:
 
-       import _ "github.com/unxed/go2xp/shim"
+```sh
+F4=/absolute/path/to/f4 sh scripts/bundle.sh /absolute/path/to/bundle-xp
+```
 
-   The package is empty on anything but windows/386, so the import is harmless for every
-   other target. `go get github.com/unxed/go2xp@main` (or a tag once there is one).
+This uses stock Go, windows/386, no cgo, and keeps symbols for audit (`-w`, not
+`-s`). The bundle includes both f4.exe and f4-xp.exe plus audit logs and checksums.
+The current f4 already has a Console API backend. Start the XP executable with:
 
-2. A `build-xp` job. The binary must be built with stock Go for windows/386, without cgo,
-   and must not be stripped with `-s` if you want `go2xp audit` to see the lazy imports
-   (`-w` alone is fine):
+```bat
+f4-xp.exe --tty winapi
+```
 
-       - run: GOOS=windows GOARCH=386 CGO_ENABLED=0 go build -trimpath -ldflags="$APP_LDFLAGS" -o build/f4.exe ./cmd/f4
-       - uses: unxed/go2xp/action@main
-         with:
-           input: build/f4.exe
-           profile: xp
-       - uses: actions/upload-artifact@v4
-         with:
-           name: f4-xp
-           path: build/f4-xp.exe
-
-   The action patches, verifies and prints the audit. The patched exe is a separate file;
-   the unpatched one still runs on modern Windows and the patched one runs there too (the
-   hooks prefer real exports), so shipping only the patched build is an option.
-
-3. The GUI mode (`-H windowsgui`) is out of scope for XP: it needs ConPTY and DWM, which
-   do not exist there. Build the console binary. On XP the terminal has no ANSI
-   interpreter, so f4's Console-API backend (cell writes through WriteConsoleOutputW, input
-   through ReadConsoleInputW) is required - see `probes/console` for the exact surface
-   that works.
-
-What to expect on the first real XP run: everything the audit marks as covered should
-work; a function it marks "NOT covered" fails at its call site with ERROR_PROC_NOT_FOUND,
-which f4 sees as an ordinary error. If something the audit did not flag fails, the fix is
-one GO2XPTBL entry in the shim.
+--help/--version and a WinAPI screen dump with both file panels were verified under
+Wine. Real XP panels, filesystem operations and process interaction
+need the [test plan](xp-test-plan.md). See [reference-review.md](reference-review.md)
+for known limitations; an absent lazy procedure can panic when its caller uses
+LazyProc.Addr, so an accepted audit entry is not a promise of graceful failure.

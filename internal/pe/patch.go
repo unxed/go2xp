@@ -154,11 +154,11 @@ func (r *Raw) AddSection(name string, data []byte, characteristics uint32) (uint
 	secs := r.Sections()
 	// make sure 40 free bytes follow the last section header
 	lastHdrEnd := r.firstSectOff + r.numSections*40
-	firstRaw := int(^uint32(0))
+	firstRaw := ^uint32(0) // keep PE offsets unsigned on the 32-bit XP host too
 	var maxRVAEnd, maxRawEnd uint32
 	for _, s := range secs {
-		if int(s.RawPtr) < firstRaw && s.RawSize > 0 {
-			firstRaw = int(s.RawPtr)
+		if s.RawPtr < firstRaw && s.RawSize > 0 {
+			firstRaw = s.RawPtr
 		}
 		if e := s.VirtualAddress + alignUp(s.VirtualSize, r.sectAlign); e > maxRVAEnd {
 			maxRVAEnd = e
@@ -167,7 +167,7 @@ func (r *Raw) AddSection(name string, data []byte, characteristics uint32) (uint
 			maxRawEnd = e
 		}
 	}
-	if lastHdrEnd+40 > firstRaw {
+	if uint64(lastHdrEnd)+40 > uint64(firstRaw) {
 		return 0, fmt.Errorf("no room for a new section header (need 40 bytes of header padding)")
 	}
 	newRVA := alignUp(maxRVAEnd, r.sectAlign)

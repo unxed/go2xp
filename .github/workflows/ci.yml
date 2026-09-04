@@ -18,8 +18,10 @@ jobs:
         run: |
           go build ./...
           go vet ./cmd/... ./internal/...
-          GOOS=windows GOARCH=386 go vet ./shim/ ./probes/... 2>&1 | grep -v 'possible misuse of unsafe.Pointer' || true
+          GOOS=windows GOARCH=386 go vet -unsafeptr=false ./shim/ ./probes/...
           go test ./...
+          python3 shim/gen_table.py
+          git diff --exit-code -- shim/shim_windows_386.s
 
       # Wine is far more permissive than an XP loader, but a failure here is always a
       # real bug, and it is the only way to run the polyfills without a VM.
@@ -30,6 +32,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends wine wine32 bsdutils
 
       - name: Wine smoke test
+        env:
+          GO2XP_WINE_LOGS: ${{ runner.temp }}/go2xp-wine-logs
         run: sh scripts/wine-test.sh
 
       # The audit gate. go2xp audit exits non-zero for any absent name that is neither
@@ -43,3 +47,14 @@ jobs:
             GOOS=windows GOARCH=386 CGO_ENABLED=0 go build -o "$name.exe" "./$dir"
             ./go2xp audit -profile profiles/xp.json "$name.exe"
           done
+
+      - name: Build the self-hosting XP bundle
+        run: sh scripts/bundle.sh "$RUNNER_TEMP/bundle xp"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: go2xp-xp-handoff
+          path: |
+            ${{ runner.temp }}/bundle xp
+            ${{ runner.temp }}/go2xp-wine-logs

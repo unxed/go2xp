@@ -1,41 +1,43 @@
 name: go2xp
-description: >
-  Patch a Go windows/386 binary (built with the go2xp shim linked in) so it runs on
-  Windows XP or Windows 7: fixes the PE header, redirects missing imports to the
-  polyfills and verifies the result.
+description: Patch and audit an experimental Go windows/386 executable for XP.
 inputs:
   input:
-    description: Path to the windows/386 executable to patch
+    description: Path to the windows/386 executable with the shim linked in
     required: true
   output:
-    description: Where to write the patched executable (default: <input> with -xp before the extension)
+    description: Output path (default <input>-<profile>.exe)
     required: false
   profile:
-    description: Target profile, xp or win7
-    required: false
+    description: Target profile (xp; win7 is experimental and incomplete)
     default: xp
   go2xp-ref:
-    description: git ref of github.com/unxed/go2xp to build the patcher from
-    required: false
+    description: Branch, tag or commit of unxed/go2xp to build
     default: main
 runs:
   using: composite
   steps:
-    - shell: bash
+    - id: patch
+      shell: bash
+      env:
+        GO2XP_INPUT: ${{ inputs.input }}
+        GO2XP_OUTPUT: ${{ inputs.output }}
+        GO2XP_PROFILE: ${{ inputs.profile }}
+        GO2XP_REF: ${{ inputs.go2xp-ref }}
       run: |
-        set -eu
+        set -euo pipefail
+        case "$GO2XP_PROFILE" in xp|win7) ;; *) echo 'Unknown profile' >&2; exit 1;; esac
         tmp=$(mktemp -d)
-        git clone -q --depth 1 --branch "${{ inputs.go2xp-ref }}" https://github.com/unxed/go2xp "$tmp/go2xp"
+        trap 'rm -rf "$tmp"' EXIT
+        git init -q "$tmp/go2xp"
+        git -C "$tmp/go2xp" fetch -q --depth 1 https://github.com/unxed/go2xp "$GO2XP_REF"
+        git -C "$tmp/go2xp" checkout -q --detach FETCH_HEAD
         (cd "$tmp/go2xp" && go build -o "$tmp/go2xp-bin" ./cmd/go2xp)
-        in="${{ inputs.input }}"
-        out="${{ inputs.output }}"
-        if [ -z "$out" ]; then out="${in%.exe}-${{ inputs.profile }}.exe"; fi
-        prof="$tmp/go2xp/profiles/${{ inputs.profile }}.json"
-        "$tmp/go2xp-bin" patch -profile "$prof" "$in" "$out"
+        out=${GO2XP_OUTPUT:-${GO2XP_INPUT%.exe}-$GO2XP_PROFILE.exe}
+        prof="$tmp/go2xp/profiles/$GO2XP_PROFILE.json"
+        "$tmp/go2xp-bin" patch -profile "$prof" "$GO2XP_INPUT" "$out"
         "$tmp/go2xp-bin" verify -profile "$prof" "$out"
-        "$tmp/go2xp-bin" audit -profile "$prof" "$out" || true
+        "$tmp/go2xp-bin" audit -profile "$prof" "$out"
         echo "patched=$out" >> "$GITHUB_OUTPUT"
-      id: patch
 outputs:
   patched:
     description: Path of the patched executable

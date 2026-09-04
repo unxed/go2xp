@@ -153,8 +153,8 @@ func polySetFileInformationByHandle(h, class, buf, size uintptr) uintptr {
 }
 
 // The ProcThreadAttributeList trio (Vista+). os/exec builds one for every child, with
-// no fallback. XP's CreateProcessW tolerates EXTENDED_STARTUPINFO_PRESENT and simply
-// has no attribute list to read, so on XP the list only needs to exist, not to work: the
+// no fallback. Our CreateProcessW wrapper removes EXTENDED_STARTUPINFO_PRESENT
+// when the real attribute API is absent. The list then only needs to exist: the
 // handle-inheritance list it would have carried is not honoured, and the child inherits
 // every inheritable handle, which is what every program did before Vista. Same approach
 // as go-legacy-winxp.
@@ -254,4 +254,101 @@ func polyCreateEventExW(attrs, name, flags, access uintptr) uintptr {
 		setErr(uintptr(e))
 	}
 	return h
+}
+
+var realCreateProcessW = realProc("kernel32.dll", "CreateProcessW")
+
+// XP has no attribute-list API. Give CreateProcessW a plain STARTUPINFO on that
+// system, keeping the caller's STARTUPINFOEX untouched. Forward unchanged whenever
+// the real attribute API exists. Removing flags after a failed native call could
+// silently discard valid attributes and reuse a command line the call has modified.
+func polyCreateProcessW(app, cmd, processAttrs, threadAttrs, inherit, flags, env, cwd, startup, result uintptr) uintptr {
+	const extendedStartupInfoPresent = 0x80000
+	var plain syscall.StartupInfo
+	si := (*syscall.StartupInfo)(unsafe.Pointer(startup))
+	if realInitializeProcThreadAttributeList == 0 && flags&extendedStartupInfoPresent != 0 {
+		if startup == 0 {
+			setErr(errorInvalidParameter)
+			return 0
+		}
+		plain = *si
+		plain.Cb = uint32(unsafe.Sizeof(plain))
+		si = &plain
+		flags &^= extendedStartupInfoPresent
+	}
+	r, _, e := syscall.SyscallN(realCreateProcessW, app, cmd, processAttrs, threadAttrs,
+		inherit, flags, env, cwd, uintptr(unsafe.Pointer(si)), result)
+	if r == 0 {
+		setErr(uintptr(e))
+	}
+	return r
+}
+
+var realNtCreateFile = realProc("ntdll.dll", "NtCreateFile")
+var getFileInformationByHandle = syscall.GetFileInformationByHandle
+
+type unicodeString struct {
+	length, maximumLength uint16
+	buffer                *uint16
+}
+
+type objectAttributes struct {
+	length                          uint32
+	root                            uintptr
+	name                            *unicodeString
+	attributes                      uint32
+	securityDescriptor, securityQoS uintptr
+}
+
+// Go 1.26 RemoveAll opens each child relative to its already opened parent with
+// OBJ_DONT_REPARSE. XP/7 reject that flag. For a single relative component, opening
+// the reparse point itself and checking its attributes preserves the no-follow
+// contract. Multi-component paths are deliberately not retried: their intermediate
+// junctions could otherwise escape the root. This is not a general os.Root emulation.
+func polyNtCreateFile(result, access, attrs, iosb, allocation, fileAttrs, share, disposition, options, ea, eaLen uintptr) uintptr {
+	const (
+		objDontReparse                = 0x1000
+		fileOpenReparsePoint          = 0x200000
+		statusInvalidParameter        = 0xc000000d
+		statusReparsePointEncountered = 0xc000050b
+		statusAccessDenied            = 0xc0000022
+	)
+	r, _, _ := syscall.SyscallN(realNtCreateFile, result, access, attrs, iosb, allocation,
+		fileAttrs, share, disposition, options, ea, eaLen)
+	if r != statusInvalidParameter || attrs == 0 || result == 0 || disposition != 1 || options&0x30 == 0 {
+		return r
+	}
+	oa := (*objectAttributes)(unsafe.Pointer(attrs))
+	if oa.attributes&objDontReparse == 0 || oa.root == 0 || oa.name == nil || oa.name.buffer == nil || oa.name.length == 0 || oa.name.length%2 != 0 {
+		return r
+	}
+	name := unsafe.Slice(oa.name.buffer, int(oa.name.length/2))
+	for _, c := range name {
+		if c == '\\' || c == '/' || c == ':' || c == 0 {
+			return r
+		}
+	}
+	if syscall.UTF16ToString(name) == ".." {
+		return r
+	}
+	copyAttrs := *oa
+	copyAttrs.attributes &^= objDontReparse
+	r, _, _ = syscall.SyscallN(realNtCreateFile, result, access, uintptr(unsafe.Pointer(&copyAttrs)),
+		iosb, allocation, fileAttrs, share, disposition, options|fileOpenReparsePoint, ea, eaLen)
+	if int32(r) < 0 {
+		return r
+	}
+	hp := (*syscall.Handle)(unsafe.Pointer(result))
+	var info syscall.ByHandleFileInformation
+	if err := getFileInformationByHandle(*hp, &info); err != nil {
+		syscall.CloseHandle(*hp)
+		*hp = 0
+		return statusAccessDenied // refuse rather than silently weaken no-follow
+	}
+	if info.FileAttributes&syscall.FILE_ATTRIBUTE_REPARSE_POINT != 0 {
+		syscall.CloseHandle(*hp)
+		*hp = 0
+		return statusReparsePointEncountered
+	}
+	return r
 }

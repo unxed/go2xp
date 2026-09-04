@@ -28,6 +28,8 @@ import (
 //go:cgo_import_dynamic go2xp_TerminateProcess TerminateProcess%2 "kernel32.dll"
 //go:cgo_import_dynamic go2xp_GetQueuedCompletionStatus GetQueuedCompletionStatus%5 "kernel32.dll"
 //go:cgo_import_dynamic go2xp_CancelIo CancelIo%1 "kernel32.dll"
+//go:cgo_import_dynamic go2xp_GetSystemDirectoryW GetSystemDirectoryW%2 "kernel32.dll"
+//go:cgo_import_dynamic go2xp_SetLastError SetLastError%1 "kernel32.dll"
 //go:cgo_import_dynamic go2xp_SystemFunction036 SystemFunction036%2 "advapi32.dll"
 
 //go:linkname procGetProcAddress go2xp_GetProcAddress
@@ -47,6 +49,12 @@ var procGetQueuedCompletionStatus uintptr
 
 //go:linkname procCancelIo go2xp_CancelIo
 var procCancelIo uintptr
+
+//go:linkname procGetSystemDirectoryW go2xp_GetSystemDirectoryW
+var procGetSystemDirectoryW uintptr
+
+//go:linkname procSetLastError go2xp_SetLastError
+var procSetLastError uintptr
 
 //go:linkname procSystemFunction036 go2xp_SystemFunction036
 var procSystemFunction036 uintptr
@@ -70,6 +78,8 @@ func xp_UpdateProcThreadAttribute()
 func xp_DeleteProcThreadAttributeList()
 func xp_WSASocketW()
 func xp_CreateEventExW()
+func xp_CreateProcessW()
+func xp_NtCreateFile()
 
 // Late polyfills are written in Go and installed as stdcall callbacks by init; the
 // assembly trampoline of each one jumps to the address kept here. Only functions that
@@ -83,6 +93,8 @@ var (
 	cbDeleteProcThreadAttributeList     uintptr
 	cbWSASocketW                        uintptr
 	cbCreateEventExW                    uintptr
+	cbCreateProcessW                    uintptr
+	cbNtCreateFile                      uintptr
 )
 
 // forcePolyfills makes xp_GetProcAddress answer from the table instead of preferring the
@@ -107,6 +119,8 @@ func init() {
 	cbDeleteProcThreadAttributeList = syscall.NewCallback(polyDeleteProcThreadAttributeList)
 	cbWSASocketW = syscall.NewCallback(polyWSASocketW)
 	cbCreateEventExW = syscall.NewCallback(polyCreateEventExW)
+	cbCreateProcessW = syscall.NewCallback(polyCreateProcessW)
+	cbNtCreateFile = syscall.NewCallback(polyNtCreateFile)
 	if os.Getenv("GO2XP_FORCE_POLYFILLS") != "" {
 		forcePolyfills = 1
 	}
@@ -117,9 +131,10 @@ func init() {
 // The emulation is coarser than the original in two ways: CancelIo cancels every pending
 // operation the calling thread issued on the handle rather than the single operation
 // named by lpOverlapped, and it can only cancel what the calling thread started. In
-// practice Go calls this to tear down all I/O on a handle that is being closed, which is
-// what CancelIo does, so the difference is not observable there. The lpOverlapped
-// argument is deliberately ignored.
+// particular, Go can issue and cancel I/O on different OS threads, so this is NOT
+// equivalent for pending operations or deadlines. See docs/reference-review.md.
+// The lpOverlapped argument is ignored; same-thread successful calls are the only
+// behavior this fallback can promise.
 func polyCancelIoEx(hFile, lpOverlapped uintptr) uintptr {
 	r, _, _ := syscall.Syscall(procCancelIo, 1, hFile, 0, 0)
 	return r
