@@ -24,12 +24,8 @@ func main() {
 		// go2xp patch -profile profiles/xp.json in.exe out.exe
 		err = patchCmd(os.Args[2:])
 	case "audit":
-		// go2xp audit app.exe [profiles/kernel32-exports.tsv]
-		exp := "profiles/kernel32-exports.tsv"
-		if len(os.Args) > 3 {
-			exp = os.Args[3]
-		}
-		err = audit(os.Args[2], exp)
+		// go2xp audit [-profile P] app.exe
+		err = auditCmd(os.Args[2:])
 	case "verify":
 		// go2xp verify -profile profiles/xp.json app.exe
 		err = verifyCmd(os.Args[2:])
@@ -48,7 +44,8 @@ func usage() {
   go2xp exports kernel32.dll          exported names (to build a target-OS profile)
   go2xp patch -profile P in.exe [out.exe]
   go2xp verify -profile P app.exe
-  go2xp audit app.exe [exports.tsv]   lazily resolved kernel32 names the target lacks, and whether the shim covers them
+  go2xp audit [-profile P] app.exe    lazily resolved kernel32 names the target lacks; exits 1 if one is
+                                      neither polyfilled by the shim nor accepted under "pending" in the profile
 `)
 	os.Exit(2)
 }

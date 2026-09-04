@@ -7,6 +7,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -31,14 +33,14 @@ jobs:
       - name: Wine smoke test
         run: sh scripts/wine-test.sh
 
-      # The audit gate: every probe, patched, must have no uncovered kernel32 name that
-      # is not on the accepted list.
+      # The audit gate. go2xp audit exits non-zero for any absent name that is neither
+      # polyfilled by the shim nor accepted under "pending" in the profile, so the
+      # profile is the single place that decides what is acceptable.
       - name: Audit probes
         run: |
           go build -o go2xp ./cmd/go2xp
           for dir in probes/*/; do
             name=$(basename "$dir")
             GOOS=windows GOARCH=386 CGO_ENABLED=0 go build -o "$name.exe" "./$dir"
-            ./go2xp audit "$name.exe" | tee "audit-$name.txt"
+            ./go2xp audit -profile profiles/xp.json "$name.exe"
           done
-          ! grep -h 'NOT covered' audit-*.txt | grep -vE 'SetFileCompletionNotificationModes|GetVolumeInformationByHandleW|GetTempPath2W'

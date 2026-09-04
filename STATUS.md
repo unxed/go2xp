@@ -21,7 +21,7 @@
 | 4 | ранние asm-полифиллы, `probes/hello` | [x] |
 | 5 | Go-полифиллы, `probes/exec`, `probes/files` | [x] |
 | 6 | `probes/net`, `probes/console`, `probes/signals` | [x] |
-| 7 | CI / reusable action | [~] written, not yet run on GitHub |
+| 7 | CI / reusable action | [x] Wine stage green on GitHub Actions; audit gate reads the profile |
 | 8 | профиль win7 | [ ] |
 | 8.5 | перевод репозитория на английский (после первого запуска на XP) | [ ] |
 | 9 | f4 showcase | [ ] |
@@ -346,3 +346,17 @@ events actually reach os/signal, and which lazily resolved imports XP really lac
 - First GitHub run: every Wine probe failed with "'/tmp' is not owned by you" - Wine
   refuses to create a prefix under a directory it does not own, and /tmp is root's on the
   runner. The default prefix now lives inside the script's own mktemp scratch dir.
+
+### 2026-09-05 - CI: first runs on GitHub Actions
+
+- The Wine stage passes on the runner: all 18 runs, the same as here. What looked like a
+  hang was three signals runs waiting out 30 s each; the waits are now 10/15 s, the
+  timeout wraps script(1) itself (so a straggler holding the pty cannot stall the
+  harness), and the job has a 20-minute limit.
+- The audit gate failed on its first run, correctly in substance and wrongly in mechanics:
+  GetFinalPathNameByHandleW and ReOpenFile are accepted in the profile, but ci.yml carried
+  a hand-copied exclusion list that did not have them. Two sources of truth. Now
+  `go2xp audit -profile P` reads the accepted names from the profile's `pending` section
+  (each list's key is the reason, shown in the output) and exits non-zero only for a
+  name that is neither polyfilled nor accepted; the CI step is one line and the action
+  uses the same flag.

@@ -29,10 +29,13 @@ export WINEPREFIX
 # The console and signal probes need a real console, which Wine only provides when its
 # stdio is a terminal. script(1) supplies one; without it those probes report SKIP.
 esc=$(printf '\033')
+# The timeout wraps script(1) itself, not just wine: a child that inherited the pty
+# (the signals probe forks one) would otherwise keep script waiting for EOF after wine
+# had already been killed, and the run would hang.
 if command -v script >/dev/null; then
-	run() { script -qec "timeout 120 wine $1" /dev/null 2>/dev/null | tr -d '\r' | sed "s/${esc}\[[0-9;?]*[a-zA-Z]//g"; }
+	run() { timeout -k 5 90 script -qec "wine $1" /dev/null 2>/dev/null | tr -d '\r' | sed "s/${esc}\[[0-9;?]*[a-zA-Z]//g"; }
 else
-	run() { timeout 120 wine "$1" 2>/dev/null; }
+	run() { timeout -k 5 90 wine "$1" 2>/dev/null; }
 fi
 
 # A probe reports its own verdict, which survives the terminal wrapper better than an

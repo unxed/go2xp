@@ -33,7 +33,7 @@ runs:
         prof="$tmp/go2xp/profiles/${{ inputs.profile }}.json"
         "$tmp/go2xp-bin" patch -profile "$prof" "$in" "$out"
         "$tmp/go2xp-bin" verify -profile "$prof" "$out"
-        "$tmp/go2xp-bin" audit "$out" "$tmp/go2xp/profiles/kernel32-exports.tsv" || true
+        "$tmp/go2xp-bin" audit -profile "$prof" "$out" || true
         echo "patched=$out" >> "$GITHUB_OUTPUT"
       id: patch
 outputs:

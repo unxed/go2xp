@@ -2,18 +2,34 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/unxed/go2xp/internal/pe"
 )
 
-// audit lists every function the binary may look up at run time and reports which of
-// them the target lacks, and whether the shim covers each one. It needs the export
-// list in profiles/kernel32-exports.tsv and only knows about kernel32: a name absent
-// there may simply live in another DLL (advapi32, ws2_32...), which is reported as such.
-func audit(path, exportsPath string) error {
+// auditCmd: go2xp audit [-profile profiles/xp.json] app.exe
+//
+// Lists every function the binary may look up at run time and reports, for each one the
+// target lacks, whether the shim polyfills it, whether the profile accepts its absence,
+// or neither. The exit status is non-zero only in the last case, which makes the command
+// usable as a CI gate with the profile as the single source of truth.
+//
+// The export list (profiles/kernel32-exports.tsv, next to the profile) covers kernel32
+// only: a name absent from it may simply live in another DLL, which is reported as such.
+func auditCmd(args []string) error {
+	fs := flag.NewFlagSet("audit", flag.ExitOnError)
+	profile := fs.String("profile", "profiles/xp.json", "target OS profile; the export list is read from the same directory")
+	fs.Parse(args)
+	if fs.NArg() < 1 {
+		return fmt.Errorf("usage: go2xp audit [-profile P] app.exe")
+	}
+	path := fs.Arg(0)
+
 	lazy, err := pe.LazyProcs(path)
 	if err != nil {
 		return err
@@ -21,7 +37,11 @@ func audit(path, exportsPath string) error {
 	if len(lazy) == 0 {
 		return fmt.Errorf("no proc* symbols found; was the binary linked with -s?")
 	}
-	xp, err := loadExports(exportsPath)
+	xp, err := loadExports(filepath.Join(filepath.Dir(*profile), "kernel32-exports.tsv"))
+	if err != nil {
+		return err
+	}
+	accepted, err := loadAccepted(*profile)
 	if err != nil {
 		return err
 	}
@@ -47,24 +67,56 @@ func audit(path, exportsPath string) error {
 			advapi++
 		case !present:
 			absent = append(absent, n)
-			if !covered[n] {
+			if !covered[n] && accepted[n] == "" {
 				uncovered = append(uncovered, n)
 			}
 		}
 	}
-	fmt.Printf("%d lazily resolved names; %d not in kernel32 (other DLLs or the program's own aliases); %d kernel32-forwarded since Vista but resolved from advapi32 on XP\n", len(lazy), other, advapi)
+	fmt.Printf("%s: %d lazily resolved names; %d not in kernel32 (other DLLs or the program's own aliases); %d kernel32-forwarded since Vista but resolved from advapi32 on XP\n",
+		filepath.Base(path), len(lazy), other, advapi)
 	fmt.Printf("%d kernel32 names absent on the target:\n", len(absent))
 	for _, n := range absent {
-		mark := "  polyfilled"
-		if !covered[n] {
-			mark = "  NOT covered"
+		mark := "NOT covered"
+		switch {
+		case covered[n]:
+			mark = "polyfilled"
+		case accepted[n] != "":
+			mark = "accepted: " + accepted[n]
 		}
 		fmt.Printf("  %-40s%s\n", n, mark)
 	}
 	if len(uncovered) > 0 {
-		fmt.Printf("%d absent and not covered by the shim; each fails with ERROR_PROC_NOT_FOUND at its call site (see docs/api-audit.md for which of these are acceptable)\n", len(uncovered))
+		return fmt.Errorf("%d absent name(s) neither polyfilled nor accepted by the profile: %s (each fails with ERROR_PROC_NOT_FOUND at its call site; polyfill it in the shim or list it under \"pending\" in the profile with a reason)",
+			len(uncovered), strings.Join(uncovered, ", "))
 	}
 	return nil
+}
+
+// loadAccepted reads the profile's "pending" section: every list under it (except the
+// comment) names functions whose absence on the target is understood and accepted, and
+// the list's key is the reason.
+func loadAccepted(profilePath string) (map[string]string, error) {
+	b, err := os.ReadFile(profilePath)
+	if err != nil {
+		return nil, err
+	}
+	var p struct {
+		Pending map[string]json.RawMessage `json:"pending"`
+	}
+	if err := json.Unmarshal(b, &p); err != nil {
+		return nil, err
+	}
+	out := map[string]string{}
+	for reason, raw := range p.Pending {
+		var names []string
+		if json.Unmarshal(raw, &names) != nil {
+			continue // the comment, or a non-list entry
+		}
+		for _, n := range names {
+			out[n] = reason
+		}
+	}
+	return out, nil
 }
 
 // advapi32OnXP lists names kernel32 only started exporting (as forwarders) in Vista or
@@ -80,7 +132,7 @@ var advapi32OnXP = map[string]bool{
 	"ImpersonateLoggedOnUser": true, "SystemFunction036": true,
 }
 
-// loadExports reads profiles/kernel32-exports.tsv: name, xp|no|?, version range.
+// loadExports reads kernel32-exports.tsv: name, xp|no|?, version range.
 func loadExports(path string) (map[string]bool, error) {
 	f, err := os.Open(path)
 	if err != nil {

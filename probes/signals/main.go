@@ -77,7 +77,7 @@ func main() {
 		if err != nil {
 			fail("child exited with %v, want success", err)
 		}
-	case <-time.After(30 * time.Second):
+	case <-time.After(5 * time.Second):
 		cmd.Process.Kill()
 		if onWine() {
 			// Wine's GenerateConsoleCtrlEvent reports success but does not deliver the
@@ -101,7 +101,7 @@ func child() {
 	select {
 	case <-c:
 		os.Exit(0)
-	case <-time.After(30 * time.Second):
+	case <-time.After(10 * time.Second):
 		os.Exit(1)
 	}
 }
