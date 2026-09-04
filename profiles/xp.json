@@ -9,7 +9,9 @@
       "WerGetFlags",
       "GetErrorMode",
       "CreateWaitableTimerExW",
-      "RaiseFailFastException"
+      "RaiseFailFastException",
+      "GetQueuedCompletionStatusEx",
+      "CancelIoEx"
     ]
   },
   "missingWholeDLL": [
@@ -18,8 +20,11 @@
   "pending": {
     "comment": "absent on XP SP3, polyfill still TODO (steps 4-5)",
     "kernel32.dll": [
-      "GetQueuedCompletionStatusEx", "GetTickCount64", "SetThreadDescription",
-      "GetSystemTimePreciseAsFileTime"
+      "GetTickCount64", "SetThreadDescription", "GetSystemTimePreciseAsFileTime",
+      "InitializeProcThreadAttributeList", "UpdateProcThreadAttribute",
+      "DeleteProcThreadAttributeList", "GetFileInformationByHandleEx",
+      "SetFileInformationByHandle", "GetFinalPathNameByHandleW",
+      "SetFileCompletionNotificationModes", "CreateSymbolicLinkW"
     ]
   }
 }

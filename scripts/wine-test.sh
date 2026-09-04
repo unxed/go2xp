@@ -33,6 +33,10 @@ for dir in probes/*/; do
 	"$out/go2xp" patch -profile "$PROFILE" "$out/$name.exe" "$out/$name-patched.exe" >/dev/null
 	"$out/go2xp" verify -profile "$PROFILE" "$out/$name-patched.exe" >/dev/null
 
+	# The patched binary is run twice. The plain run is what a user gets: the hooks
+	# prefer whatever the OS really exports, so on Wine almost nothing is emulated.
+	# GO2XP_FORCE_POLYFILLS makes the table win instead, which is the only way to
+	# exercise the polyfills themselves without a real XP.
 	for exe in "$name.exe" "$name-patched.exe"; do
 		if result=$(cd "$out" && timeout 120 wine "$exe" 2>/dev/null); then
 			echo "PASS $exe: $result"
@@ -41,5 +45,11 @@ for dir in probes/*/; do
 			fail=1
 		fi
 	done
+	if result=$(cd "$out" && GO2XP_FORCE_POLYFILLS=1 timeout 120 wine "$name-patched.exe" 2>/dev/null); then
+		echo "PASS $name-patched.exe [forced polyfills]: $result"
+	else
+		echo "FAIL $name-patched.exe [forced polyfills] (exit $?)"
+		fail=1
+	fi
 done
 exit $fail

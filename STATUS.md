@@ -16,8 +16,8 @@
 | 2 | `shim` минимальный + таблица GO2XPTBL | [x] |
 | 3 | `go2xp patch` + `verify`, профиль xp | [x] + проходит под Wine (winxp) |
 | 3.5 | Wine smoke test (`scripts/wine-test.sh`) | [x] |
-| 4 | ранние asm-полифиллы, `probes/hello` | [~] сделаны простые + оба хука + ProcessPrng; остаётся GetQueuedCompletionStatusEx |
-| 5 | Go-полифиллы, `probes/exec`, `probes/files` | [ ] |
+| 4 | ранние asm-полифиллы, `probes/hello` | [x] |
+| 5 | Go-полифиллы, `probes/exec`, `probes/files` | [~] механизм готов, CancelIoEx первый; ждёт подтверждения |
 | 6 | `probes/net`, `probes/console`, `probes/signals` | [ ] |
 | 7 | CI / reusable action | [ ] |
 | 8 | профиль win7 | [ ] |
@@ -199,3 +199,45 @@ Known deviations, to fix before release:
 - Next: step 5 - GetQueuedCompletionStatusEx (the last static import missing on XP) and
   the late polyfills that can be written in Go via syscall.NewCallback: CancelIoEx,
   the ProcThreadAttributeList trio, GetTickCount64.
+
+### 2026-09-04 - step 5: the last static import, and Go-written polyfills
+
+**Milestone: a patched binary has no static import that XP lacks.** Checked by cross
+referencing the import table of the patched exec probe against the profile's missing and
+pending lists: nothing left, 41 imports, all of them XP-era kernel32.
+
+- `xp_GetQueuedCompletionStatusEx` (assembly, because netpoll calls it from the scheduler
+  where entering Go code is not safe): emulated with plain GetQueuedCompletionStatus, one
+  packet per call instead of up to 64. All three outcomes are preserved - a dequeued
+  packet fills entries[0] and returns TRUE, a timeout returns FALSE with WAIT_TIMEOUT
+  intact for netpoll to recognise, and a packet from a failed I/O (which the plain
+  function reports as FALSE with a non-NULL OVERLAPPED) is turned back into the TRUE the
+  Ex form would return.
+- **Late polyfills in Go.** A function that can only be called once the runtime is up no
+  longer needs assembly: it is an ordinary Go function installed with
+  `syscall.NewCallback`, reached through a two-instruction trampoline that jumps to the
+  callback address. First user: `CancelIoEx`, emulated with `CancelIo`.
+- **Design fix in xp_GetProcAddress.** It now asks the real function first and only falls
+  back to the table when the OS genuinely lacks the export. Before this, one patched
+  binary would have forced its emulations onto every Windows version - the CancelIo
+  emulation would have replaced the native CancelIoEx on Win7. The sentinel handle is the
+  exception: a DLL that is not there can only be answered from the table.
+- `forcePolyfills` (env `GO2XP_FORCE_POLYFILLS`) reverses that order for testing, since
+  otherwise Wine, which exports everything, would never run a single polyfill. A name the
+  table does not know still goes to the real function; getting that wrong made every
+  forced run crash in GetModuleFileNameW resolved to a null address, which is exactly the
+  kind of mistake the Wine stage is there to catch.
+- New probes `files` (write/read/stat/rename/walk/remove, Getwd, UserHomeDir) and `exec`
+  (child output, exit code) - both reach netpoll, so every patched run now exercises the
+  GetQueuedCompletionStatusEx emulation.
+- `scripts/wine-test.sh` runs each probe three ways: unpatched, patched, patched with
+  forced polyfills. All nine runs pass.
+- Profile `pending` extended with the lazily resolved functions the reference forks list
+  (ProcThreadAttributeList trio, GetFileInformationByHandleEx, GetFinalPathNameByHandleW,
+  SetFileInformationByHandle, SetFileCompletionNotificationModes, CreateSymbolicLinkW).
+  They cost nothing until something calls them, and Wine cannot tell us which ones XP
+  actually needs - that list comes from the first real run.
+
+- Next: step 6 - console and signal probes, then the first run on real hardware. Note that
+  Wine cannot narrow the pending list any further: it exports everything, so only XP can
+  say which lazy imports really fail.

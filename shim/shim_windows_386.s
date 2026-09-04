@@ -3,6 +3,11 @@
 // The Go 386 assembler has no "RET $imm"; encode "ret imm16" by hand.
 #define STDRET(n) BYTE $0xC2; WORD $n
 
+// A handle that xp_LoadLibraryExW returns for a DLL that does not exist on the target.
+// Module handles are image bases and therefore 64K-aligned, so this value can never
+// collide with a real one.
+#define SENTINEL $0x476F3258
+
 // GO2XPTBL, the contract between this package and cmd/go2xp:
 //   +0  magic   "GO2XPTBL"
 //   +8  version u32 = 1
@@ -13,16 +18,16 @@
 //        +8  VA of the polyfill, or 0 when the entry only marks an own slot
 //        +12 VA of the shim's own IAT slot, or 0
 //
-// An entry with a polyfill tells the patcher: if this function is missing on the
-// target OS, point its IAT slot here. An entry with an own slot tells it: this slot
-// belongs to the shim, never redirect it. An entry may carry both, which is what the
-// two hooks below do. Every own import needs an entry, otherwise the linker drops the
-// slot as dead code.
+// An entry with a polyfill tells the patcher: if this function is missing on the target
+// OS, point its IAT slot here. An entry with an own slot tells it: this slot belongs to
+// the shim, never redirect it. An entry may carry both, which is what the two hooks do.
+// Every own import needs an entry, otherwise the linker drops the slot as dead code.
 //
 // Polyfills are __stdcall: arguments on the stack, callee pops them (STDRET), EAX holds
-// the result, EBX/ESI/EDI/EBP must be preserved. They run during runtime.osinit, before
-// the Go runtime exists, so they must not touch g, TLS or anything else Go-specific, and
-// may only call out through the shim's own import slots.
+// the result, EBX/ESI/EDI/EBP must be preserved. The early ones run during
+// runtime.osinit, before the Go runtime exists, so they must not touch g, TLS or anything
+// else Go-specific, and may only call out through the shim's own import slots. The late
+// ones are trampolines into Go (see cb* in shim_windows_386.go).
 //
 // Note on stack discipline: the assembler rejects a function whose PUSH and POP counts
 // differ, and stdcall argument pushes always break that (the callee pops them), so
@@ -30,7 +35,7 @@
 
 DATA go2xp_table+0(SB)/8, $"GO2XPTBL"
 DATA go2xp_table+8(SB)/4, $1
-DATA go2xp_table+12(SB)/4, $11
+DATA go2xp_table+12(SB)/4, $15
 // kernel32.dll!WerSetFlags -> xp_WerSetFlags
 DATA go2xp_table+16(SB)/4, $go2xp_s_kernel32_dll(SB)
 DATA go2xp_table+20(SB)/4, $go2xp_s_WerSetFlags(SB)
@@ -56,44 +61,72 @@ DATA go2xp_table+80(SB)/4, $go2xp_s_kernel32_dll(SB)
 DATA go2xp_table+84(SB)/4, $go2xp_s_RaiseFailFastException(SB)
 DATA go2xp_table+88(SB)/4, $·xp_RaiseFailFastException(SB)
 DATA go2xp_table+92(SB)/4, $0
-// kernel32.dll!LoadLibraryExW -> xp_LoadLibraryExW  (and the shim's own slot)
+// kernel32.dll!GetQueuedCompletionStatusEx -> xp_GetQueuedCompletionStatusEx
 DATA go2xp_table+96(SB)/4, $go2xp_s_kernel32_dll(SB)
-DATA go2xp_table+100(SB)/4, $go2xp_s_LoadLibraryExW(SB)
-DATA go2xp_table+104(SB)/4, $·xp_LoadLibraryExW(SB)
-DATA go2xp_table+108(SB)/4, $go2xp_LoadLibraryExW(SB)
-// kernel32.dll!GetProcAddress -> xp_GetProcAddress  (and the shim's own slot)
+DATA go2xp_table+100(SB)/4, $go2xp_s_GetQueuedCompletionStatusEx(SB)
+DATA go2xp_table+104(SB)/4, $·xp_GetQueuedCompletionStatusEx(SB)
+DATA go2xp_table+108(SB)/4, $0
+// kernel32.dll!CancelIoEx -> xp_CancelIoEx
 DATA go2xp_table+112(SB)/4, $go2xp_s_kernel32_dll(SB)
-DATA go2xp_table+116(SB)/4, $go2xp_s_GetProcAddress(SB)
-DATA go2xp_table+120(SB)/4, $·xp_GetProcAddress(SB)
-DATA go2xp_table+124(SB)/4, $go2xp_GetProcAddress(SB)
-// bcryptprimitives.dll!ProcessPrng -> xp_ProcessPrng
-DATA go2xp_table+128(SB)/4, $go2xp_s_bcryptprimitives_dll(SB)
-DATA go2xp_table+132(SB)/4, $go2xp_s_ProcessPrng(SB)
-DATA go2xp_table+136(SB)/4, $·xp_ProcessPrng(SB)
-DATA go2xp_table+140(SB)/4, $0
-// kernel32.dll!SetErrorMode: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+116(SB)/4, $go2xp_s_CancelIoEx(SB)
+DATA go2xp_table+120(SB)/4, $·xp_CancelIoEx(SB)
+DATA go2xp_table+124(SB)/4, $0
+// kernel32.dll!LoadLibraryExW -> xp_LoadLibraryExW  (and the shim's own slot)
+DATA go2xp_table+128(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+132(SB)/4, $go2xp_s_LoadLibraryExW(SB)
+DATA go2xp_table+136(SB)/4, $·xp_LoadLibraryExW(SB)
+DATA go2xp_table+140(SB)/4, $go2xp_LoadLibraryExW(SB)
+// kernel32.dll!GetProcAddress -> xp_GetProcAddress  (and the shim's own slot)
 DATA go2xp_table+144(SB)/4, $go2xp_s_kernel32_dll(SB)
-DATA go2xp_table+148(SB)/4, $go2xp_s_SetErrorMode(SB)
-DATA go2xp_table+152(SB)/4, $0
-DATA go2xp_table+156(SB)/4, $go2xp_SetErrorMode(SB)
-// kernel32.dll!TerminateProcess: the shim's own import slot; the patcher must not redirect it
-DATA go2xp_table+160(SB)/4, $go2xp_s_kernel32_dll(SB)
-DATA go2xp_table+164(SB)/4, $go2xp_s_TerminateProcess(SB)
-DATA go2xp_table+168(SB)/4, $0
-DATA go2xp_table+172(SB)/4, $go2xp_TerminateProcess(SB)
-// advapi32.dll!SystemFunction036: the shim's own import slot; the patcher must not redirect it
-DATA go2xp_table+176(SB)/4, $go2xp_s_advapi32_dll(SB)
-DATA go2xp_table+180(SB)/4, $go2xp_s_SystemFunction036(SB)
+DATA go2xp_table+148(SB)/4, $go2xp_s_GetProcAddress(SB)
+DATA go2xp_table+152(SB)/4, $·xp_GetProcAddress(SB)
+DATA go2xp_table+156(SB)/4, $go2xp_GetProcAddress(SB)
+// bcryptprimitives.dll!ProcessPrng -> xp_ProcessPrng
+DATA go2xp_table+160(SB)/4, $go2xp_s_bcryptprimitives_dll(SB)
+DATA go2xp_table+164(SB)/4, $go2xp_s_ProcessPrng(SB)
+DATA go2xp_table+168(SB)/4, $·xp_ProcessPrng(SB)
+DATA go2xp_table+172(SB)/4, $0
+// kernel32.dll!SetErrorMode: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+176(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+180(SB)/4, $go2xp_s_SetErrorMode(SB)
 DATA go2xp_table+184(SB)/4, $0
-DATA go2xp_table+188(SB)/4, $go2xp_SystemFunction036(SB)
-GLOBL go2xp_table(SB), NOPTR, $192
+DATA go2xp_table+188(SB)/4, $go2xp_SetErrorMode(SB)
+// kernel32.dll!TerminateProcess: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+192(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+196(SB)/4, $go2xp_s_TerminateProcess(SB)
+DATA go2xp_table+200(SB)/4, $0
+DATA go2xp_table+204(SB)/4, $go2xp_TerminateProcess(SB)
+// kernel32.dll!GetQueuedCompletionStatus: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+208(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+212(SB)/4, $go2xp_s_GetQueuedCompletionStatus(SB)
+DATA go2xp_table+216(SB)/4, $0
+DATA go2xp_table+220(SB)/4, $go2xp_GetQueuedCompletionStatus(SB)
+// kernel32.dll!CancelIo: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+224(SB)/4, $go2xp_s_kernel32_dll(SB)
+DATA go2xp_table+228(SB)/4, $go2xp_s_CancelIo(SB)
+DATA go2xp_table+232(SB)/4, $0
+DATA go2xp_table+236(SB)/4, $go2xp_CancelIo(SB)
+// advapi32.dll!SystemFunction036: the shim's own import slot; the patcher must not redirect it
+DATA go2xp_table+240(SB)/4, $go2xp_s_advapi32_dll(SB)
+DATA go2xp_table+244(SB)/4, $go2xp_s_SystemFunction036(SB)
+DATA go2xp_table+248(SB)/4, $0
+DATA go2xp_table+252(SB)/4, $go2xp_SystemFunction036(SB)
+GLOBL go2xp_table(SB), NOPTR, $256
 
-// DLLs that do not exist on the target at all. xp_LoadLibraryExW answers with
-// the sentinel handle for these, and xp_GetProcAddress serves their exports from
-// the table above. Names must be lowercase: the comparison only folds the input.
+// DLLs that do not exist on the target at all. xp_LoadLibraryExW answers with the
+// sentinel handle for these, and xp_GetProcAddress serves their exports from the
+// table above. Names must be lowercase: the comparison only folds the input.
 DATA go2xp_missing_dlls+0(SB)/4, $go2xp_s_bcryptprimitives_dll(SB)
 DATA go2xp_missing_dlls+4(SB)/4, $0
 GLOBL go2xp_missing_dlls(SB), RODATA|NOPTR, $8
+
+DATA go2xp_s_CancelIo+0(SB)/8, $"CancelIo"
+DATA go2xp_s_CancelIo+8(SB)/8, $"\x00\x00\x00\x00\x00\x00\x00\x00"
+GLOBL go2xp_s_CancelIo(SB), RODATA|NOPTR, $16
+
+DATA go2xp_s_CancelIoEx+0(SB)/8, $"CancelIo"
+DATA go2xp_s_CancelIoEx+8(SB)/8, $"Ex\x00\x00\x00\x00\x00\x00"
+GLOBL go2xp_s_CancelIoEx(SB), RODATA|NOPTR, $16
 
 DATA go2xp_s_CreateWaitableTimerExW+0(SB)/8, $"CreateWa"
 DATA go2xp_s_CreateWaitableTimerExW+8(SB)/8, $"itableTi"
@@ -107,6 +140,18 @@ GLOBL go2xp_s_GetErrorMode(SB), RODATA|NOPTR, $16
 DATA go2xp_s_GetProcAddress+0(SB)/8, $"GetProcA"
 DATA go2xp_s_GetProcAddress+8(SB)/8, $"ddress\x00\x00"
 GLOBL go2xp_s_GetProcAddress(SB), RODATA|NOPTR, $16
+
+DATA go2xp_s_GetQueuedCompletionStatus+0(SB)/8, $"GetQueue"
+DATA go2xp_s_GetQueuedCompletionStatus+8(SB)/8, $"dComplet"
+DATA go2xp_s_GetQueuedCompletionStatus+16(SB)/8, $"ionStatu"
+DATA go2xp_s_GetQueuedCompletionStatus+24(SB)/8, $"s\x00\x00\x00\x00\x00\x00\x00"
+GLOBL go2xp_s_GetQueuedCompletionStatus(SB), RODATA|NOPTR, $32
+
+DATA go2xp_s_GetQueuedCompletionStatusEx+0(SB)/8, $"GetQueue"
+DATA go2xp_s_GetQueuedCompletionStatusEx+8(SB)/8, $"dComplet"
+DATA go2xp_s_GetQueuedCompletionStatusEx+16(SB)/8, $"ionStatu"
+DATA go2xp_s_GetQueuedCompletionStatusEx+24(SB)/8, $"sEx\x00\x00\x00\x00\x00"
+GLOBL go2xp_s_GetQueuedCompletionStatusEx(SB), RODATA|NOPTR, $32
 
 DATA go2xp_s_LoadLibraryExW+0(SB)/8, $"LoadLibr"
 DATA go2xp_s_LoadLibraryExW+8(SB)/8, $"aryExW\x00\x00"
@@ -155,12 +200,6 @@ GLOBL go2xp_s_bcryptprimitives_dll(SB), RODATA|NOPTR, $24
 DATA go2xp_s_kernel32_dll+0(SB)/8, $"kernel32"
 DATA go2xp_s_kernel32_dll+8(SB)/8, $".dll\x00\x00\x00\x00"
 GLOBL go2xp_s_kernel32_dll(SB), RODATA|NOPTR, $16
-
-
-// A handle that xp_LoadLibraryExW returns for a DLL that does not exist on the target.
-// Module handles are image bases and therefore 64K-aligned, so this value can never
-// collide with a real one.
-#define SENTINEL $0x476F3258
 
 // func tableAddr() uintptr
 TEXT ·tableAddr(SB), NOSPLIT, $0-4
@@ -237,30 +276,60 @@ llx_ret:
 
 // FARPROC WINAPI GetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 //
-// This is the reason the whole design works with two slots: every lazily resolved
-// import in the program - the runtime's own windowsFindfunc, syscall.GetProcAddress and
+// This is the reason the whole design works with two slots: every lazily resolved import
+// in the program - the runtime's own windowsFindfunc, syscall.GetProcAddress and
 // therefore all of golang.org/x/sys/windows - funnels through here, so a polyfill in
 // GO2XPTBL covers all of them at once, with no generated code to patch.
 //
-// Matching is by function name only, ignoring the module. Exported names are unique
-// enough in practice, and it means a lookup works whether the caller holds a real module
-// handle or the sentinel. A name that is not in the table is forwarded to the real
-// GetProcAddress, unless the handle is the sentinel, in which case it fails.
+// The real function is asked first and always wins, so a polyfill is used only where the
+// OS genuinely lacks the export. That keeps one patched binary correct across Windows
+// versions: the same exe prefers the native CancelIoEx on Win7 and falls back to the
+// CancelIo emulation on XP, with no profile involved at run time. The exception is the
+// sentinel handle, which belongs to a DLL that is not there at all and can only be
+// answered from the table.
+//
+// Setting forcePolyfills reverses the order, so a name the table knows is answered from
+// the table even where the OS exports it. Anything the table does not know still goes to
+// the real function - the point is to exercise the polyfills on a system that has the
+// real ones, not to break every other lookup (see scripts/wine-test.sh).
 TEXT ·xp_GetProcAddress(SB), NOSPLIT|NOFRAME, $0-0
 	PUSHL	SI
 	PUSHL	DI
 	PUSHL	BX
-	// return address at 12(SP); hModule 16(SP), lpProcName 20(SP)
-	MOVL	20(SP), BX
+	SUBL	$4, SP			// 0(SP): where a table miss should go next
+	// return address at 16(SP); hModule 20(SP), lpProcName 24(SP)
+	MOVL	$0, 0(SP)		// a miss fails, because the real call already ran
+	MOVL	20(SP), AX
+	CMPL	AX, SENTINEL
+	JEQ	gpa_table		// a DLL that is not there: only the table can answer
+	MOVL	·forcePolyfills(SB), AX
+	TESTL	AX, AX
+	JZ	gpa_real_first
+	MOVL	$1, 0(SP)		// forced: a miss still has to reach the real export
+	JMP	gpa_table
+
+gpa_real_first:
+	SUBL	$8, SP
+	MOVL	32(SP), AX		// lpProcName
+	MOVL	AX, 4(SP)
+	MOVL	28(SP), AX		// hModule
+	MOVL	AX, 0(SP)
+	MOVL	go2xp_GetProcAddress(SB), AX
+	CALL	AX
+	TESTL	AX, AX
+	JNZ	gpa_ret			// it exists here: nothing to emulate
+
+gpa_table:
+	MOVL	24(SP), BX
 	CMPL	BX, $0x10000		// imported by ordinal: nothing to match by name
-	JB	gpa_notfound
+	JB	gpa_miss
 	LEAL	go2xp_table(SB), DX
 	MOVL	12(DX), CX		// entry count
 	ADDL	$16, DX			// first entry
 
 gpa_entry:
 	TESTL	CX, CX
-	JZ	gpa_notfound
+	JZ	gpa_miss
 	MOVL	8(DX), AX		// polyfill VA
 	TESTL	AX, AX
 	JZ	gpa_next		// own-slot-only entry, nothing to serve
@@ -269,7 +338,7 @@ gpa_entry:
 
 gpa_cmp:
 	MOVBLZX	(DI), AX
-	CMPB	(SI), AL		// GetProcAddress is case-sensitive, so compare exactly
+	CMPB	(SI), AL		// GetProcAddress is case-sensitive: compare exactly
 	JNE	gpa_next
 	TESTL	AX, AX
 	JZ	gpa_hit
@@ -286,26 +355,112 @@ gpa_hit:
 	MOVL	8(DX), AX
 	JMP	gpa_ret
 
-gpa_notfound:
-	MOVL	16(SP), AX
-	CMPL	AX, SENTINEL
-	JEQ	gpa_fail		// nothing else can be asked of a DLL that is not there
-	SUBL	$8, SP
-	MOVL	28(SP), AX		// lpProcName
+gpa_miss:
+	MOVL	0(SP), AX
+	TESTL	AX, AX
+	JZ	gpa_fail
+	SUBL	$8, SP			// forced mode: everything else is still the OS's job
+	MOVL	32(SP), AX		// lpProcName
 	MOVL	AX, 4(SP)
-	MOVL	24(SP), AX		// hModule
+	MOVL	28(SP), AX		// hModule
 	MOVL	AX, 0(SP)
 	MOVL	go2xp_GetProcAddress(SB), AX
 	CALL	AX
 	JMP	gpa_ret
 
 gpa_fail:
-	XORL	AX, AX
+	XORL	AX, AX			// the real call, if it ran, already set the error
 
 gpa_ret:
+	ADDL	$4, SP
 	POPL	BX
 	POPL	DI
 	POPL	SI
+	STDRET(8)
+
+// BOOL WINAPI GetQueuedCompletionStatusEx(HANDLE port, LPOVERLAPPED_ENTRY entries,
+//     ULONG count, PULONG removed, DWORD timeout, BOOL alertable) - Vista+.
+//
+// The last static import the runtime needs that XP does not have. Emulated with plain
+// GetQueuedCompletionStatus, which dequeues exactly one packet, so netpoll gets one entry
+// per call instead of up to 64: slower under load, but not different in behaviour.
+//
+// The three outcomes are kept faithful. A dequeued packet fills entries[0] and returns
+// TRUE. A timeout returns FALSE with the last error already set to WAIT_TIMEOUT, which is
+// what netpoll checks for. A packet belonging to a failed I/O makes the plain function
+// return FALSE with a non-NULL OVERLAPPED, and the Ex form reports that as a normal
+// dequeue, so it is turned back into TRUE here; the status stays in the OVERLAPPED where
+// the caller reads it from. fAlertable has no equivalent and is ignored (the runtime
+// always passes FALSE).
+TEXT ·xp_GetQueuedCompletionStatusEx(SB), NOSPLIT|NOFRAME, $0-0
+	PUSHL	BX
+	PUSHL	SI
+	PUSHL	DI
+	// return address at 12(SP); port 16, entries 20, count 24, removed 28, timeout 32
+	MOVL	24(SP), AX
+	TESTL	AX, AX
+	JZ	gqe_fail		// no room for even one entry
+	SUBL	$12, SP			// scratch: bytes 0(SP), key 4(SP), overlapped 8(SP)
+	MOVL	$0, 8(SP)
+	SUBL	$20, SP			// arguments for GetQueuedCompletionStatus
+	MOVL	48(SP), AX		// port
+	MOVL	AX, 0(SP)
+	LEAL	20(SP), AX		// &bytes
+	MOVL	AX, 4(SP)
+	LEAL	24(SP), AX		// &key
+	MOVL	AX, 8(SP)
+	LEAL	28(SP), AX		// &overlapped
+	MOVL	AX, 12(SP)
+	MOVL	64(SP), AX		// timeout
+	MOVL	AX, 16(SP)
+	MOVL	go2xp_GetQueuedCompletionStatus(SB), AX
+	CALL	AX			// callee pops 20; scratch is at 0/4/8(SP) again
+	TESTL	AX, AX
+	JNZ	gqe_fill
+	MOVL	8(SP), AX		// FALSE: was a packet still dequeued?
+	TESTL	AX, AX
+	JZ	gqe_unwind		// no - timeout or a real error, propagate it
+
+gqe_fill:
+	MOVL	32(SP), DI		// entries
+	MOVL	4(SP), AX		// lpCompletionKey
+	MOVL	AX, 0(DI)
+	MOVL	8(SP), AX		// lpOverlapped
+	MOVL	AX, 4(DI)
+	MOVL	$0, 8(DI)		// Internal
+	MOVL	0(SP), AX		// dwNumberOfBytesTransferred
+	MOVL	AX, 12(DI)
+	MOVL	40(SP), DI		// removed
+	MOVL	$1, (DI)
+	ADDL	$12, SP
+	MOVL	$1, AX
+	JMP	gqe_ret
+
+gqe_unwind:
+	ADDL	$12, SP
+
+gqe_fail:
+	XORL	AX, AX
+
+gqe_ret:
+	POPL	DI
+	POPL	SI
+	POPL	BX
+	STDRET(24)
+
+// BOOL WINAPI CancelIoEx(HANDLE hFile, LPOVERLAPPED lpOverlapped) - Vista+.
+// A late polyfill: it is only ever called from ordinary goroutine context, so it is
+// written in Go (polyCancelIoEx) and reached through this trampoline. Until init has
+// installed the callback the trampoline reports failure, which is the correct answer for
+// anything that manages to call it that early.
+TEXT ·xp_CancelIoEx(SB), NOSPLIT|NOFRAME, $0-0
+	MOVL	·cbCancelIoEx(SB), AX
+	TESTL	AX, AX
+	JZ	cix_early
+	JMP	AX			// the callback pops the arguments itself
+
+cix_early:
+	XORL	AX, AX
 	STDRET(8)
 
 // BOOL WINAPI ProcessPrng(PBYTE pbData, SIZE_T cbData) - Win10+, bcryptprimitives.dll.
