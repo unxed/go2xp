@@ -29,24 +29,41 @@ absent function was checked in the Go 1.26.6 sources, not guessed.
 | CreateEventExW | dependency use | CreateEventW with the flags unpacked |
 | ProcessPrng | crypto/rand, runtime throw at startup | SystemFunction036 via the sentinel DLL |
 
+## Correction after the first real XP run
+
+The categories below originally said "fails with an error". That was wrong for most of
+them: Go's generated wrappers resolve a function with `LazyProc.Addr()`, and an absent
+export makes `mustFind` **panic**, not return an error. The first XP run died exactly so,
+in `os.ReadDir` on `GetVolumeInformationByHandleW`. Only call sites that check
+`LazyProc.Find()` first survive an absent export - in Go 1.26.6 that is
+`SetFileCompletionNotificationModes` and `GetTempPath2W`, and nothing else on f4's list.
+
+Consequence: every absent function f4 can reach now has an entry in the shim. Either a
+real polyfill, or a stub that returns the function's own failure value with
+`ERROR_CALL_NOT_IMPLEMENTED`, so the caller gets the ordinary error path it already has.
+The hooks still prefer the real export, so a stub is only reached where the function is
+genuinely missing.
+
 ## Absent on XP, but Go copes on its own
 
-GetTempPath2W (os falls back to GetTempPathW), SetFileCompletionNotificationModes
-(internal/poll tolerates the error), GetVolumeInformationByHandleW (os.ReadDir sets vol=0
-and continues; only os.SameFile degrades).
+GetTempPath2W (os checks Find() first, then falls back to GetTempPathW) and
+SetFileCompletionNotificationModes (internal/poll checks Find() first). These two only.
+GetVolumeInformationByHandleW was wrongly listed here: its *call* error is tolerated, its
+*lookup* is not - it is now a real polyfill over NtQueryVolumeInformationFile.
 
-## Absent on XP, left to fail with an error
+## Absent on XP, stubbed to fail cleanly
 
-The caller gets ERROR_PROC_NOT_FOUND and handles it like any other failure. None sits on
+Each has a stub in the shim (STUBS in gen_table.py) returning its failure value with
+ERROR_CALL_NOT_IMPLEMENTED, so the caller gets an error instead of a panic. None sits on
 a path a file manager needs to start: GetFinalPathNameByHandleW (symlink resolution),
 CreateSymbolicLinkW, ReOpenFile (chmod of a read-only file inside os.Root),
 QueryFullProcessImageNameW, GetCurrentConsoleFontEx, RegLoadMUIStringW, WSAPoll,
 FindFirstStreamW / FindNextStreamW.
 
-## No XP equivalent at all
+## No XP equivalent at all (stubbed the same way)
 
-CreatePseudoConsole / ResizePseudoConsole / ClosePseudoConsole (ConPTY, Win10 1809),
-DwmSetWindowAttribute, GetDpiForWindow. f4 already probes for ConPTY and needs the
+CreatePseudoConsole / ResizePseudoConsole / ClosePseudoConsole (ConPTY, Win10 1809)
+return E_NOTIMPL, DwmSetWindowAttribute returns E_NOTIMPL, GetDpiForWindow returns 96. f4 already probes for ConPTY and needs the
 Console-API backend on XP regardless, which is f4-side work.
 
 ## Not requested by f4

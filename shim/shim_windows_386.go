@@ -30,6 +30,7 @@ import (
 //go:cgo_import_dynamic go2xp_CancelIo CancelIo%1 "kernel32.dll"
 //go:cgo_import_dynamic go2xp_GetSystemDirectoryW GetSystemDirectoryW%2 "kernel32.dll"
 //go:cgo_import_dynamic go2xp_SetLastError SetLastError%1 "kernel32.dll"
+//go:cgo_import_dynamic go2xp_GetTickCount GetTickCount%0 "kernel32.dll"
 //go:cgo_import_dynamic go2xp_SystemFunction036 SystemFunction036%2 "advapi32.dll"
 
 //go:linkname procGetProcAddress go2xp_GetProcAddress
@@ -56,6 +57,9 @@ var procGetSystemDirectoryW uintptr
 //go:linkname procSetLastError go2xp_SetLastError
 var procSetLastError uintptr
 
+//go:linkname procGetTickCount go2xp_GetTickCount
+var procGetTickCount uintptr
+
 //go:linkname procSystemFunction036 go2xp_SystemFunction036
 var procSystemFunction036 uintptr
 
@@ -80,6 +84,26 @@ func xp_WSASocketW()
 func xp_CreateEventExW()
 func xp_CreateProcessW()
 func xp_NtCreateFile()
+func xp_GetVolumeInformationByHandleW()
+func xp_GetTickCount64()
+
+// Stubs for functions XP lacks that have no polyfill: they make LazyProc.Addr() succeed
+// and then fail like the real function would (see STUBS in gen_table.py).
+func xp_GetFinalPathNameByHandleW()
+func xp_CreateSymbolicLinkW()
+func xp_ReOpenFile()
+func xp_QueryFullProcessImageNameW()
+func xp_GetCurrentConsoleFontEx()
+func xp_FindFirstStreamW()
+func xp_FindNextStreamW()
+func xp_CreatePseudoConsole()
+func xp_ResizePseudoConsole()
+func xp_ClosePseudoConsole()
+func xp_RegLoadMUIStringW()
+func xp_WSAPoll()
+func xp_DwmSetWindowAttribute()
+func xp_GetDpiForWindow()
+func xp_SetProcessDpiAwarenessContext()
 
 // Late polyfills are written in Go and installed as stdcall callbacks by init; the
 // assembly trampoline of each one jumps to the address kept here. Only functions that
@@ -95,6 +119,10 @@ var (
 	cbCreateEventExW                    uintptr
 	cbCreateProcessW                    uintptr
 	cbNtCreateFile                      uintptr
+	cbGetVolumeInformationByHandleW     uintptr
+	// wsaSetLastError is filled in by the socket wrapper once ws2_32 is loaded; the
+	// WSAPoll stub uses it to report WSAEOPNOTSUPP and skips it while it is zero.
+	wsaSetLastError uintptr
 )
 
 // forcePolyfills makes xp_GetProcAddress answer from the table instead of preferring the
@@ -121,6 +149,7 @@ func init() {
 	cbCreateEventExW = syscall.NewCallback(polyCreateEventExW)
 	cbCreateProcessW = syscall.NewCallback(polyCreateProcessW)
 	cbNtCreateFile = syscall.NewCallback(polyNtCreateFile)
+	cbGetVolumeInformationByHandleW = syscall.NewCallback(polyGetVolumeInformationByHandleW)
 	if os.Getenv("GO2XP_FORCE_POLYFILLS") != "" {
 		forcePolyfills = 1
 	}

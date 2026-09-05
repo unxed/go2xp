@@ -1,8 +1,10 @@
 {
   "name": "xp",
   "comment": "Windows XP SP3 x86. Header 5.1. 'missing' lists kernel32 funcs absent on XP that the shim currently polyfills. Functions absent on XP but not yet polyfilled are in 'pending' (informational; add to 'missing' once a polyfill exists in GO2XPTBL). Source: MS Learn 'Minimum supported client' + go-legacy-winxp; verify against a live XP export dump before release (SPEC 7.1).",
-  "osMajor": 5, "osMinor": 1,
-  "subsystemMajor": 5, "subsystemMinor": 1,
+  "osMajor": 5,
+  "osMinor": 1,
+  "subsystemMajor": 5,
+  "subsystemMinor": 1,
   "missing": {
     "kernel32.dll": [
       "WerSetFlags",
@@ -17,7 +19,32 @@
       "InitializeProcThreadAttributeList",
       "UpdateProcThreadAttribute",
       "DeleteProcThreadAttributeList",
-      "CreateEventExW"
+      "CreateEventExW",
+      "GetVolumeInformationByHandleW",
+      "GetFinalPathNameByHandleW",
+      "CreateSymbolicLinkW",
+      "ReOpenFile",
+      "QueryFullProcessImageNameW",
+      "GetCurrentConsoleFontEx",
+      "FindFirstStreamW",
+      "FindNextStreamW",
+      "CreatePseudoConsole",
+      "ResizePseudoConsole",
+      "ClosePseudoConsole",
+      "GetTickCount64"
+    ],
+    "advapi32.dll": [
+      "RegLoadMUIStringW"
+    ],
+    "ws2_32.dll": [
+      "WSAPoll"
+    ],
+    "dwmapi.dll": [
+      "DwmSetWindowAttribute"
+    ],
+    "user32.dll": [
+      "GetDpiForWindow",
+      "SetProcessDpiAwarenessContext"
     ]
   },
   "missingWholeDLL": [
@@ -25,15 +52,25 @@
   ],
   "overrides": {
     "comment": "present on XP but wrapped anyway; served from the shim table ahead of the real export (see go2xp_overrides in shim)",
-    "ws2_32.dll": ["WSASocketW"],
-    "kernel32.dll": ["CreateProcessW"],
-    "ntdll.dll": ["NtCreateFile"]
+    "ws2_32.dll": [
+      "WSASocketW"
+    ],
+    "kernel32.dll": [
+      "CreateProcessW"
+    ],
+    "ntdll.dll": [
+      "NtCreateFile"
+    ]
   },
   "pending": {
-    "comment": "absent on XP SP3 and requested by f4 (lazily), but deliberately left to fail: Go or f4 handles the error, or there is no XP equivalent",
-    "graceful_in_go": ["GetTempPath2W", "SetFileCompletionNotificationModes", "GetVolumeInformationByHandleW"],
-    "fails_with_error": ["GetFinalPathNameByHandleW", "CreateSymbolicLinkW", "ReOpenFile", "QueryFullProcessImageNameW", "GetCurrentConsoleFontEx", "RegLoadMUIStringW", "WSAPoll", "FindFirstStreamW", "FindNextStreamW"],
-    "no_xp_equivalent": ["CreatePseudoConsole", "ResizePseudoConsole", "ClosePseudoConsole", "DwmSetWindowAttribute", "GetDpiForWindow"],
-    "not_requested_by_f4": ["GetTickCount64", "SetThreadDescription", "GetSystemTimePreciseAsFileTime"]
+    "comment": "absent on XP SP3 and deliberately left without even a stub. Only names whose call sites in Go 1.26.6 check LazyProc.Find() first belong here: an unguarded LazyProc.Addr() PANICS on a missing export, which is what killed the first real XP run (GetVolumeInformationByHandleW). Everything else absent gets at least a stub in the shim.",
+    "graceful_in_go": [
+      "GetTempPath2W",
+      "SetFileCompletionNotificationModes"
+    ],
+    "not_requested_by_f4": [
+      "SetThreadDescription",
+      "GetSystemTimePreciseAsFileTime"
+    ]
   }
 }

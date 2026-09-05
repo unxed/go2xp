@@ -407,3 +407,29 @@ events actually reach os/signal, and which lazily resolved imports XP really lac
   absent lazy export returns an ordinary error and that f4 lacks a WinAPI backend
   were corrected. Hosted CI for this revision is pending publication; it is not
   implied by these local results.
+
+### 2026-09-05 - first real XP run, and what it taught
+
+- **The loader accepted the patched f4, the early polyfills ran inside osinit, the
+  runtime came up and f4 reached main.main.** Everything that only a real XP could
+  confirm about the patcher and the early hooks is now confirmed.
+- It died at the first lazy import: `panic: Failed to find GetVolumeInformationByHandleW
+  procedure in kernel32.dll`, from os.ReadDir. The audit had that name as
+  "graceful_in_go", and that was a category error, not a one-off: Go's generated wrappers
+  resolve with `LazyProc.Addr()`, whose `mustFind` panics on a missing export. Only
+  call sites that check `Find()` first survive - in 1.26.6 that is exactly
+  SetFileCompletionNotificationModes and GetTempPath2W. Everything previously filed
+  under "fails_with_error" would have panicked the same way when reached.
+- Fix, systemic: `STUBS` in gen_table.py. Every absent function without a polyfill gets a
+  generated stub returning its own failure value with ERROR_CALL_NOT_IMPLEMENTED (or the
+  convention the function uses: INVALID_HANDLE_VALUE, E_NOTIMPL, LSTATUS, SOCKET_ERROR
+  with WSAEOPNOTSUPP, 96 for GetDpiForWindow). Addr() then finds an address and the call
+  fails the way the caller already handles.
+- GetVolumeInformationByHandleW itself got a real polyfill over
+  NtQueryVolumeInformationFile (serial and label from FileFsVolumeInformation, flags,
+  component limit and name from FileFsAttributeInformation), since ReadDir calls it for
+  every directory. GetTickCount64 in assembly (GetTickCount zero-extended).
+- Wine: 18/18 including forced polyfills; audit on the files probe shows the new
+  polyfill and nothing uncovered.
+- Also noted: the tester's build is not necessarily this tree. Ask for `git rev-parse
+  HEAD` of the shim they linked with each report.

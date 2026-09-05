@@ -225,6 +225,9 @@ func polyWSASocketW(af, typ, proto, info, group, flags uintptr) uintptr {
 		handleFlagInherit    = 1
 	)
 	wsaSocketW := realProc("ws2_32.dll", "WSASocketW")
+	if wsaSetLastError == 0 {
+		wsaSetLastError = realProc("ws2_32.dll", "WSASetLastError")
+	}
 	s, _, e := syscall.SyscallN(wsaSocketW, af, typ, proto, info, group, flags)
 	if s == invalidSocket && flags&wsaFlagNoHandleInher != 0 && e == wsaeinval {
 		s, _, e = syscall.SyscallN(wsaSocketW, af, typ, proto, info, group, flags&^wsaFlagNoHandleInher)
@@ -352,3 +355,72 @@ func polyNtCreateFile(result, access, attrs, iosb, allocation, fileAttrs, share,
 	}
 	return r
 }
+
+// BOOL WINAPI GetVolumeInformationByHandleW(HANDLE, LPWSTR volName, DWORD volNameSize,
+//
+//	LPDWORD serial, LPDWORD maxComponent, LPDWORD fsFlags, LPWSTR fsName, DWORD fsNameSize) - Vista+.
+//
+// os.ReadDir calls this for every directory it opens (for the volume serial that
+// os.SameFile uses), and the generated wrapper resolves it with LazyProc.Addr(), which
+// panics when the export is missing - the first thing the first real XP run hit. The
+// data comes from NtQueryVolumeInformationFile, which XP has: FileFsVolumeInformation for
+// the serial and label, FileFsAttributeInformation for the flags, the component limit and
+// the file system name. Each is queried only if the caller asked for something in it.
+func polyGetVolumeInformationByHandleW(h, volName, volNameSize, serial, maxComponent, fsFlags, fsName, fsNameSize uintptr) uintptr {
+	const (
+		fileFsVolumeInformation    = 1
+		fileFsAttributeInformation = 5
+	)
+	var iosb ioStatusBlock
+	var buf [16 + 2*260]byte // header plus a MAX_PATH name, for either class
+
+	if serial != 0 || volName != 0 {
+		// FILE_FS_VOLUME_INFORMATION: creation time (8), serial (4), label length (4),
+		// supports objects (1, padded), label (UTF-16, not NUL-terminated).
+		status, _, _ := syscall.SyscallN(ntQueryVolumeInformationFile, h, uintptr(unsafe.Pointer(&iosb)),
+			uintptr(unsafe.Pointer(&buf[0])), uintptr(len(buf)), fileFsVolumeInformation)
+		if status != 0 && status != 0x80000005 /* STATUS_BUFFER_OVERFLOW: label cut, rest valid */ {
+			return finish(h, status, &iosb)
+		}
+		if serial != 0 {
+			*(*uint32)(unsafe.Pointer(serial)) = *(*uint32)(unsafe.Pointer(&buf[8])) //nolint:govet
+		}
+		if volName != 0 && volNameSize != 0 {
+			copyUTF16(volName, volNameSize, buf[18:], int(*(*uint32)(unsafe.Pointer(&buf[12])))/2)
+		}
+	}
+	if maxComponent != 0 || fsFlags != 0 || fsName != 0 {
+		// FILE_FS_ATTRIBUTE_INFORMATION: attributes (4), max component length (4),
+		// name length (4), name (UTF-16, not NUL-terminated).
+		status, _, _ := syscall.SyscallN(ntQueryVolumeInformationFile, h, uintptr(unsafe.Pointer(&iosb)),
+			uintptr(unsafe.Pointer(&buf[0])), uintptr(len(buf)), fileFsAttributeInformation)
+		if status != 0 && status != 0x80000005 {
+			return finish(h, status, &iosb)
+		}
+		if fsFlags != 0 {
+			*(*uint32)(unsafe.Pointer(fsFlags)) = *(*uint32)(unsafe.Pointer(&buf[0])) //nolint:govet
+		}
+		if maxComponent != 0 {
+			*(*uint32)(unsafe.Pointer(maxComponent)) = *(*uint32)(unsafe.Pointer(&buf[4])) //nolint:govet
+		}
+		if fsName != 0 && fsNameSize != 0 {
+			copyUTF16(fsName, fsNameSize, buf[12:], int(*(*uint32)(unsafe.Pointer(&buf[8])))/2)
+		}
+	}
+	return 1
+}
+
+// copyUTF16 writes up to n UTF-16 units from src into the caller's buffer of size units
+// and NUL-terminates it, truncating if needed.
+func copyUTF16(dst, size uintptr, src []byte, n int) {
+	out := unsafe.Slice((*uint16)(unsafe.Pointer(dst)), size) //nolint:govet
+	if n > int(size)-1 {
+		n = int(size) - 1
+	}
+	for i := 0; i < n; i++ {
+		out[i] = uint16(src[2*i]) | uint16(src[2*i+1])<<8
+	}
+	out[n] = 0
+}
+
+var ntQueryVolumeInformationFile = realProc("ntdll.dll", "NtQueryVolumeInformationFile")
