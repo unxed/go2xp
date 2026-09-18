@@ -433,3 +433,43 @@ events actually reach os/signal, and which lazily resolved imports XP really lac
   polyfill and nothing uncovered.
 - Also noted: the tester's build is not necessarily this tree. Ask for `git rev-parse
   HEAD` of the shim they linked with each report.
+
+### 2026-09-18 - ReactOS 0.4.16: the first target that runs unattended
+
+- **The mechanism works on a real NT 5.x-family system end to end.** Stock Go
+  1.26.6, windows/386, shim linked, `go2xp patch -profile profiles/reactos.json`:
+  the `hello` and `files` probes print their OK lines on ReactOS 0.4.16, and f4
+  reaches `main.main`, draws both panels and runs file operations, viewer,
+  editor and command line. Early polyfills run inside `osinit`; the absent-export
+  stubs behave as designed (f4 asks for `CreatePseudoConsole`, gets `E_NOTIMPL`,
+  degrades instead of panicking in `LazyProc.Addr`).
+- **Why this target matters:** XP cannot go in CI, ReactOS can. It boots in QEMU
+  without KVM and is driven over the QEMU monitor by `scripts/reactos-vm.py`
+  (screenshot, sendkey, type, swap the CD that carries the next build in), so a
+  regression run needs nobody watching a screen.
+- **The profile is measured, not documented.** `scripts/fetch-reactos-exports.py`
+  reads the export tables of all 447 DLLs in `\reactos\system32` of the released
+  image (34,815 names) with pefile. `profiles/reactos-kernel32-exports.tsv` is
+  that data; `profiles/reactos.json` cites it.
+- **`*_vista.dll` is not a redirect for applications.** ReactOS ships
+  kernel32_vista / ntdll_vista / advapi32_vista / gdi32_vista carrying exactly
+  the Vista+ names, but in the 0.4.16 image only ReactOS's own DLLs import them
+  (36 modules: combase, msvcrt, ole32, msi, ...), no application binary. A name
+  only they have counts as absent. `--list-vista-importers` re-checks that on a
+  newer image.
+- **Not the same profile as xp, in both directions.** ReactOS exports
+  `ReOpenFile`, `FindFirstStreamW`, `FindNextStreamW` and
+  `SetFileCompletionNotificationModes`, which xp.json lists as missing; running
+  the xp profile here would point those four slots at stubs and replace working
+  functions with failures. Header is 5.2.
+- **The audit now takes its export list from the profile** (`"exports"` field,
+  default `kernel32-exports.tsv`), since each target brings its own; the marker
+  column is read as "absent iff `no`", so `xp` and `reactos` lists share one
+  reader. Audit of the ReactOS-patched hello probe is clean.
+- **Lesson for adopters, learned here:** giving every absent export an address
+  breaks capability probes that only resolve a name. f4's ConPTY probe said
+  "ConPTY is available" because the three names resolved to stubs, picked the
+  shell mode that needs a PTY, and left the terminal black; it now allocates a
+  pseudo console and closes it. Probe by using the API, not by looking it up.
+- Still open here: nothing ReactOS-specific is wired into CI yet, and the f4
+  side (shim import under a build tag, a windows/386 job) is not upstream.

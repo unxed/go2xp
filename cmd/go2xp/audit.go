@@ -19,8 +19,9 @@ import (
 // or neither. The exit status is non-zero only in the last case, which makes the command
 // usable as a CI gate with the profile as the single source of truth.
 //
-// The export list (profiles/kernel32-exports.tsv, next to the profile) covers kernel32
-// only: a name absent from it may simply live in another DLL, which is reported as such.
+// The export list covers kernel32 only: a name absent from it may simply live in another
+// DLL, which is reported as such. It is read from the file the profile's "exports" field
+// names, next to the profile, or from kernel32-exports.tsv when the profile names none.
 func auditCmd(args []string) error {
 	fs := flag.NewFlagSet("audit", flag.ExitOnError)
 	profile := fs.String("profile", "profiles/xp.json", "target OS profile; the export list is read from the same directory")
@@ -37,7 +38,11 @@ func auditCmd(args []string) error {
 	if len(lazy) == 0 {
 		return fmt.Errorf("no proc* symbols found; was the binary linked with -s?")
 	}
-	xp, err := loadExports(filepath.Join(filepath.Dir(*profile), "kernel32-exports.tsv"))
+	exportList, err := exportListOf(*profile)
+	if err != nil {
+		return err
+	}
+	xp, err := loadExports(exportList)
 	if err != nil {
 		return err
 	}
@@ -92,6 +97,28 @@ func auditCmd(args []string) error {
 	return nil
 }
 
+// exportListOf returns the export list to audit against: the file named by the profile's
+// "exports" field, resolved next to the profile, or kernel32-exports.tsv when the profile
+// names none. Each target OS brings its own list -- the xp one is a documentation scrape,
+// the reactos one is read out of the released image -- and the profile is what says which.
+func exportListOf(profilePath string) (string, error) {
+	b, err := os.ReadFile(profilePath)
+	if err != nil {
+		return "", err
+	}
+	var p struct {
+		Exports string `json:"exports"`
+	}
+	if err := json.Unmarshal(b, &p); err != nil {
+		return "", err
+	}
+	name := p.Exports
+	if name == "" {
+		name = "kernel32-exports.tsv"
+	}
+	return filepath.Join(filepath.Dir(profilePath), name), nil
+}
+
 // loadAccepted reads the profile's "pending" section: every list under it (except the
 // comment) names functions whose absence on the target is understood and accepted, and
 // the list's key is the reason.
@@ -132,7 +159,9 @@ var advapi32OnXP = map[string]bool{
 	"ImpersonateLoggedOnUser": true, "SystemFunction036": true,
 }
 
-// loadExports reads kernel32-exports.tsv: name, xp|no|?, version range.
+// loadExports reads an export list: name, marker, note. The marker is "no" where the
+// target lacks the export and the target's own name ("xp", "reactos") where it has it,
+// so one reader serves every profile's list.
 func loadExports(path string) (map[string]bool, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -148,7 +177,7 @@ func loadExports(path string) (map[string]bool, error) {
 		}
 		parts := strings.Split(line, "\t")
 		if len(parts) >= 2 {
-			out[parts[0]] = parts[1] == "xp"
+			out[parts[0]] = parts[1] != "no"
 		}
 	}
 	return out, sc.Err()

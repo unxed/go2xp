@@ -1,0 +1,80 @@
+{
+  "name": "reactos",
+  "comment": "ReactOS 0.4.16 x86 (release build 20260829-0.4.16-release-0-g822e864), which reports itself as NT 5.2 (Build 3790). Header 5.2. Unlike the xp profile, 'missing' here is not derived from documentation: every name was checked against the export tables of the DLLs in \\reactos\\system32 of the released ReactOS-0.4.16-i386 image (profiles/reactos-kernel32-exports.tsv). ReactOS ships kernel32_vista.dll / ntdll_vista.dll / advapi32_vista.dll / user32_vista.dll, but those are internal compatibility modules: in the released image they are imported only by ReactOS's own DLLs (combase, msvcrt, ole32, msi, ...), not by application binaries, and the names they carry are absent from the app-facing kernel32.dll. So a name that only kernel32_vista.dll has counts as missing here.",
+  "exports": "reactos-kernel32-exports.tsv",
+  "osMajor": 5,
+  "osMinor": 2,
+  "subsystemMajor": 5,
+  "subsystemMinor": 2,
+  "missing": {
+    "kernel32.dll": [
+      "WerSetFlags",
+      "WerGetFlags",
+      "GetErrorMode",
+      "CreateWaitableTimerExW",
+      "RaiseFailFastException",
+      "GetQueuedCompletionStatusEx",
+      "CancelIoEx",
+      "GetFileInformationByHandleEx",
+      "SetFileInformationByHandle",
+      "InitializeProcThreadAttributeList",
+      "UpdateProcThreadAttribute",
+      "DeleteProcThreadAttributeList",
+      "CreateEventExW",
+      "GetVolumeInformationByHandleW",
+      "GetFinalPathNameByHandleW",
+      "CreateSymbolicLinkW",
+      "QueryFullProcessImageNameW",
+      "GetCurrentConsoleFontEx",
+      "CreatePseudoConsole",
+      "ResizePseudoConsole",
+      "ClosePseudoConsole",
+      "GetTickCount64"
+    ],
+    "advapi32.dll": [
+      "RegLoadMUIStringW"
+    ],
+    "ws2_32.dll": [
+      "WSAPoll"
+    ],
+    "user32.dll": [
+      "GetDpiForWindow",
+      "SetProcessDpiAwarenessContext"
+    ]
+  },
+  "missingWholeDLL": [
+    "bcryptprimitives.dll",
+    "dwmapi.dll"
+  ],
+  "overrides": {
+    "comment": "present on ReactOS 0.4.16 but wrapped anyway, for the same reasons as on XP: ReactOS has no ProcThreadAttributeList API either (see 'missing'), so CreateProcessW must not be handed EXTENDED_STARTUPINFO_PRESENT, and WSASocketW predates the Win7 WSA_FLAG_NO_HANDLE_INHERIT flag.",
+    "ws2_32.dll": [
+      "WSASocketW"
+    ],
+    "kernel32.dll": [
+      "CreateProcessW"
+    ],
+    "ntdll.dll": [
+      "NtCreateFile"
+    ]
+  },
+  "present_on_reactos_but_not_on_xp": {
+    "comment": "informational: names the xp profile lists as missing that the released ReactOS 0.4.16 kernel32.dll does export, which is why this profile is not simply xp.json. Redirecting these to shim stubs would replace working functions with failures.",
+    "kernel32.dll": [
+      "ReOpenFile",
+      "FindFirstStreamW",
+      "FindNextStreamW",
+      "SetFileCompletionNotificationModes"
+    ]
+  },
+  "pending": {
+    "comment": "absent on ReactOS 0.4.16 and deliberately left without a stub. Same rule as in the xp profile: only names whose call sites check LazyProc.Find() before Addr() may live here, because an unguarded Addr() panics.",
+    "graceful_in_go": [
+      "GetTempPath2W"
+    ],
+    "not_requested_by_f4": [
+      "SetThreadDescription",
+      "GetSystemTimePreciseAsFileTime"
+    ]
+  }
+}
