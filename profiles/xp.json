@@ -63,10 +63,12 @@
     ]
   },
   "pending": {
-    "comment": "absent on XP SP3 and deliberately left without even a stub. Only names whose call sites in Go 1.26.6 check LazyProc.Find() first belong here: an unguarded LazyProc.Addr() PANICS on a missing export, which is what killed the first real XP run (GetVolumeInformationByHandleW). Everything else absent gets at least a stub in the shim.",
+    "comment": "absent on XP SP3 and deliberately left without even a stub. Only names whose call sites check LazyProc.Find() first belong here, in Go 1.26.6 or in f4 itself (GetConsoleScreenBufferInfoEx and SetConsoleScreenBufferInfoEx, internal/terminal/console_palette_windows.go): an unguarded LazyProc.Addr() PANICS on a missing export, which is what killed the first real XP run (GetVolumeInformationByHandleW). Everything else absent gets at least a stub in the shim.",
     "graceful_in_go": [
       "GetTempPath2W",
-      "SetFileCompletionNotificationModes"
+      "SetFileCompletionNotificationModes",
+      "GetConsoleScreenBufferInfoEx",
+      "SetConsoleScreenBufferInfoEx"
     ],
     "not_requested_by_f4": [
       "SetThreadDescription",
